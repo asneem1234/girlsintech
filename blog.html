@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog - Girlsin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --text: #000;
+      --outline: #000;
+      --radius: 14px;
+      --light-blue: #c4e7f0;
+    }
+    * { box-sizing: border-box; }
+    html, body { 
+      margin: 0; 
+      height: 100%; 
+      font-family: 'Inter', Arial, sans-serif; 
+      color: var(--text); 
+    }
+    body {
+      background-image: url('assets/pcbg.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      cursor: none; /* Hide default cursor */
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* Custom cursor */
+    #custom-cursor {
+      position: fixed;
+      top: -100px;
+      left: -100px;
+      width: 40px;
+      height: 40px;
+      background-image: url('assets/arrow.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-10px, -10px);
+      transition: background-image 0.1s ease;
+      opacity: 0;
+    }
+    #custom-cursor.hovering {
+      background-image: url('assets/clickable.png');
+    }
+    #custom-cursor.clicking {
+      transform: translate(-10px, -8px) scale(0.95);
+    }
+
+    /* Main container */
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    /* Top navigation bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-bottom: 3px solid #000;
+      padding: 8px 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    
+    .nav-icons {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border: 2px solid var(--outline);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius);
+      cursor: none;
+      box-shadow: 2px 2px 0 #000;
+    }
+    
+    .icon-btn:active {
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0 #000;
+    }
+    
+    /* Blog Window Popup */
+    .window-popup {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 85%;
+      max-width: 900px;
+      height: 80%;
+      background-color: rgba(245, 245, 240, 0.95);
+      border: 3px solid #000;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      animation: fadeIn 0.3s ease forwards;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .window-popup.minimized {
+      transform: translate(-50%, 100%);
+      transition: transform 0.3s ease;
+      height: 0;
+      overflow: hidden;
+    }
+
+    .window-popup.maximized {
+      width: 95%;
+      height: 90%;
+      max-width: none;
+      transition: all 0.3s ease;
+    }
+
+    .window-header {
+      display: flex;
+      align-items: center;
+      background-color: #f5f5f3;
+      padding: 10px 15px;
+      border-bottom: 2px solid #000;
+      cursor: move; /* Indicates draggable */
+    }
+
+    .window-controls {
+      display: flex;
+      gap: 8px;
+      margin-right: 15px;
+    }
+
+    .window-button {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 1px solid #000;
+      cursor: none;
+    }
+
+    .close-button {
+      background-color: #ff6961;
+    }
+
+    .minimize-button {
+      background-color: #fdfd96;
+    }
+
+    .maximize-button {
+      background-color: #77dd77;
+    }
+
+    .window-title {
+      font-weight: 600;
+      font-size: 16px;
+      flex: 1;
+      text-align: center;
+    }
+
+    .window-content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    /* Blog categories */
+    .categories { 
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .category-tag {
+      border: 2px solid #000;
+      background: #fff;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: none;
+    }
+    
+    .category-tag:hover {
+      background: #D9A3CF;
+    }
+    
+    .category-tag.active {
+      background: #000;
+      color: #fff;
+    }
+
+    /* Featured blog */
+    .featured-blog { 
+      background: #fff; 
+      border: 3px solid #000; 
+      padding: 20px; 
+      border-radius: 18px; 
+      margin-bottom: 30px; 
+      box-shadow: 6px 6px 0 #000;
+    }
+    
+    .featured-blog h2 { 
+      margin-top: 0;
+      border-bottom: 2px solid #000;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .featured-content {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 20px;
+    }
+    
+    .featured-image {
+      border-radius: 10px;
+      border: 2px solid #000;
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+    
+    .featured-text h3 {
+      margin-top: 0;
+      font-size: 22px;
+    }
+    
+    .author-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+    
+    .author-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid #000;
+    }
+
+    /* Blog cards */
+    .blogs-grid {
+      display: grid;
+      gap: 26px;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+    
+    .blog-card {
+      background: #fff;
+      border: 3px solid #000;
+      padding: 14px 16px 60px;
+      position: relative;
+      border-radius: 18px;
+      min-height: 200px;
+      box-shadow: 4px 4px 0 #000;
+      cursor: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    
+    .blog-card:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 8px 8px 0 #000;
+    }
+    
+    .blog-card:active {
+      transform: translate(0, 0);
+      box-shadow: 4px 4px 0 #000;
+    }
+    
+    .blog-card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+    
+    .blog-card p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.4;
+      flex: 1;
+    }
+    
+    .read-btn {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      border: 2px solid #000;
+      background: #D9A3CF;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: none;
+      box-shadow: 2px 2px 0 #000;
+    }
+    
+    .read-btn:hover {
+      background: #c391b9;
+    }
+    
+    .read-btn:active {
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0 #000;
+    }
+    
+    /* Team Window Styles */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 25px;
+      margin-top: 20px;
+    }
+    
+    .team-member {
+      background: #fff;
+      border: 3px solid #000;
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 4px 4px 0 #000;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .team-member:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 7px 7px 0 #000;
+    }
+    
+    .team-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 2px solid #000;
+      overflow: hidden;
+      margin: 0 auto 15px;
+    }
+    
+    .team-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .team-member h3 {
+      margin: 0 0 5px;
+      font-size: 18px;
+    }
+    
+    .team-role {
+      font-weight: 600;
+      margin: 0 0 10px;
+      color: #444;
+      font-size: 14px;
+    }
+    
+    .team-bio {
+      font-size: 13px;
+      line-height: 1.4;
+      margin: 0;
+    }
+    
+    /* About Us Window Styles */
+    .about-hero {
+      margin-bottom: 20px;
+      border: 3px solid #000;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 5px 5px 0 #000;
+    }
+    
+    .about-image {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    .about-text {
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+    
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .value-item {
+      background: #fff;
+      border: 2px solid #000;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 3px 3px 0 #000;
+    }
+    
+    .value-item h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+    
+    .value-item p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    /* Animation container */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    
+    /* App shortcuts at the bottom */
+    .app-dock {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      padding: 10px 20px;
+      background-color: rgba(255, 255, 255, 0.7);
+      border: 3px solid #000;
+      border-radius: 20px;
+      box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5);
+    }
+    
+    .dock-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: none;
+      transition: transform 0.2s ease;
+    }
+    
+    .dock-item:hover {
+      transform: translateY(-5px);
+    }
+    
+    .dock-icon {
+      width: 50px;
+      height: 50px;
+      background-color: #fff;
+      border: 2px solid #000;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 5px;
+    }
+    
+    .dock-icon img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
+    
+    .dock-label {
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    /* Side app icons */
+    .side-apps {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .app-icon {
+      width: 60px;
+      height: 60px;
+      background-color: #fff;
+      border: 2px solid #000;
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: none;
+      box-shadow: 2px 2px 0 #000;
+      transition: transform 0.2s ease;
+      position: relative;
+    }
+    
+    .app-icon:hover {
+      transform: translateY(-3px);
+      box-shadow: 2px 5px 0 #000;
+    }
+    
+    .app-icon img {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+      margin-bottom: 3px;
+    }
+    
+    .app-name {
+      font-size: 9px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    /* Right side apps */
+    .right-apps {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideIn {
+      from { 
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to { 
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      .side-apps, .right-apps {
+        display: none;
+      }
+      
+      .app-dock {
+        padding: 10px;
+        gap: 10px;
+      }
+      
+      .dock-icon {
+        width: 40px;
+        height: 40px;
+      }
+      
+      .dock-icon img {
+        width: 30px;
+        height: 30px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Team Window Popup -->
+    <div id="team-window" class="window-popup" style="display: none;">
+      <div class="window-header">
+        <div class="window-controls">
+          <button class="window-button close-button" title="Close"></button>
+          <button class="window-button minimize-button" title="Minimize"></button>
+          <button class="window-button maximize-button" title="Maximize"></button>
+        </div>
+        <div class="window-title">Our Team</div>
+      </div>
+      <div class="window-content">
+        <h2>Meet the Team</h2>
+        <div class="team-grid">
+          <div class="team-member">
+            <div class="team-avatar">
+              <img src="assets/author.png" alt="Team Member">
+            </div>
+            <h3>Sophia Chen</h3>
+            <p class="team-role">Creative Director</p>
+            <p class="team-bio">Leads our creative vision with over 10 years of experience in digital design and brand strategy.</p>
+          </div>
+          <div class="team-member">
+            <div class="team-avatar">
+              <img src="assets/author.png" alt="Team Member">
+            </div>
+            <h3>Jackson Lee</h3>
+            <p class="team-role">Lead Developer</p>
+            <p class="team-bio">Frontend specialist with a passion for creating elegant, accessible, and responsive interfaces.</p>
+          </div>
+          <div class="team-member">
+            <div class="team-avatar">
+              <img src="assets/author.png" alt="Team Member">
+            </div>
+            <h3>Emma Wilson</h3>
+            <p class="team-role">UX Researcher</p>
+            <p class="team-bio">Conducts user testing and research to ensure our designs meet real user needs and expectations.</p>
+          </div>
+          <div class="team-member">
+            <div class="team-avatar">
+              <img src="assets/author.png" alt="Team Member">
+            </div>
+            <h3>Oliver Martinez</h3>
+            <p class="team-role">Content Strategist</p>
+            <p class="team-bio">Develops compelling content strategies that tell our clients' stories effectively.</p>
+          </div>
+          <div class="team-member">
+            <div class="team-avatar">
+              <img src="assets/team.png" alt="Team Member">
+            </div>
+            <h3>Amelia Wong</h3>
+            <p class="team-role">Project Manager</p>
+            <p class="team-bio">Keeps projects on track and ensures clear communication between team members and clients.</p>
+          </div>
+          <div class="team-member">
+            <div class="team-avatar">
+              <img src="assets/team.png" alt="Team Member">
+            </div>
+            <h3>Noah Johnson</h3>
+            <p class="team-role">Visual Designer</p>
+            <p class="team-bio">Creates stunning visual assets that elevate brands and capture audience attention.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- About Us Window Popup -->
+    <div id="about-window" class="window-popup" style="display: none;">
+      <div class="window-header">
+        <div class="window-controls">
+          <button class="window-button close-button" title="Close"></button>
+          <button class="window-button minimize-button" title="Minimize"></button>
+          <button class="window-button maximize-button" title="Maximize"></button>
+        </div>
+        <div class="window-title">About Us</div>
+      </div>
+      <div class="window-content">
+        <div class="about-hero">
+          <img src="assets/team.gif" alt="About Us" class="about-image">
+        </div>
+        <h2>Our Story</h2>
+        <p class="about-text">Girlsin was founded in 2023 with a simple mission: create digital experiences that feel as human as the people who use them. What started as a small collective of designers and developers has grown into a studio known for blending playful aesthetics with thoughtful functionality.</p>
+        
+        <h2>Our Approach</h2>
+        <p class="about-text">We believe that great design should feel both familiar and surprising. Our work combines nostalgic visual elements with modern usability principles to create interfaces that are intuitive yet delightful. We focus on crafting experiences that respect users' time and attention while still offering moments of joy.</p>
+        
+        <h2>Our Values</h2>
+        <div class="values-grid">
+          <div class="value-item">
+            <h3>Playfulness</h3>
+            <p>We approach challenges with curiosity and joy, finding creative solutions where others see obstacles.</p>
+          </div>
+          <div class="value-item">
+            <h3>Craft</h3>
+            <p>We obsess over details because we know they make the difference between good work and great work.</p>
+          </div>
+          <div class="value-item">
+            <h3>Honesty</h3>
+            <p>We create designs that are transparent in their function and authentic in their expression.</p>
+          </div>
+          <div class="value-item">
+            <h3>Growth</h3>
+            <p>We're always learning, iterating, and looking for ways to improve our work and ourselves.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Blog Window Popup -->
+    <div id="blog-window" class="window-popup" style="display: none;">
+      <div class="window-header">
+        <div class="window-controls">
+          <button class="window-button close-button" title="Close"></button>
+          <button class="window-button minimize-button" title="Minimize"></button>
+          <button class="window-button maximize-button" title="Maximize"></button>
+        </div>
+        <div class="window-title">Blogs</div>
+      </div>
+      <div class="window-content">
+        <!-- Categories -->
+        <div class="categories">
+          <div class="category-tag active">All</div>
+          <div class="category-tag">Technology</div>
+          <div class="category-tag">Lifestyle</div>
+          <div class="category-tag">Fashion</div>
+          <div class="category-tag">Travel</div>
+          <div class="category-tag">Food</div>
+        </div>
+        
+        <!-- Featured Blog -->
+        <div class="featured-blog">
+          <h2>Featured Post</h2>
+          <div class="featured-content">
+            <img src="assets/author.png" alt="Featured" class="featured-image">
+            <div class="featured-text">
+              <h3>The Future of Digital Design in 2025</h3>
+              <p>Exploring how AI-driven tools are transforming the creative landscape and empowering designers to break new boundaries. This comprehensive look at emerging technologies showcases innovative approaches that will define the next era of digital experiences.</p>
+              <div class="author-info">
+                <img src="assets/author.png" alt="Author" class="author-avatar">
+                <div>
+                  <div style="font-weight:600;">Sophia Chen</div>
+                  <div>August 10, 2025</div>
+                </div>
+              </div>
+              <button class="read-btn">Read Full Article</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Blog Grid -->
+        <h2>Latest Blogs</h2>
+        <div class="blogs-grid" id="blogsGrid">
+          <!-- Blog cards will be inserted here by JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Side apps -->
+    <div class="side-apps">
+      <a href="landingpage.html" class="app-icon">
+        <img src="assets/folder.png" alt="MyNudes">
+        <span class="app-name">MyNudes</span>
+      </a>
+      <a href="landingpage.html" class="app-icon">
+        <img src="assets/folder.png" alt="DesignerCC">
+        <span class="app-name">DesignerCC</span>
+      </a>
+      <a href="landingpage.html" class="app-icon">
+        <img src="assets/folder.png" alt="Procrastiland">
+        <span class="app-name">Procrastiland Explorer</span>
+      </a>
+    </div>
+
+    <!-- Right side apps -->
+    <div class="right-apps">
+      <a href="landingpage.html" class="app-icon">
+        <img src="assets/folder.png" alt="SpotJnamp">
+        <span class="app-name">SpotJnamp</span>
+      </a>
+      <a href="landingpage.html" class="app-icon">
+        <img src="assets/folder.png" alt="Project">
+        <span class="app-name">Trevor's project</span>
+      </a>
+    </div>
+
+    <!-- Bottom app dock -->
+    <div class="app-dock">
+      <a href="team.html" class="dock-item">
+        <div class="dock-icon">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M4.5 20c0-5 8-5 8-5s8 0 8 5"></path>
+            <path d="M12 15c-3 0-5.5 1-7 2.5"></path>
+            <path d="M12 15c3 0 5.5 1 7 2.5"></path>
+          </svg>
+        </div>
+        <span class="dock-label">Team</span>
+      </a>
+      <a href="landingpage.html" class="dock-item">
+        <div class="dock-icon">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 8v8"></path>
+            <path d="M12 16h.01"></path>
+          </svg>
+        </div>
+        <span class="dock-label">About Us</span>
+      </a>
+      <a href="#" id="blog-opener" class="dock-item">
+        <div class="dock-icon">
+          <img src="assets/folder.png" alt="Blog">
+        </div>
+        <span class="dock-label">Blog</span>
+      </a>
+      <a href="landingpage.html" class="dock-item">
+        <div class="dock-icon">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="12" y1="8" x2="12" y2="16"></line>
+            <line x1="8" y1="12" x2="16" y2="12"></line>
+          </svg>
+        </div>
+        <span class="dock-label">Girlsin</span>
+      </a>
+      <a href="landingpage.html" class="dock-item">
+        <div class="dock-icon">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 8v4"></path>
+            <path d="M12 16h.01"></path>
+          </svg>
+        </div>
+        <span class="dock-label">Help</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Custom cursor -->
+  <div id="custom-cursor"></div>
+
+  <!-- Audio element for click sound -->
+  <audio id="click-sound" preload="auto" style="display: none;">
+    <source src="assets/click.mp3" type="audio/mp3">
+  </audio>
+
+  <script>
+    // Custom cursor implementation
+    let customCursor;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      // Create cursor element
+      customCursor = document.createElement('div');
+      customCursor.id = 'custom-cursor';
+      document.body.appendChild(customCursor);
+      
+      // Move cursor with mouse
+      let firstMove = true;
+      document.addEventListener('mousemove', function(e) {
+        if (firstMove) {
+          customCursor.style.opacity = '1';
+          firstMove = false;
+        }
+        customCursor.style.left = e.clientX + 'px';
+        customCursor.style.top = e.clientY + 'px';
+      });
+      
+      // Add clicking state
+      document.addEventListener('mousedown', function() {
+        customCursor.classList.add('clicking');
+      });
+      
+      document.addEventListener('mouseup', function() {
+        customCursor.classList.remove('clicking');
+      });
+      
+      // Handle cursor leaving window
+      document.addEventListener('mouseleave', function() {
+        customCursor.style.display = 'none';
+      });
+      
+      document.addEventListener('mouseenter', function() {
+        customCursor.style.display = 'block';
+      });
+      
+      // Change cursor for clickable elements
+      const clickableElements = document.querySelectorAll('a, button, .dock-item, .app-icon');
+      
+      // Get click sound element
+      const clickSound = document.getElementById('click-sound');
+      
+      // Function to play click sound
+      function playClickSound() {
+        if (clickSound) {
+          try {
+            clickSound.currentTime = 0;
+            const playPromise = clickSound.play();
+            if (playPromise !== undefined) {
+              playPromise.catch(function(error) {
+                console.log('Audio playback error:', error);
+              });
+            }
+          } catch (e) {
+            console.log('Audio play error:', e);
+          }
+        }
+      }
+      
+      // Add hover and click events to all clickable elements
+      clickableElements.forEach(function(element) {
+        element.addEventListener('mouseenter', function() {
+          customCursor.classList.add('hovering');
+        });
+
+        element.addEventListener('mouseleave', function() {
+          customCursor.classList.remove('hovering');
+        });
+
+        element.addEventListener('click', playClickSound);
+      });
+
+      // Window references
+      const blogWindow = document.getElementById('blog-window');
+      const teamWindow = document.getElementById('team-window');
+      const aboutWindow = document.getElementById('about-window');
+      
+      // Button references
+      const blogOpener = document.getElementById('blog-opener');
+      const teamOpener = document.querySelector('.dock-item:nth-child(1)');
+      const aboutOpener = document.querySelector('.dock-item:nth-child(2)');
+      
+      // Window control buttons - we'll handle these by parent window
+      const closeButtons = document.querySelectorAll('.close-button');
+      const minimizeButtons = document.querySelectorAll('.minimize-button');
+      const maximizeButtons = document.querySelectorAll('.maximize-button');
+      
+      const blogsGrid = document.getElementById('blogsGrid');
+      
+      // Blog data
+      const blogs = [
+        {id:1, title:'Digital Minimalism in App Design', category:'Technology', author:'Jackson Lee', date:'August 11, 2025', avatar:'assets/author.png', snippet:'How simplicity in UI/UX creates more engaging and accessible digital experiences.'},
+        {id:2, title:'Summer Fashion Trends to Watch', category:'Fashion', author:'Amelia Wong', date:'August 9, 2025', avatar:'assets/author.png', snippet:'Bright colors, sustainable materials, and vintage inspirations dominate this season.'},
+        {id:3, title:'Hidden Cafés in Tokyo', category:'Travel', author:'Sophia Chen', date:'August 8, 2025', avatar:'assets/author.png', snippet:'Exploring intimate coffee shops tucked away in the bustling metropolis.'},
+        {id:4, title:'Plant-Based Recipes for Beginners', category:'Food', author:'Oliver Martinez', date:'August 7, 2025', avatar:'assets/author.png', snippet:'Easy and nutritious meals to kickstart your plant-based journey.'},
+        {id:5, title:'Building a Morning Routine', category:'Lifestyle', author:'Emma Wilson', date:'August 6, 2025', avatar:'assets/author.png', snippet:'Transform your day with these science-backed morning habits.'},
+        {id:6, title:'Web3 Technologies Explained', category:'Technology', author:'Noah Johnson', date:'August 5, 2025', avatar:'assets/author.png', snippet:'Demystifying blockchain, NFTs, and decentralized applications.'},
+        {id:7, title:'Sustainable Home Decor Ideas', category:'Lifestyle', author:'Isabella Garcia', date:'August 4, 2025', avatar:'assets/author.png', snippet:'Eco-friendly approaches to styling your living space with minimal impact.'},
+        {id:8, title:'Street Photography Tips', category:'Lifestyle', author:'Ethan Brown', date:'August 3, 2025', avatar:'assets/author.png', snippet:'Capturing authentic moments in urban environments with simple techniques.'}
+      ];
+      
+      // Load blog posts
+      function loadBlogs() {
+        if (blogsGrid) {
+          blogsGrid.innerHTML = ''; // Clear existing content
+          blogs.forEach(blog => {
+            const blogCard = document.createElement('div');
+            blogCard.className = 'blog-card';
+            blogCard.innerHTML = `
+              <h3>${blog.title}</h3>
+              <p>${blog.snippet}</p>
+              <div class="author-info">
+                <img src="${blog.avatar}" alt="${blog.author}" class="author-avatar">
+                <div>
+                  <div style="font-weight:600;">${blog.author}</div>
+                  <div>${blog.date}</div>
+                </div>
+              </div>
+              <button class='read-btn' data-id='${blog.id}'>Read</button>
+            `;
+            blogsGrid.appendChild(blogCard);
+          });
+          
+          // Add event listeners to all read buttons
+          const readButtons = document.querySelectorAll('.read-btn');
+          readButtons.forEach(button => {
+            button.addEventListener('click', function() {
+              playClickSound();
+              // You could redirect to blog-post.html with the ID
+              // window.location.href = `blog-post.html?id=${this.dataset.id}`;
+            });
+          });
+        }
+      }
+      
+      // Category tags functionality
+      const categoryTags = document.querySelectorAll('.category-tag');
+      if (categoryTags.length > 0) {
+        categoryTags.forEach(tag => {
+          tag.addEventListener('click', () => {
+            playClickSound();
+            // Remove active class from all tags
+            categoryTags.forEach(t => t.classList.remove('active'));
+            // Add active class to clicked tag
+            tag.classList.add('active');
+            // Filter blogs by category (in a real implementation)
+          });
+        });
+      }
+      
+      // Blog window opener
+      if (blogOpener) {
+        blogOpener.addEventListener('click', function(e) {
+          e.preventDefault();
+          playClickSound();
+          blogWindow.style.display = 'flex';
+          // Reset from minimized state if needed
+          blogWindow.classList.remove('minimized');
+          // Load blogs if they haven't been loaded yet
+          if (blogsGrid && blogsGrid.children.length === 0) {
+            loadBlogs();
+          }
+        });
+      }
+      
+      // Team window opener
+      if (teamOpener) {
+        teamOpener.addEventListener('click', function(e) {
+          e.preventDefault();
+          playClickSound();
+          
+          // Hide other windows
+          blogWindow.style.display = 'none';
+          aboutWindow.style.display = 'none';
+          
+          // Show team window
+          teamWindow.style.display = 'flex';
+          teamWindow.classList.remove('minimized');
+          teamWindow.classList.remove('maximized');
+          teamWindow.style.transform = 'translate(-50%, -50%)';
+        });
+      }
+      
+      // About Us window opener
+      if (aboutOpener) {
+        aboutOpener.addEventListener('click', function(e) {
+          e.preventDefault();
+          playClickSound();
+          
+          // Hide other windows
+          blogWindow.style.display = 'none';
+          teamWindow.style.display = 'none';
+          
+          // Show about window
+          aboutWindow.style.display = 'flex';
+          aboutWindow.classList.remove('minimized');
+          aboutWindow.classList.remove('maximized');
+          aboutWindow.style.transform = 'translate(-50%, -50%)';
+        });
+      }
+      
+      // Close buttons - apply to all windows
+      closeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          playClickSound();
+          const parentWindow = this.closest('.window-popup');
+          
+          parentWindow.style.animation = 'fadeOut 0.3s ease forwards';
+          setTimeout(() => {
+            parentWindow.style.display = 'none';
+            parentWindow.style.animation = '';
+            parentWindow.classList.remove('maximized');
+          }, 300);
+        });
+      });
+      
+      // Minimize buttons - apply to all windows
+      minimizeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          playClickSound();
+          const parentWindow = this.closest('.window-popup');
+          
+          parentWindow.classList.add('minimized');
+          setTimeout(() => {
+            parentWindow.style.display = 'none';
+            parentWindow.classList.remove('minimized');
+          }, 300);
+        });
+      });
+      
+      // Maximize/restore buttons - apply to all windows
+      maximizeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          playClickSound();
+          const parentWindow = this.closest('.window-popup');
+          parentWindow.classList.toggle('maximized');
+        });
+      });
+      
+      // Make all windows draggable
+      document.querySelectorAll('.window-popup').forEach(window => {
+        const header = window.querySelector('.window-header');
+        let isDragging = false;
+        let offsetX, offsetY;
+        
+        header.addEventListener('mousedown', function(e) {
+          // Only allow dragging if not maximized
+          if (!window.classList.contains('maximized')) {
+            isDragging = true;
+            // Calculate the offset from the window corner
+            const rect = window.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+            
+            // Set active window on top (z-index)
+            document.querySelectorAll('.window-popup').forEach(w => {
+              w.style.zIndex = "1000";
+            });
+            window.style.zIndex = "1001";
+          }
+        });
+        
+        document.addEventListener('mousemove', function(e) {
+          if (isDragging) {
+            const x = e.clientX - offsetX;
+            const y = e.clientY - offsetY;
+            
+            // Position the window at cursor position minus the offset
+            window.style.left = x + 'px';
+            window.style.top = y + 'px';
+            window.style.transform = 'none'; // Remove default centering
+          }
+        });
+        
+        document.addEventListener('mouseup', function() {
+          isDragging = false;
+        });
+      });
+
+      // Back button setup
+      window.goBack = function() {
+        if (document.referrer && document.referrer !== location.href) {
+          history.back();
+        } else {
+          window.location.href = 'landingpage.html';
+        }
+      };
+    });
+  </script>
+</body>
+</html>
