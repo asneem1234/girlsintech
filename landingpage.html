@@ -23,7 +23,7 @@
             height: 100%;
             width: 100%;
             overflow: auto;
-            cursor: none; /* Hide the default cursor */
+            cursor: auto; /* show default cursor */
         }
         
         /* Custom cursor element that follows the mouse */
@@ -71,9 +71,17 @@
             align-items: center;
             overflow: hidden;
         }
-        /* Wallpaper sits behind everything */
-        .wallpaper-bg { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; }
-        .bg-container img:not(.wallpaper-bg) {
+        /* Main background sits behind everything */
+        .main-bg { 
+            position: absolute; 
+            inset: 0; 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            object-position: center center; 
+            z-index: 0; 
+        }
+        .bg-container img:not(.main-bg) {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
@@ -107,7 +115,7 @@
     <style>
         /* Common hover effect styles for all clickable elements */
         .clickable {
-            cursor: none;
+            cursor: auto;
             transition: transform 0.2s ease; /* Adding back a quick transition for smooth raising */
         }
         .clickable:hover {
@@ -116,7 +124,7 @@
         
         /* Clickable elements without hover effect */
         .clickable-no-hover {
-            cursor: none;
+            cursor: auto;
         }
         
         /* Uncomment this line to see all clickable areas for debugging
@@ -127,7 +135,7 @@
         
         /* Author image styles */
         .overlay-author {
-            cursor: none;
+            cursor: auto;
             width:150px !important; /* restored original / larger size */
             height:auto;
         }
@@ -159,7 +167,7 @@
         
         /* Team image styles - blended with background */
         .overlay-team {
-            cursor: none;
+            cursor: auto;
             /* Removed transition effect */
         }
         
@@ -205,7 +213,7 @@
         .overlay-lamp {
             width:130px; /* Decreased from 160px to 130px */
             height:auto;
-            cursor:none;
+            cursor:auto;
             /* Removed transition for hover effect */
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.18));
         }
@@ -217,15 +225,15 @@
         }
         /* Removed hover effect for lamp */
     body.dark-purple-bg { transition: filter 0.6s ease; }
-    /* Dark mode: adjust wallpaper tones via filter only */
-    body.dark-purple-bg .wallpaper-bg { filter: brightness(0.42) contrast(1.08) saturate(0.8) hue-rotate(-8deg); }
+    /* Dark mode: adjust main background tones via filter only */
+    body.dark-purple-bg .main-bg { filter: brightness(0.42) contrast(1.08) saturate(0.8) hue-rotate(-8deg); }
         
         .overlay-window {
             position: absolute;
-            left: -8%; /* Moved further left from -6% */
-            top: -5%; /* Moved up from -3% */
+            left: -16%; /* Moved further left from -8% */
+            top: -23%; /* Moved further up from -5% */
             z-index: 2;
-            width: 700px;
+            width: 850px; /* Increased from 700px */
             height: auto;
             transition: opacity 0.4s ease;
         }
@@ -306,6 +314,77 @@
         }
         
         /* PC wrapper removed */
+        
+        /* Password Modal */
+        .password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            cursor: none;
+        }
+        .password-box {
+            background: #F5F5DC;
+            border: 4px solid #000;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 8px 8px 0 #000;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .password-box h2 {
+            margin: 0 0 20px;
+            font-size: 24px;
+            font-family: 'Inter', Arial, sans-serif;
+        }
+        .password-input {
+            width: 100%;
+            padding: 12px;
+            border: 3px solid #000;
+            border-radius: 14px;
+            font-size: 16px;
+            margin: 15px 0;
+            font-family: 'Inter', Arial, sans-serif;
+        }
+        .password-btn {
+            background: #D9A3CF;
+            border: 3px solid #000;
+            padding: 12px 24px;
+            border-radius: 14px;
+            font-weight: 600;
+            cursor: none;
+            box-shadow: 3px 3px 0 #000;
+            margin: 10px;
+            font-family: 'Inter', Arial, sans-serif;
+            font-size: 14px;
+        }
+        .password-btn:hover {
+            background: #c391b9;
+        }
+        .password-btn:active {
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0 #000;
+        }
+        .password-btn.secondary {
+            background: #A3D9A5;
+        }
+        .password-btn.secondary:hover {
+            background: #92c794;
+        }
+        .error-msg {
+            color: #ff4444;
+            font-weight: 600;
+            margin-top: 10px;
+            font-family: 'Inter', Arial, sans-serif;
+        }
     </style>
 </head>
 <body>
@@ -317,9 +396,22 @@
     <!-- Transition overlay for page animations -->
     <div id="transition-overlay"></div>
     
+    <!-- Password Modal -->
+    <div class="password-modal" id="password-modal">
+        <div class="password-box">
+            <h2>🔐 Access Required</h2>
+            <p>Enter the password to access the Author Panel:</p>
+            <input type="password" id="password-input" class="password-input" placeholder="Enter password...">
+            <div>
+                <button id="submit-password" class="password-btn">Submit</button>
+                <button id="cancel-password" class="password-btn secondary">Cancel</button>
+            </div>
+            <div id="error-message" class="error-msg" style="display: none;">Incorrect password! Try again.</div>
+        </div>
+    </div>
+    
     <div class="bg-container">
-    <img src="assets/roomwallpaper.jpg" alt="Wallpaper" class="wallpaper-bg">
-    <img src="assets/main.png" alt="Main Background">
+    <img src="assets/main.png" alt="Main Background" class="main-bg">
         <!-- Window on left side -->
     <img src="assets/window.png" alt="Window" id="room-window" class="overlay-window">
         <!-- PC element removed -->
@@ -330,17 +422,17 @@
             </div>
         
         <!-- Author image below the PC - only the image is clickable -->
-    <div class="author-wrapper" style="position:absolute; left:35%; top:75%; transform:translate(-50%,-50%); z-index:15;">
-            <a href="author.html" id="author-link" class="clickable-no-hover" style="display:inline-block; width:auto; height:auto; cursor:none; position:relative;">
+    <div class="author-wrapper" style="position:absolute; left:38%; top:75%; transform:translate(-50%,-50%); z-index:15;">
+            <a id="author-link" class="clickable-no-hover" style="display:inline-block; width:auto; height:auto; cursor:none; position:relative;">
                 <img id="author-image" src="assets/author.png" alt="Author" class="overlay-author" style="opacity:1;">
             </a>
             <img src="assets/authors.png" alt="About the author" class="author-bubble">
         </div>
         
-        <!-- PC image to the right of author image - clickable, links to article.html -->
-        <div class="pc-wrapper" style="position:absolute; left:46%; top:62%; transform:translate(-50%,-50%); z-index:14;">
-            <a href="article.html" id="pc-link" class="clickable-no-hover" style="display:inline-block; width:auto; height:auto; cursor:none; position:relative;">
-                <img id="pc-image" src="assets/pc.png" alt="PC" class="pc-static-image" style="width:180px; height:auto; opacity:1;">
+        <!-- PC image to the right of author image - clickable, links to blog.html -->
+        <div class="pc-wrapper" style="position:absolute; left:46%; top:58%; transform:translate(-50%,-50%); z-index:14;">
+            <a href="blog.html" id="pc-link" class="clickable-no-hover" style="display:inline-block; width:280px; height:220px; cursor:none; position:relative;">
+                <img id="pc-image" src="assets/pc.png" alt="PC" class="pc-static-image" style="width:280px; height:220px; object-fit:contain; opacity:1;">
             </a>
             <img src="assets/articlesbub.png" alt="Articles" class="pc-bubble" style="position:absolute; left:130px; top:-80px; width:180px; height:auto; opacity:0; pointer-events:none; transform: translateY(6px) scale(.95); transition: opacity .25s ease, transform .25s ease; z-index:25;">
         </div>
@@ -350,7 +442,7 @@
        
         
         <!-- Team image integrated with the background wall - only the image is clickable -->
-        <div class="team-wrapper" style="position:absolute; left:59%; top:28%; transform:translate(-50%,-50%); z-index:5;">
+        <div class="team-wrapper" style="position:absolute; left:59%; top:24%; transform:translate(-50%,-50%); z-index:5;">
             <a href="team.html" id="team-link" style="display:inline-block; width:120px; height:120px; cursor:none; mix-blend-mode: multiply; position:relative;">
                 <img src="assets/team.png" alt="Team" id="team-image" class="overlay-team" style="width:120px; height:120px; object-fit:contain; filter: brightness(0.97) contrast(0.95); box-shadow: none;">
             </a>
@@ -649,11 +741,11 @@
             pcLink.addEventListener('click', function(e) {
                 e.preventDefault();
                 playClickSound();
-                console.log("PC clicked - navigating to article.html");
+                console.log("PC clicked - navigating to blog.html");
                 
                 // Add a small delay to allow the click sound to play
                 setTimeout(function() {
-                    window.location.href = 'article.html';
+                    window.location.href = 'blog.html';
                 }, 50);
             });
             
@@ -663,15 +755,16 @@
             const pcBubble = document.querySelector('.pc-bubble');
             
             if (pcImage) {
-                // Save the original static image width - IMPORTANT: Do not change this
-                const staticWidth = '180px';
+                // Static image dimensions - fixed size
+                const staticWidth = '280px';
+                const staticHeight = '220px';
                 
                 // Paths to images
                 const staticSrc = 'assets/pc.png';
                 const animatedSrc = 'assets/pc.gif';
                 
-                // Increased size for GIF only (25% larger)
-                const gifWidth = '290px';
+                // GIF size - same as static now for consistency
+                const gifWidth = '280px';
                 
                 // Preload the GIF for smoother transition
                 const preloadGif = new Image();
@@ -679,12 +772,14 @@
                 
                 // When mouse enters the PC image
                 pcLink.addEventListener('mouseenter', function() {
-                    // Change to GIF with larger size
+                    // Change to GIF with exact same dimensions as static
                     pcImage.src = animatedSrc;
-                    pcImage.style.width = gifWidth;
+                    pcImage.style.width = staticWidth;
+                    pcImage.style.height = staticHeight;
+                    pcImage.style.objectFit = 'contain';
                     
-                    // Adjust position to move slightly upwards with a minor left adjustment
-                    pcImage.style.transform = 'translate(-2px, 0px)';
+                    // Remove any transform that might affect size perception
+                    pcImage.style.transform = '';
                     
                     // Show the articles bubble
                     if (pcBubble) {
@@ -695,9 +790,11 @@
                 
                 // When mouse leaves
                 pcLink.addEventListener('mouseleave', function() {
-                    // Change back to static PNG with its original size
+                    // Change back to static PNG with exact same dimensions
                     pcImage.src = staticSrc;
                     pcImage.style.width = staticWidth;
+                    pcImage.style.height = staticHeight;
+                    pcImage.style.objectFit = 'contain';
                     
                     // Reset position adjustment
                     pcImage.style.transform = '';
@@ -756,7 +853,24 @@
             });
         }
         
-        if (authorLink) authorLink.addEventListener('click', playClickSound);
+        // Author link - show password modal
+        if (authorLink) {
+            authorLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log("Author link clicked - showing password modal");
+                playClickSound();
+                const passwordModal = document.getElementById('password-modal');
+                const passwordInput = document.getElementById('password-input');
+                if (passwordModal && passwordInput) {
+                    passwordModal.style.display = 'flex';
+                    passwordInput.focus();
+                    console.log("Password modal shown and input focused");
+                } else {
+                    console.error("Password modal elements not found!");
+                }
+            });
+        }
+        
         if (teamLink) teamLink.addEventListener('click', playClickSound);
         if (lampElement) lampElement.addEventListener('click', playClickSound);
         
@@ -772,6 +886,64 @@
 
             // Add click sound when element is clicked
             element.addEventListener('click', playClickSound);
+        });
+        
+        // Password Modal Logic
+        const CORRECT_PASSWORD = "HEHE123";
+        const passwordModal = document.getElementById('password-modal');
+        const passwordInput = document.getElementById('password-input');
+        const submitBtn = document.getElementById('submit-password');
+        const cancelBtn = document.getElementById('cancel-password');
+        const errorMsg = document.getElementById('error-message');
+
+        function checkPassword() {
+            const enteredPassword = passwordInput.value.trim();
+            if (enteredPassword === CORRECT_PASSWORD) {
+                passwordModal.style.display = 'none';
+                playClickSound();
+                window.location.href = 'author.html';
+            } else {
+                errorMsg.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
+                playClickSound();
+            }
+        }
+
+        if (submitBtn) {
+            submitBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                checkPassword();
+            });
+        }
+        
+        if (passwordInput) {
+            passwordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    checkPassword();
+                }
+            });
+        }
+
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function() {
+                passwordModal.style.display = 'none';
+                playClickSound();
+            });
+        }
+        
+        // Add hover effects to password modal buttons
+        [submitBtn, cancelBtn].forEach(btn => {
+            if (btn) {
+                btn.addEventListener('mouseenter', function() {
+                    customCursor.classList.add('hovering');
+                });
+                btn.addEventListener('mouseleave', function() {
+                    customCursor.classList.remove('hovering');
+                });
+                btn.addEventListener('click', playClickSound);
+            }
         });
     });
     </script>

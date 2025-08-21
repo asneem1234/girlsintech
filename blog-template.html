@@ -556,6 +556,169 @@
         element.addEventListener('click', playClickSound);
       });
       
+      // Get URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const blogId = urlParams.get('id');
+      
+      // Blog data (matching the data in blog.html)
+      const blogData = {
+        1: {
+          title: 'Digital Minimalism in App Design', 
+          category: 'Technology', 
+          author: 'Jackson Lee', 
+          date: 'August 11, 2025', 
+          avatar: 'assets/author.png',
+          readTime: '5',
+          image: 'assets/pc.png',
+          content: {
+            intro: 'In an age of information overload, digital minimalism emerges as a powerful philosophy for creating more meaningful user experiences. This approach to app design prioritizes simplicity, functionality, and user wellbeing over feature bloat and attention-grabbing elements.',
+            sections: [
+              {
+                heading: 'The Principles of Minimalist Design',
+                content: 'Minimalist design is not about creating empty spaces or removing useful features. Instead, it\'s about thoughtful curation—ensuring every element serves a purpose and contributes to the user\'s goals. By eliminating unnecessary visual noise and focusing on core functionality, we create interfaces that are both beautiful and highly usable.'
+              },
+              {
+                heading: 'Impact on User Experience',
+                content: 'When users encounter a minimalist interface, they can focus on what truly matters. Reduced cognitive load leads to faster decision-making, lower stress levels, and more satisfying interactions. Studies show that users complete tasks 40% faster when using well-designed minimalist interfaces compared to cluttered alternatives.'
+              },
+              {
+                heading: 'Implementing Minimalism in Practice',
+                content: 'Start by auditing your current interface and questioning every element. Can this feature be simplified? Does this visual element add value or distraction? Use plenty of white space, limit your color palette, and ensure your typography hierarchy guides users naturally through the content.'
+              }
+            ],
+            quote: 'Good design is as little design as possible. This philosophy becomes even more relevant in digital spaces where user attention is precious.',
+            conclusion: 'Digital minimalism in app design is not a trend—it\'s a return to the fundamental principles of good design. By embracing simplicity and focusing on user needs, we create digital experiences that are not only more beautiful but more human.'
+          }
+        },
+        2: {
+          title: 'Summer Fashion Trends to Watch', 
+          category: 'Fashion', 
+          author: 'Amelia Wong', 
+          date: 'August 9, 2025', 
+          avatar: 'assets/author.png',
+          readTime: '4',
+          image: 'assets/team.png',
+          content: {
+            intro: 'As we step into the warmer months, fashion takes on a fresh perspective with sustainable materials, vibrant colors, and nostalgic influences that define this summer\'s aesthetic landscape.',
+            sections: [
+              {
+                heading: 'Sustainable and Conscious Fashion',
+                content: 'This summer, eco-consciousness meets style with brands embracing organic cotton, recycled materials, and zero-waste production methods. Consumers are increasingly seeking pieces that align with their environmental values without compromising on aesthetics.'
+              },
+              {
+                heading: 'Color Palettes and Patterns',
+                content: 'Bright, optimistic hues dominate the season—think electric blues, sunset oranges, and vibrant greens. Mixed with classic patterns like stripes and florals, these combinations create looks that are both modern and timeless.'
+              },
+              {
+                heading: 'Vintage Revival',
+                content: 'The 90s continue their comeback with oversized blazers, slip dresses, and minimalist jewelry. However, this revival is thoughtful—selecting the best elements of past decades while updating them for contemporary lifestyles.'
+              }
+            ],
+            quote: 'Fashion is about expressing your authentic self while being mindful of your impact on the world.',
+            conclusion: 'This summer\'s trends reflect a maturing fashion landscape where style, sustainability, and self-expression converge to create truly meaningful wardrobes.'
+          }
+        },
+        3: {
+          title: 'Hidden Cafés in Tokyo', 
+          category: 'Travel', 
+          author: 'Sophia Chen', 
+          date: 'August 8, 2025', 
+          avatar: 'assets/author.png',
+          readTime: '6',
+          image: 'assets/logo.png',
+          content: {
+            intro: 'Beyond the bustling streets and neon signs of Tokyo lies a network of intimate coffee shops that offer refuge from the urban intensity. These hidden gems represent the soul of Japanese hospitality and craftsmanship.',
+            sections: [
+              {
+                heading: 'The Art of Japanese Coffee Culture',
+                content: 'Japanese coffee culture, or "kissaten," emphasizes precision, ritual, and respect for the bean. In these hidden cafés, baristas treat each cup as a work of art, using traditional siphon brewing methods and hand-selected beans from around the world.'
+              },
+              {
+                heading: 'Discovering the Secret Spots',
+                content: 'The best Tokyo cafés are often found in the most unexpected places—basement levels of office buildings, converted residential spaces, or tucked away in narrow alleys. Each tells a unique story through its interior design, menu selection, and the personality of its owner.'
+              },
+              {
+                heading: 'A Cultural Experience',
+                content: 'Visiting these cafés is about more than just coffee—it\'s about experiencing "omotenashi," the Japanese philosophy of selfless service. The quiet atmosphere, attention to detail, and warm hospitality create moments of peace in one of the world\'s busiest cities.'
+              }
+            ],
+            quote: 'In Tokyo\'s hidden cafés, every cup tells a story of tradition, innovation, and the pursuit of perfection.',
+            conclusion: 'These intimate spaces remind us that the best travel experiences often happen away from tourist trails, in places where local culture and genuine hospitality intersect.'
+          }
+        },
+        featured: {
+          title: 'The Future of Digital Design in 2025', 
+          category: 'Technology', 
+          author: 'Sophia Chen', 
+          date: 'August 10, 2025', 
+          avatar: 'assets/author.png',
+          readTime: '8',
+          image: 'assets/pc.png',
+          content: {
+            intro: 'As we navigate through 2025, artificial intelligence and machine learning are fundamentally reshaping how we approach digital design. This transformation is not just about automation—it\'s about augmenting human creativity and enabling designers to focus on what they do best.',
+            sections: [
+              {
+                heading: 'AI as a Creative Partner',
+                content: 'Modern AI tools don\'t replace designers—they amplify their capabilities. From generating initial concepts to optimizing user flows, AI serves as an intelligent collaborator that handles routine tasks while designers focus on strategy, emotion, and human connection.'
+              },
+              {
+                heading: 'Personalized User Experiences',
+                content: 'The future of digital design is deeply personal. AI-driven interfaces adapt in real-time to user preferences, accessibility needs, and contextual situations. This means every user gets an experience tailored specifically for them, improving both usability and engagement.'
+              },
+              {
+                heading: 'Ethical Design Considerations',
+                content: 'With great power comes great responsibility. As designers, we must ensure our AI-enhanced creations respect user privacy, promote digital wellbeing, and remain accessible to all. The challenge is harnessing AI\'s potential while maintaining human-centered design principles.'
+              }
+            ],
+            quote: 'The future of design lies not in choosing between human creativity and artificial intelligence, but in finding the perfect harmony between them.',
+            conclusion: 'As we move forward, the most successful digital products will be those that seamlessly blend AI capabilities with genuine human insight, creating experiences that are both technologically advanced and deeply human.'
+          }
+        }
+      };
+      
+      // Load blog content if ID exists
+      if (blogId && blogData[blogId]) {
+        const blog = blogData[blogId];
+        
+        // Update title
+        document.querySelector('.blog-title').textContent = blog.title;
+        
+        // Update meta information
+        document.querySelector('.author-info img').src = blog.avatar;
+        document.querySelector('.author-info div div:first-child').textContent = blog.author;
+        document.querySelector('.author-info div div:last-child').textContent = blog.date;
+        document.querySelector('.meta-item').innerHTML = `
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          ${blog.readTime} min read
+        `;
+        document.querySelector('.category-tag').textContent = blog.category;
+        
+        // Update featured image
+        document.querySelector('.featured-image').src = blog.image;
+        
+        // Update content
+        const content = blog.content;
+        const contentElement = document.querySelector('.blog-content');
+        
+        contentElement.innerHTML = `
+          <p>${content.intro}</p>
+          
+          ${content.sections.map(section => `
+            <h2>${section.heading}</h2>
+            <p>${section.content}</p>
+          `).join('')}
+          
+          <blockquote>"${content.quote}"</blockquote>
+          
+          <p>${content.conclusion}</p>
+        `;
+      }
+      
       // Back button logic
       const goBackBtn = document.querySelector('.back-button');
       if(goBackBtn) {

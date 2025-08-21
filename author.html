@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Author Panel - Girlsin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --beige:#F5F5DC;
+      --green:#A3D9A5;
+      --purple:#D9A3CF;
+      --text:#000;
+      --outline:#000;
+      --radius:14px;
+    }
+    * { box-sizing:border-box; }
+    html,body { margin:0; height:100%; font-family: 'Inter', Arial, sans-serif; color:var(--text); background:var(--purple); cursor: auto; }
+    body { display:flex; flex-direction:column; }
+    a { color:inherit; text-decoration: none; }
+
+    /* Custom cursor */
+    #custom-cursor {
+      position: fixed;
+      top: -100px;
+      left: -100px;
+      width: 40px;
+      height: 40px;
+      background-image: url('assets/arrow.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-10px, -10px);
+      transition: background-image 0.1s ease;
+      opacity: 0;
+    }
+    #custom-cursor.hovering {
+      background-image: url('assets/clickable.png');
+    }
+    #custom-cursor.clicking {
+      transform: translate(-10px, -8px) scale(0.95);
+    }
+
+    /* Layout shell */
+    .app-shell { flex:1; display:grid; grid-template-columns:250px 1fr; grid-template-rows:auto 1fr; grid-template-areas: "sidebar header" "sidebar main"; height:100%; }
+    .sidebar { grid-area:sidebar; background:var(--beige); border-right:3px solid var(--outline); padding:14px 14px 80px; display:flex; flex-direction:column; gap:22px; position:relative; }
+    .header { grid-area:header; background:var(--beige); border-bottom:3px solid var(--outline); display:flex; align-items:center; justify-content:space-between; padding:8px 18px; position:relative; }
+    .main { grid-area:main; position:relative; overflow:hidden; }
+    
+    /* Header */
+    .hdr-left,.hdr-right { display:flex; gap:14px; align-items:center; }
+    .hdr-center { position:absolute; left:50%; transform:translateX(-50%); font-weight:600; font-size:18px; }
+    .icon-btn { width:32px; height:32px; border:2px solid var(--outline); background:#fff; display:flex; align-items:center; justify-content:center; border-radius:10px; cursor:auto; box-shadow:2px 2px 0 #000; }
+    .icon-btn:active { transform:translate(1px,1px); box-shadow:1px 1px 0 #000; }
+    svg { width:18px; height:18px; stroke:var(--text); }
+    
+    /* Sidebar sections */
+    .team-row { display:flex; align-items:center; justify-content:space-between; cursor:auto; font-weight:600; }
+    .team-row span { display:flex; align-items:center; gap:6px; }
+    .section-title { font-size:13px; text-transform:uppercase; letter-spacing:.5px; margin:4px 0 6px; font-weight:600; }
+    .channels { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; }
+    .channels li { padding:6px 10px; border:2px solid transparent; border-radius:10px; cursor:auto; display:flex; align-items:center; gap:6px; font-size:14px; }
+    .channels li:hover { background:#ffffffa8; }
+    .channels li.active { background:#fff; border-color:#000; font-weight:600; position:relative; }
+    
+    /* Main content */
+    .channel-header { display:flex; align-items:center; justify-content:space-between; padding:10px 22px 6px; background:var(--beige); border-bottom:3px solid var(--outline); font-size:14px; }
+    .channel-header h2 { margin:0; font-size:16px; }
+    .content-scroll { position:absolute; inset:56px 0 0 0; overflow:auto; padding:24px clamp(16px,3vw,40px) 120px; }
+    
+    /* Article Form */
+    .article-form {
+      background: #fff;
+      border: 3px solid var(--outline);
+      border-radius: 18px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 6px 6px 0 #000;
+    }
+    .article-form h2 {
+      margin: 0 0 20px;
+      border-bottom: 2px solid var(--outline);
+      padding-bottom: 10px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 12px;
+      border: 3px solid var(--outline);
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-family: inherit;
+    }
+    .form-textarea {
+      min-height: 200px;
+      resize: vertical;
+    }
+    .form-btn {
+      background: var(--green);
+      border: 3px solid var(--outline);
+      padding: 12px 24px;
+      border-radius: var(--radius);
+      font-weight: 600;
+      cursor:auto;
+      box-shadow: 3px 3px 0 #000;
+      margin-right: 10px;
+      font-family: inherit;
+    }
+    .form-btn:hover {
+      background: #92c794;
+    }
+    .form-btn:active {
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0 #000;
+    }
+    .form-btn.secondary {
+      background: var(--purple);
+    }
+    .form-btn.secondary:hover {
+      background: #c391b9;
+    }
+
+    /* Article List */
+    .article-list {
+      background: #fff;
+      border: 3px solid var(--outline);
+      border-radius: 18px;
+      padding: 30px;
+      box-shadow: 6px 6px 0 #000;
+    }
+    .article-item {
+      padding: 15px;
+      border: 2px solid var(--outline);
+      border-radius: var(--radius);
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .article-info h4 {
+      margin: 0 0 5px;
+      font-size: 16px;
+    }
+    .article-info p {
+      margin: 0;
+      font-size: 13px;
+      color: #666;
+    }
+    .article-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 12px;
+      border: 2px solid var(--outline);
+      border-radius: 8px;
+      cursor: auto;
+      font-weight: 600;
+    }
+    .btn-edit {
+      background: var(--purple);
+    }
+    .btn-delete {
+      background: #ffaaaa;
+    }
+
+    /* Dock */
+    .dock { position:fixed; bottom:14px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,0.7); backdrop-filter:blur(6px); border:3px solid #000; border-radius:30px; display:flex; gap:18px; padding:14px 28px; box-shadow:6px 6px 0 #000; z-index:600; }
+    .dock-item { width:60px; text-align:center; font-size:11px; font-weight:600; cursor:auto; position:relative; }
+    .dock-item img, .dock-item .dock-icon { width:54px; height:54px; border:3px solid #000; background:#fff; border-radius:18px; display:flex; align-items:center; justify-content:center; box-shadow:3px 3px 0 #000; }
+    .dock-item span { display:block; margin-top:6px; }
+    .dock-item:hover img, .dock-item:hover .dock-icon { transform:translateY(-6px); }
+    .dock-icon svg { width:32px; height:32px; stroke-width:2.2; }
+  </style>
+</head>
+<body>
+  <!-- Main App Shell -->
+  <div id="main-app" class="app-shell">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="team-row">
+        <span>📝 Author Panel</span>
+      </div>
+      <div class="section-title">Navigation</div>
+      <ul class="channels">
+        <li class="active">✏️ Write Article</li>
+        <li>📚 My Articles</li>
+        <li>📊 Statistics</li>
+      </ul>
+      <div class="section-title">Quick Actions</div>
+      <ul class="channels">
+        <li onclick="goHome()">🏠 Back to Home</li>
+        <li onclick="viewBlogs()">📖 View Blog</li>
+        <li>⚙️ Settings</li>
+      </ul>
+    </div>
+    
+    <!-- Header -->
+    <div class="header">
+      <div class="hdr-left">
+        <div class="icon-btn">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="hdr-center">Author Dashboard</div>
+      <div class="hdr-right">
+        <div class="icon-btn">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main">
+      <div class="channel-header">
+        <h2>✏️ Create New Article</h2>
+        <span>Welcome, Author!</span>
+      </div>
+      <div class="content-scroll" id="main-content">
+        <!-- Write Article Form -->
+        <div class="article-form" id="write-article">
+          <h2>📝 Write New Article</h2>
+          <form id="article-form">
+            <div class="form-group">
+              <label for="article-title">Article Title:</label>
+              <input type="text" id="article-title" class="form-input" placeholder="Enter article title..." required>
+            </div>
+            
+            <div class="form-group">
+              <label for="article-category">Category:</label>
+              <select id="article-category" class="form-select" required>
+                <option value="">Select category...</option>
+                <option value="Technology">Technology</option>
+                <option value="Lifestyle">Lifestyle</option>
+                <option value="Fashion">Fashion</option>
+                <option value="Travel">Travel</option>
+                <option value="Food">Food</option>
+                <option value="Health">Health</option>
+                <option value="Education">Education</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="article-excerpt">Article Excerpt:</label>
+              <input type="text" id="article-excerpt" class="form-input" placeholder="Brief description..." required>
+            </div>
+            
+            <div class="form-group">
+              <label for="article-content">Article Content:</label>
+              <textarea id="article-content" class="form-textarea" placeholder="Write your article content here..." required></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label for="author-name">Author Name:</label>
+              <input type="text" id="author-name" class="form-input" placeholder="Your name..." required>
+            </div>
+            
+            <div>
+              <button type="submit" class="form-btn">📤 Publish Article</button>
+              <button type="button" id="preview-btn" class="form-btn secondary">👁️ Preview</button>
+              <button type="button" id="view-blog-btn" class="form-btn secondary">📖 View Blog</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- My Articles List -->
+        <div class="article-list" id="my-articles">
+          <h2>📚 My Published Articles</h2>
+          <div id="articles-container">
+            <!-- Articles will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Dock -->
+  <div class="dock" id="dock">
+    <div class="dock-item" onclick="goHome()">
+      <div class="dock-icon">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        </svg>
+      </div>
+      <span>Home</span>
+    </div>
+    <div class="dock-item" onclick="viewBlogs()">
+      <div class="dock-icon">
+        <img src="assets/pc.png" alt="Blogs">
+      </div>
+      <span>Blogs</span>
+    </div>
+    <div class="dock-item">
+      <div class="dock-icon">
+        <img src="assets/author.png" alt="Author">
+      </div>
+      <span>Author</span>
+    </div>
+  </div>
+
+  <!-- Custom cursor -->
+  <div id="custom-cursor"></div>
+
+  <!-- Audio element for click sound -->
+  <audio id="click-sound" preload="auto" style="display: none;">
+    <source src="assets/click.mp3" type="audio/mp3">
+  </audio>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log("Author page loaded");
+      
+      const cursor = document.getElementById('custom-cursor');
+      
+      // Move cursor with mouse
+      let firstMove = true;
+      document.addEventListener('mousemove', function(e) {
+        if (firstMove) {
+          cursor.style.opacity = '1';
+          firstMove = false;
+        }
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+      });
+      
+      // Add clicking state
+      document.addEventListener('mousedown', function() {
+        cursor.classList.add('clicking');
+      });
+      
+      document.addEventListener('mouseup', function() {
+        cursor.classList.remove('clicking');
+      });
+      
+      // Click sound function
+      function playClickSound() {
+        const clickSound = document.getElementById('click-sound');
+        if (clickSound) {
+          clickSound.currentTime = 0;
+          clickSound.play().catch(e => console.log("Audio play failed:", e));
+        }
+      }
+      
+      // Add hover and click events to all clickable elements
+      const clickableElements = document.querySelectorAll('button, .dock-item, .channels li, .icon-btn');
+      clickableElements.forEach(function(element) {
+        element.addEventListener('mouseenter', function() {
+          cursor.classList.add('hovering');
+        });
+
+        element.addEventListener('mouseleave', function() {
+          cursor.classList.remove('hovering');
+        });
+
+        element.addEventListener('click', playClickSound);
+      });
+
+      // Article Form Logic
+      const articleForm = document.getElementById('article-form');
+      const articlesContainer = document.getElementById('articles-container');
+
+      articleForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        playClickSound();
+        
+        const article = {
+          id: Date.now(),
+          title: document.getElementById('article-title').value,
+          category: document.getElementById('article-category').value,
+          excerpt: document.getElementById('article-excerpt').value,
+          content: document.getElementById('article-content').value,
+          author: document.getElementById('author-name').value,
+          date: new Date().toLocaleDateString(),
+          avatar: 'assets/author.png'
+        };
+        
+        // Save to localStorage
+        let articles = JSON.parse(localStorage.getItem('blogArticles') || '[]');
+        articles.unshift(article);
+        localStorage.setItem('blogArticles', JSON.stringify(articles));
+        
+        // Clear form
+        articleForm.reset();
+        
+        // Reload articles list
+        loadArticles();
+        
+        alert('Article published successfully! 🎉');
+      });
+
+      // Load and display articles
+      function loadArticles() {
+        const articles = JSON.parse(localStorage.getItem('blogArticles') || '[]');
+        articlesContainer.innerHTML = '';
+        
+        if (articles.length === 0) {
+          articlesContainer.innerHTML = '<p>No articles published yet. Write your first article! ✍️</p>';
+          return;
+        }
+        
+        articles.forEach(article => {
+          const articleDiv = document.createElement('div');
+          articleDiv.className = 'article-item';
+          articleDiv.innerHTML = `
+            <div class="article-info">
+              <h4>${article.title}</h4>
+              <p>${article.category} • ${article.date} • By ${article.author}</p>
+            </div>
+            <div class="article-actions">
+              <button class="btn-small btn-edit" onclick="editArticle(${article.id})">Edit</button>
+              <button class="btn-small btn-delete" onclick="deleteArticle(${article.id})">Delete</button>
+            </div>
+          `;
+          articlesContainer.appendChild(articleDiv);
+        });
+      }
+
+      // Load articles on page load
+      loadArticles();
+
+      // Preview button
+      document.getElementById('preview-btn').addEventListener('click', function() {
+        playClickSound();
+        const title = document.getElementById('article-title').value;
+        const content = document.getElementById('article-content').value;
+        
+        if (!title || !content) {
+          alert('Please fill in title and content to preview!');
+          return;
+        }
+        
+        const previewWindow = window.open('', '_blank');
+        previewWindow.document.write(`
+          <html>
+            <head><title>Preview: ${title}</title></head>
+            <body style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;">
+              <h1>${title}</h1>
+              <div style="white-space: pre-wrap;">${content}</div>
+            </body>
+          </html>
+        `);
+      });
+
+      // View Blog button
+      document.getElementById('view-blog-btn').addEventListener('click', function() {
+        playClickSound();
+        window.location.href = 'blog.html';
+      });
+
+      // Global functions for article management - properly defined
+      window.editArticle = function(id) {
+        const articles = JSON.parse(localStorage.getItem('blogArticles') || '[]');
+        const article = articles.find(a => a.id === id);
+        if (article) {
+          document.getElementById('article-title').value = article.title;
+          document.getElementById('article-category').value = article.category;
+          document.getElementById('article-excerpt').value = article.excerpt;
+          document.getElementById('article-content').value = article.content;
+          document.getElementById('author-name').value = article.author;
+          
+          // Remove the original article
+          const updatedArticles = articles.filter(a => a.id !== id);
+          localStorage.setItem('blogArticles', JSON.stringify(updatedArticles));
+          
+          document.querySelector('#write-article h2').textContent = '✏️ Edit Article';
+          document.querySelector('.content-scroll').scrollTop = 0;
+        }
+      };
+
+      window.deleteArticle = function(id) {
+        if (confirm('Are you sure you want to delete this article?')) {
+          const articles = JSON.parse(localStorage.getItem('blogArticles') || '[]');
+          const updatedArticles = articles.filter(a => a.id !== id);
+          localStorage.setItem('blogArticles', JSON.stringify(updatedArticles));
+          loadArticles();
+        }
+      };
+
+      window.goHome = function() {
+        window.location.href = 'landingpage.html';
+      };
+
+      window.viewBlogs = function() {
+        window.location.href = 'blog.html';
+      };
+    });
+  </script>
+</body>
+</html>

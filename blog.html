@@ -732,7 +732,7 @@
                   <div>August 10, 2025</div>
                 </div>
               </div>
-              <button class="read-btn">Read Full Article</button>
+              <button class="read-btn" data-id="featured">Read Full Article</button>
             </div>
           </div>
         </div>
@@ -748,15 +748,15 @@
     <!-- Side apps -->
     <div class="side-apps">
       <a href="landingpage.html" class="app-icon">
-        <img src="assets/folder.png" alt="MyNudes">
+        <img src="assets/pc.png" alt="MyNudes">
         <span class="app-name">MyNudes</span>
       </a>
       <a href="landingpage.html" class="app-icon">
-        <img src="assets/folder.png" alt="DesignerCC">
+        <img src="assets/author.png" alt="DesignerCC">
         <span class="app-name">DesignerCC</span>
       </a>
       <a href="landingpage.html" class="app-icon">
-        <img src="assets/folder.png" alt="Procrastiland">
+        <img src="assets/team.png" alt="Procrastiland">
         <span class="app-name">Procrastiland Explorer</span>
       </a>
     </div>
@@ -764,11 +764,11 @@
     <!-- Right side apps -->
     <div class="right-apps">
       <a href="landingpage.html" class="app-icon">
-        <img src="assets/folder.png" alt="SpotJnamp">
+        <img src="assets/lamp.png" alt="SpotJnamp">
         <span class="app-name">SpotJnamp</span>
       </a>
       <a href="landingpage.html" class="app-icon">
-        <img src="assets/folder.png" alt="Project">
+        <img src="assets/logo.png" alt="Project">
         <span class="app-name">Trevor's project</span>
       </a>
     </div>
@@ -777,48 +777,31 @@
     <div class="app-dock">
       <a href="team.html" class="dock-item">
         <div class="dock-icon">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="8" r="4"></circle>
-            <path d="M4.5 20c0-5 8-5 8-5s8 0 8 5"></path>
-            <path d="M12 15c-3 0-5.5 1-7 2.5"></path>
-            <path d="M12 15c3 0 5.5 1 7 2.5"></path>
-          </svg>
+          <img src="assets/team.png" alt="Team">
         </div>
         <span class="dock-label">Team</span>
       </a>
       <a href="landingpage.html" class="dock-item">
         <div class="dock-icon">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <path d="M12 8v8"></path>
-            <path d="M12 16h.01"></path>
-          </svg>
+          <img src="assets/author.png" alt="About">
         </div>
         <span class="dock-label">About Us</span>
       </a>
       <a href="#" id="blog-opener" class="dock-item">
         <div class="dock-icon">
-          <img src="assets/folder.png" alt="Blog">
+          <img src="assets/pc.png" alt="Blog">
         </div>
         <span class="dock-label">Blog</span>
       </a>
       <a href="landingpage.html" class="dock-item">
         <div class="dock-icon">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-            <line x1="12" y1="8" x2="12" y2="16"></line>
-            <line x1="8" y1="12" x2="16" y2="12"></line>
-          </svg>
+          <img src="assets/logo.png" alt="Home">
         </div>
         <span class="dock-label">Girlsin</span>
       </a>
       <a href="landingpage.html" class="dock-item">
         <div class="dock-icon">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <path d="M12 8v4"></path>
-            <path d="M12 16h.01"></path>
-          </svg>
+          <img src="assets/lamp.png" alt="Help">
         </div>
         <span class="dock-label">Help</span>
       </a>
@@ -925,23 +908,44 @@
       
       const blogsGrid = document.getElementById('blogsGrid');
       
-      // Blog data
-      const blogs = [
-        {id:1, title:'Digital Minimalism in App Design', category:'Technology', author:'Jackson Lee', date:'August 11, 2025', avatar:'assets/author.png', snippet:'How simplicity in UI/UX creates more engaging and accessible digital experiences.'},
-        {id:2, title:'Summer Fashion Trends to Watch', category:'Fashion', author:'Amelia Wong', date:'August 9, 2025', avatar:'assets/author.png', snippet:'Bright colors, sustainable materials, and vintage inspirations dominate this season.'},
-        {id:3, title:'Hidden Cafés in Tokyo', category:'Travel', author:'Sophia Chen', date:'August 8, 2025', avatar:'assets/author.png', snippet:'Exploring intimate coffee shops tucked away in the bustling metropolis.'},
-        {id:4, title:'Plant-Based Recipes for Beginners', category:'Food', author:'Oliver Martinez', date:'August 7, 2025', avatar:'assets/author.png', snippet:'Easy and nutritious meals to kickstart your plant-based journey.'},
-        {id:5, title:'Building a Morning Routine', category:'Lifestyle', author:'Emma Wilson', date:'August 6, 2025', avatar:'assets/author.png', snippet:'Transform your day with these science-backed morning habits.'},
-        {id:6, title:'Web3 Technologies Explained', category:'Technology', author:'Noah Johnson', date:'August 5, 2025', avatar:'assets/author.png', snippet:'Demystifying blockchain, NFTs, and decentralized applications.'},
-        {id:7, title:'Sustainable Home Decor Ideas', category:'Lifestyle', author:'Isabella Garcia', date:'August 4, 2025', avatar:'assets/author.png', snippet:'Eco-friendly approaches to styling your living space with minimal impact.'},
-        {id:8, title:'Street Photography Tips', category:'Lifestyle', author:'Ethan Brown', date:'August 3, 2025', avatar:'assets/author.png', snippet:'Capturing authentic moments in urban environments with simple techniques.'}
-      ];
+      // Blog data - default blogs combined with articles from localStorage
+      function getAllBlogs() {
+        const defaultBlogs = [
+          {id:1, title:'Digital Minimalism in App Design', category:'Technology', author:'Jackson Lee', date:'August 11, 2025', avatar:'assets/author.png', snippet:'How simplicity in UI/UX creates more engaging and accessible digital experiences.'},
+          {id:2, title:'Summer Fashion Trends to Watch', category:'Fashion', author:'Amelia Wong', date:'August 9, 2025', avatar:'assets/author.png', snippet:'Bright colors, sustainable materials, and vintage inspirations dominate this season.'},
+          {id:3, title:'Hidden Cafés in Tokyo', category:'Travel', author:'Sophia Chen', date:'August 8, 2025', avatar:'assets/author.png', snippet:'Exploring intimate coffee shops tucked away in the bustling metropolis.'},
+          {id:4, title:'Plant-Based Recipes for Beginners', category:'Food', author:'Oliver Martinez', date:'August 7, 2025', avatar:'assets/author.png', snippet:'Easy and nutritious meals to kickstart your plant-based journey.'},
+          {id:5, title:'Building a Morning Routine', category:'Lifestyle', author:'Emma Wilson', date:'August 6, 2025', avatar:'assets/author.png', snippet:'Transform your day with these science-backed morning habits.'},
+          {id:6, title:'Web3 Technologies Explained', category:'Technology', author:'Noah Johnson', date:'August 5, 2025', avatar:'assets/author.png', snippet:'Demystifying blockchain, NFTs, and decentralized applications.'},
+          {id:7, title:'Sustainable Home Decor Ideas', category:'Lifestyle', author:'Isabella Garcia', date:'August 4, 2025', avatar:'assets/author.png', snippet:'Eco-friendly approaches to styling your living space with minimal impact.'},
+          {id:8, title:'Street Photography Tips', category:'Lifestyle', author:'Ethan Brown', date:'August 3, 2025', avatar:'assets/author.png', snippet:'Capturing authentic moments in urban environments with simple techniques.'}
+        ];
+        
+        // Get articles from localStorage (created in author.html)
+        const storedArticles = JSON.parse(localStorage.getItem('blogArticles') || '[]');
+        
+        // Convert stored articles to blog format and combine with defaults
+        const authorBlogs = storedArticles.map(article => ({
+          id: article.id,
+          title: article.title,
+          category: article.category,
+          author: article.author,
+          date: article.date,
+          avatar: article.avatar,
+          snippet: article.excerpt
+        }));
+        
+        // Combine and sort by ID (newest first for author articles)
+        return [...authorBlogs, ...defaultBlogs];
+      }
       
       // Load blog posts
       function loadBlogs() {
         if (blogsGrid) {
           blogsGrid.innerHTML = ''; // Clear existing content
-          blogs.forEach(blog => {
+          const allBlogs = getAllBlogs();
+          
+          allBlogs.forEach(blog => {
             const blogCard = document.createElement('div');
             blogCard.className = 'blog-card';
             blogCard.innerHTML = `
@@ -962,10 +966,26 @@
           // Add event listeners to all read buttons
           const readButtons = document.querySelectorAll('.read-btn');
           readButtons.forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function(e) {
+              e.stopPropagation(); // Prevent card click event
               playClickSound();
-              // You could redirect to blog-post.html with the ID
-              // window.location.href = `blog-post.html?id=${this.dataset.id}`;
+              // Redirect to blog-template.html with the blog ID
+              window.location.href = `blog-template.html?id=${this.dataset.id}`;
+            });
+          });
+          
+          // Add click handlers to blog cards themselves
+          const blogCards = document.querySelectorAll('.blog-card');
+          blogCards.forEach(card => {
+            card.addEventListener('click', function(e) {
+              // Only trigger if the click wasn't on the read button
+              if (!e.target.classList.contains('read-btn')) {
+                playClickSound();
+                const readBtn = this.querySelector('.read-btn');
+                if (readBtn) {
+                  window.location.href = `blog-template.html?id=${readBtn.dataset.id}`;
+                }
+              }
             });
           });
         }
@@ -986,15 +1006,22 @@
         });
       }
       
-      // Blog window opener
+      // Blog window opener - Auto open on page load
       if (blogOpener) {
+        // Auto-open the blog window when page loads
+        blogWindow.style.display = 'flex';
+        blogWindow.classList.remove('minimized');
+        // Always load blogs to ensure fresh content including new articles
+        loadBlogs();
+        
         blogOpener.addEventListener('click', function(e) {
           e.preventDefault();
           playClickSound();
           blogWindow.style.display = 'flex';
           // Reset from minimized state if needed
           blogWindow.classList.remove('minimized');
-          // Load blogs if they haven't been loaded yet
+          // Always reload blogs to get fresh content
+          loadBlogs();
           if (blogsGrid && blogsGrid.children.length === 0) {
             loadBlogs();
           }
