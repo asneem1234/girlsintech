@@ -230,12 +230,21 @@
         
         .overlay-window {
             position: absolute;
-            left: -16%; /* Moved further left from -8% */
-            top: -23%; /* Moved further up from -5% */
+            left: -20%; /* Moved a little to the right from -25% */
+            top: -23%; /* Maintaining the vertical position */
             z-index: 2;
-            width: 850px; /* Increased from 700px */
+            width: 850px; /* Maintaining the width */
             height: auto;
-            transition: opacity 0.4s ease;
+            transform-origin: center center;
+        }
+        
+        /* Sleeping cat styles */
+        .sleeping-cat {
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+            transition: transform 0.5s ease;
+        }
+        .sleeping-cat:hover {
+            transform: scale(1.05);
         }
         
         /* Interactive elements */
@@ -412,8 +421,12 @@
     
     <div class="bg-container">
     <img src="assets/main.png" alt="Main Background" class="main-bg">
-        <!-- Window on left side -->
+        <!-- Window repositioned to the left -->
     <img src="assets/window.png" alt="Window" id="room-window" class="overlay-window">
+        <!-- Cat sleeping GIF on left side -->
+    <div class="cat-wrapper" style="position:absolute; left:9%; top:82%; transform:translate(-50%,-50%); z-index:12;">
+        <img src="assets/Cat-Sleeping-Loop-Video-Creati-unscreen.gif" alt="Sleeping Cat" class="sleeping-cat" style="width:650px; height:auto; object-fit:contain;">
+    </div>
         <!-- PC element removed -->
 
             <!-- Lamp (click to switch background color) -->
@@ -430,11 +443,11 @@
         </div>
         
         <!-- PC image to the right of author image - clickable, links to blog.html -->
-        <div class="pc-wrapper" style="position:absolute; left:46%; top:58%; transform:translate(-50%,-50%); z-index:14;">
-            <a href="blog.html" id="pc-link" class="clickable-no-hover" style="display:inline-block; width:280px; height:220px; cursor:none; position:relative;">
-                <img id="pc-image" src="assets/pc.png" alt="PC" class="pc-static-image" style="width:280px; height:220px; object-fit:contain; opacity:1;">
+        <div class="pc-wrapper" style="position:absolute; left:50%; top:66%; transform:translate(-50%,-50%); z-index:14;">
+            <a href="blog.html" id="pc-link" class="clickable-no-hover" style="display:inline-block; width:350px; height:275px; cursor:none; position:relative;">
+                <img id="pc-image" src="assets/pc.png" alt="PC" class="pc-static-image" style="width:250px; height:195px; object-fit:contain; opacity:1;">
             </a>
-            <img src="assets/articlesbub.png" alt="Articles" class="pc-bubble" style="position:absolute; left:130px; top:-80px; width:180px; height:auto; opacity:0; pointer-events:none; transform: translateY(6px) scale(.95); transition: opacity .25s ease, transform .25s ease; z-index:25;">
+            <img src="assets/articlesbub.png" alt="Articles" class="pc-bubble" style="position:absolute; left:160px; top:-80px; width:180px; height:auto; opacity:0; pointer-events:none; transform: translateY(6px) scale(.95); transition: opacity .25s ease, transform .25s ease; z-index:25;">
         </div>
 
        
@@ -460,7 +473,7 @@
     <script>
         // Preload cursor images & report if missing
         (function(){
-            const imgs = ['assets/cursor.png','assets/onclick.png','assets/nightwindow.png','assets/authors.png','assets/meetteam.png','assets/articlesbub.png','assets/logo.gif'];
+            const imgs = ['assets/cursor.png','assets/onclick.png','assets/window.png','assets/window.gif','assets/authors.png','assets/meetteam.png','assets/articlesbub.png','assets/logo.gif','assets/Cat-Sleeping-Loop-Video-Creati-unscreen.gif'];
             imgs.forEach(src=>{const i=new Image(); i.onload=()=>console.log('Loaded asset',src); i.onerror=()=>console.warn('Failed to load asset',src); i.src=src;});
         })();
         // Add this script to verify the elements are there and set up event listeners
@@ -477,30 +490,47 @@
             // Lamp click -> change background color to dark purple (toggle)
             const lamp = document.getElementById('lamp');
             if (lamp) {
-                const winImg = document.getElementById('room-window');
                 lamp.addEventListener('click', function(e){
                     e.preventDefault();
                     const dark = document.body.classList.toggle('dark-purple-bg');
-                    if (winImg) {
-                        // Fade swap
-                        winImg.style.opacity = 0;
-                        setTimeout(()=>{
-                            winImg.src = dark ? 'assets/nightwindow.png' : 'assets/window.png';
-                            winImg.onload = () => { winImg.style.opacity = 1; };
-                        }, 180);
-                    }
                 });
             }
 
-            // Window code (hover effect removed)
+            // Window animation on hover - direct swap like author/team
             (function(){
                 const winImg = document.getElementById('room-window');
                 if(!winImg) return;
-                // Just keeping the references for dark mode toggle
-                let baseSrc = 'assets/window.png';
-                let darkSrc = 'assets/nightwindow.png';
-                // No hover event listeners needed anymore
-                // When dark mode toggles we already handle src in lamp click
+                
+                // Original size and position values
+                const original = {
+                    width: '850px',
+                    height: 'auto',
+                    left: '-20%'
+                };
+                
+                // Larger size and shifted position for GIF
+                const changed = {
+                    width: '1100px', // Increased from 1000px
+                    height: 'auto',
+                    left: '-30%' // Moved even further to the left (from -25%)
+                };
+                
+                // Preload the GIF for performance
+                const windowGif = new Image();
+                windowGif.src = 'assets/window.gif';
+                
+                // Direct image swap on hover with size and position changes (no transition)
+                winImg.addEventListener('mouseenter', function() {
+                    winImg.src = 'assets/window.gif';
+                    winImg.style.width = changed.width;
+                    winImg.style.left = changed.left; // Move left
+                });
+                
+                winImg.addEventListener('mouseleave', function() {
+                    winImg.src = 'assets/window.png';
+                    winImg.style.width = original.width;
+                    winImg.style.left = original.left; // Reset position
+                });
             })();
             
             const bookLink = document.getElementById('book-link');
@@ -755,16 +785,17 @@
             const pcBubble = document.querySelector('.pc-bubble');
             
             if (pcImage) {
-                // Static image dimensions - fixed size
-                const staticWidth = '280px';
-                const staticHeight = '220px';
+                // Static image dimensions - even smaller size
+                const staticWidth = '250px';
+                const staticHeight = '195px';
                 
                 // Paths to images
                 const staticSrc = 'assets/pc.png';
                 const animatedSrc = 'assets/pc.gif';
                 
-                // GIF size - same as static now for consistency
-                const gifWidth = '280px';
+                // GIF size - larger than static
+                const gifWidth = '350px';
+                const gifHeight = '275px';
                 
                 // Preload the GIF for smoother transition
                 const preloadGif = new Image();
@@ -772,14 +803,14 @@
                 
                 // When mouse enters the PC image
                 pcLink.addEventListener('mouseenter', function() {
-                    // Change to GIF with exact same dimensions as static
+                    // Change to GIF with larger dimensions
                     pcImage.src = animatedSrc;
-                    pcImage.style.width = staticWidth;
-                    pcImage.style.height = staticHeight;
+                    pcImage.style.width = gifWidth;
+                    pcImage.style.height = gifHeight;
                     pcImage.style.objectFit = 'contain';
                     
-                    // Remove any transform that might affect size perception
-                    pcImage.style.transform = '';
+                    // Make a very subtle adjustment upward with same left position
+                    pcImage.style.transform = 'translateY(-40px) translateX(-45px)';
                     
                     // Show the articles bubble
                     if (pcBubble) {
@@ -790,14 +821,14 @@
                 
                 // When mouse leaves
                 pcLink.addEventListener('mouseleave', function() {
-                    // Change back to static PNG with exact same dimensions
+                    // Change back to static PNG with smaller dimensions
                     pcImage.src = staticSrc;
                     pcImage.style.width = staticWidth;
                     pcImage.style.height = staticHeight;
                     pcImage.style.objectFit = 'contain';
                     
-                    // Reset position adjustment
-                    pcImage.style.transform = '';
+                    // Reset position adjustment - ensuring no vertical shift
+                    pcImage.style.transform = 'translateY(0)';
                     
                     // Hide the articles bubble
                     if (pcBubble) {
