@@ -241,10 +241,6 @@
         /* Sleeping cat styles */
         .sleeping-cat {
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
-            transition: transform 0.5s ease;
-        }
-        .sleeping-cat:hover {
-            transform: scale(1.05);
         }
         
         /* Interactive elements */
@@ -425,7 +421,7 @@
     <img src="assets/window.png" alt="Window" id="room-window" class="overlay-window">
         <!-- Cat sleeping GIF on left side -->
     <div class="cat-wrapper" style="position:absolute; left:9%; top:82%; transform:translate(-50%,-50%); z-index:12;">
-        <img src="assets/Cat-Sleeping-Loop-Video-Creati-unscreen.gif" alt="Sleeping Cat" class="sleeping-cat" style="width:650px; height:auto; object-fit:contain;">
+        <img src="assets/cat.gif" alt="Sleeping Cat" class="sleeping-cat" style="width:650px; height:auto; object-fit:contain;">
     </div>
         <!-- PC element removed -->
 
@@ -473,7 +469,7 @@
     <script>
         // Preload cursor images & report if missing
         (function(){
-            const imgs = ['assets/cursor.png','assets/onclick.png','assets/window.png','assets/window.gif','assets/authors.png','assets/meetteam.png','assets/articlesbub.png','assets/logo.gif','assets/Cat-Sleeping-Loop-Video-Creati-unscreen.gif'];
+            const imgs = ['assets/cursor.png','assets/onclick.png','assets/window.png','assets/authors.png','assets/meetteam.png','assets/articlesbub.png','assets/logo.gif','assets/Cat-Sleeping-Loop-Video-Creati-unscreen.gif'];
             imgs.forEach(src=>{const i=new Image(); i.onload=()=>console.log('Loaded asset',src); i.onerror=()=>console.warn('Failed to load asset',src); i.src=src;});
         })();
         // Add this script to verify the elements are there and set up event listeners
@@ -497,40 +493,15 @@
             }
 
             // Window animation on hover - direct swap like author/team
+            // Window element - No hover effects
             (function(){
                 const winImg = document.getElementById('room-window');
                 if(!winImg) return;
                 
-                // Original size and position values
-                const original = {
-                    width: '850px',
-                    height: 'auto',
-                    left: '-20%'
-                };
-                
-                // Larger size and shifted position for GIF
-                const changed = {
-                    width: '1100px', // Increased from 1000px
-                    height: 'auto',
-                    left: '-30%' // Moved even further to the left (from -25%)
-                };
-                
-                // Preload the GIF for performance
-                const windowGif = new Image();
-                windowGif.src = 'assets/window.gif';
-                
-                // Direct image swap on hover with size and position changes (no transition)
-                winImg.addEventListener('mouseenter', function() {
-                    winImg.src = 'assets/window.gif';
-                    winImg.style.width = changed.width;
-                    winImg.style.left = changed.left; // Move left
-                });
-                
-                winImg.addEventListener('mouseleave', function() {
-                    winImg.src = 'assets/window.png';
-                    winImg.style.width = original.width;
-                    winImg.style.left = original.left; // Reset position
-                });
+                // Set static size and position
+                winImg.style.width = '850px';
+                winImg.style.height = 'auto';
+                winImg.style.left = '-20%';
             })();
             
             const bookLink = document.getElementById('book-link');

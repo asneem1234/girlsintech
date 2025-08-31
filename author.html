@@ -69,108 +69,317 @@
     .channel-header h2 { margin:0; font-size:16px; }
     .content-scroll { position:absolute; inset:56px 0 0 0; overflow:auto; padding:24px clamp(16px,3vw,40px) 120px; }
     
-    /* Article Form */
+    /* Article Form - Updated Style for Girlsin.tech Theme */
     .article-form {
-      background: #fff;
+      background: var(--beige);
       border: 3px solid var(--outline);
       border-radius: 18px;
       padding: 30px;
       margin-bottom: 30px;
       box-shadow: 6px 6px 0 #000;
+      position: relative;
+      overflow: hidden;
+    }
+    .article-form::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 150px;
+      height: 150px;
+      background: var(--purple);
+      opacity: 0.2;
+      border-radius: 50%;
+      transform: translate(50%, -50%);
+      z-index: 0;
     }
     .article-form h2 {
       margin: 0 0 20px;
       border-bottom: 2px solid var(--outline);
       padding-bottom: 10px;
+      position: relative;
+      z-index: 1;
     }
     .form-group {
       margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
     }
     .form-group label {
       display: block;
       margin-bottom: 8px;
       font-weight: 600;
+      color: var(--text);
     }
     .form-input, .form-textarea, .form-select {
       width: 100%;
-      padding: 12px;
-      border: 3px solid var(--outline);
+      padding: 12px 16px;
+      border: 2px solid var(--outline);
       border-radius: var(--radius);
       font-size: 14px;
       font-family: inherit;
+      background: white;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--purple);
+      box-shadow: 0 0 0 2px rgba(217, 163, 207, 0.3);
     }
     .form-textarea {
       min-height: 200px;
       resize: vertical;
     }
+    .form-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' width='18px' height='18px'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 30px;
+    }
     .form-btn {
-      background: var(--green);
-      border: 3px solid var(--outline);
+      background: var(--purple);
+      color: white;
+      border: 2px solid var(--outline);
       padding: 12px 24px;
       border-radius: var(--radius);
       font-weight: 600;
-      cursor:auto;
+      cursor: pointer;
       box-shadow: 3px 3px 0 #000;
       margin-right: 10px;
+      margin-bottom: 10px;
       font-family: inherit;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
     .form-btn:hover {
-      background: #92c794;
+      background: #c68abd; /* Lighter purple */
+      transform: translateY(-2px);
+      box-shadow: 4px 4px 0 #000;
     }
     .form-btn:active {
-      transform: translate(1px, 1px);
+      transform: translate(2px, 2px);
       box-shadow: 1px 1px 0 #000;
     }
     .form-btn.secondary {
-      background: var(--purple);
+      background: var(--green);
+      color: black;
     }
     .form-btn.secondary:hover {
-      background: #c391b9;
+      background: #8ac28c; /* Lighter green */
+      transform: translateY(-2px);
+      box-shadow: 4px 4px 0 #000;
+    }
+    
+    .form-button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 30px;
     }
 
     /* Article List */
     .article-list {
-      background: #fff;
+      background: var(--beige);
       border: 3px solid var(--outline);
       border-radius: 18px;
-      padding: 30px;
-      box-shadow: 6px 6px 0 #000;
+      padding: 35px;
+      box-shadow: 8px 8px 0 #000;
+      position: relative;
+      overflow: hidden;
+      margin-top: 40px;
+    }
+    .article-list::before {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 180px;
+      height: 180px;
+      background: var(--green);
+      opacity: 0.2;
+      border-radius: 50%;
+      transform: translate(-50%, 50%);
+      z-index: 0;
+    }
+    .article-list::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 120px;
+      height: 120px;
+      background: var(--purple);
+      opacity: 0.15;
+      border-radius: 50%;
+      transform: translate(30%, -30%);
+      z-index: 0;
+    }
+    .article-list h2 {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 25px;
+      border-bottom: 3px solid var(--outline);
+      padding-bottom: 15px;
+      font-size: 24px;
+      color: var(--text);
+      font-weight: 800;
+      letter-spacing: -0.5px;
     }
     .article-item {
-      padding: 15px;
+      padding: 20px;
       border: 2px solid var(--outline);
       border-radius: var(--radius);
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      background: white;
+      position: relative;
+      z-index: 1;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 4px 4px 0 #000;
+    }
+    .article-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 5px 5px 0 #000;
+    }
+    .article-info {
+      flex: 1;
     }
     .article-info h4 {
-      margin: 0 0 5px;
-      font-size: 16px;
+      margin: 0 0 8px;
+      font-size: 18px;
+      color: var(--text);
+      font-weight: 700;
+      letter-spacing: -0.5px;
     }
     .article-info p {
       margin: 0;
-      font-size: 13px;
-      color: #666;
+      font-size: 14px;
+      color: #555;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .article-info p::before {
+      content: "•";
+      font-size: 20px;
+      color: var(--purple);
     }
     .article-actions {
       display: flex;
-      gap: 10px;
+      gap: 8px;
     }
     .btn-small {
-      padding: 6px 12px;
-      font-size: 12px;
+      padding: 10px 16px;
+      font-size: 14px;
       border: 2px solid var(--outline);
-      border-radius: 8px;
-      cursor: auto;
-      font-weight: 600;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 700;
+      font-family: inherit;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 3px 3px 0 #000;
+    }
+    .btn-small:hover {
+      transform: translateY(-2px);
+      box-shadow: 4px 4px 0 #000;
+    }
+    .btn-small:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0 #000;
     }
     .btn-edit {
       background: var(--purple);
+      color: white;
+    }
+    .btn-edit:hover {
+      background: #c68abd; /* Lighter purple */
     }
     .btn-delete {
-      background: #ffaaaa;
+      background: #ff6b6b;
+      color: white;
+    }
+    .btn-delete:hover {
+      background: #ff8282; /* Lighter red */
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      background-color: rgba(255, 255, 255, 0.7);
+      border: 2px dashed var(--outline);
+      border-radius: var(--radius);
+      margin: 20px 0;
+    }
+    
+    .empty-state-icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .empty-state h3 {
+      font-size: 22px;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    
+    .empty-state p {
+      color: #666;
+      line-height: 1.5;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+    
+    /* Page Transitions */
+    .content-area {
+      animation: fadeIn 0.4s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .article-form, .article-list {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .article-form:hover, .article-list:hover {
+      transform: translateY(-5px);
+      box-shadow: 10px 10px 0 #000;
+    }
+    
+    /* Loading State */
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      text-align: center;
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: var(--purple);
+      border-radius: 50%;
+      margin-bottom: 15px;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     /* Dock */
@@ -244,14 +453,12 @@
               <label for="article-category">Category:</label>
               <select id="article-category" class="form-select" required>
                 <option value="">Select category...</option>
-                <option value="Technology">Technology</option>
-                <option value="Lifestyle">Lifestyle</option>
-                <option value="Fashion">Fashion</option>
-                <option value="Travel">Travel</option>
-                <option value="Food">Food</option>
-                <option value="Health">Health</option>
-                <option value="Education">Education</option>
-                <option value="Other">Other</option>
+                <option value="Project Stories">Project Stories</option>
+                <option value="Tech Learning">Tech Learning</option>
+                <option value="Career Growth">Career Growth</option>
+                <option value="Corporate Experiences">Corporate Experiences</option>
+                <option value="Mentorship">Mentorship</option>
+                <option value="Women in STEM">Women in STEM</option>
               </select>
             </div>
             
@@ -270,7 +477,7 @@
               <input type="text" id="author-name" class="form-input" placeholder="Your name..." required>
             </div>
             
-            <div>
+            <div class="form-button-group">
               <button type="submit" class="form-btn">📤 Publish Article</button>
               <button type="button" id="preview-btn" class="form-btn secondary">👁️ Preview</button>
               <button type="button" id="view-blog-btn" class="form-btn secondary">📖 View Blog</button>
@@ -283,6 +490,11 @@
           <h2>📚 My Published Articles</h2>
           <div id="articles-container">
             <!-- Articles will be loaded here -->
+          </div>
+          <div id="empty-state" class="empty-state" style="display: none;">
+            <div class="empty-state-icon">📝</div>
+            <h3>No articles yet!</h3>
+            <p>Your published articles will appear here. Start writing your first article above.</p>
           </div>
         </div>
       </div>
@@ -370,68 +582,20 @@
         element.addEventListener('click', playClickSound);
       });
 
-      // Article Form Logic
-      const articleForm = document.getElementById('article-form');
-      const articlesContainer = document.getElementById('articles-container');
-
-      articleForm.addEventListener('submit', function(e) {
-        e.preventDefault();
+      // UI Logic - Click sound for form submission
+      // Note: The actual form submission is now handled by author.js
+      document.getElementById('article-form').addEventListener('submit', function() {
         playClickSound();
-        
-        const article = {
-          id: Date.now(),
-          title: document.getElementById('article-title').value,
-          category: document.getElementById('article-category').value,
-          excerpt: document.getElementById('article-excerpt').value,
-          content: document.getElementById('article-content').value,
-          author: document.getElementById('author-name').value,
-          date: new Date().toLocaleDateString(),
-          avatar: 'assets/author.png'
-        };
-        
-        // Save to localStorage
-        let articles = JSON.parse(localStorage.getItem('blogArticles') || '[]');
-        articles.unshift(article);
-        localStorage.setItem('blogArticles', JSON.stringify(articles));
-        
-        // Clear form
-        articleForm.reset();
-        
-        // Reload articles list
-        loadArticles();
-        
-        alert('Article published successfully! 🎉');
       });
 
       // Load and display articles
+      // Note: The loadArticles function is now handled by author.js
       function loadArticles() {
-        const articles = JSON.parse(localStorage.getItem('blogArticles') || '[]');
-        articlesContainer.innerHTML = '';
-        
-        if (articles.length === 0) {
-          articlesContainer.innerHTML = '<p>No articles published yet. Write your first article! ✍️</p>';
-          return;
-        }
-        
-        articles.forEach(article => {
-          const articleDiv = document.createElement('div');
-          articleDiv.className = 'article-item';
-          articleDiv.innerHTML = `
-            <div class="article-info">
-              <h4>${article.title}</h4>
-              <p>${article.category} • ${article.date} • By ${article.author}</p>
-            </div>
-            <div class="article-actions">
-              <button class="btn-small btn-edit" onclick="editArticle(${article.id})">Edit</button>
-              <button class="btn-small btn-delete" onclick="deleteArticle(${article.id})">Delete</button>
-            </div>
-          `;
-          articlesContainer.appendChild(articleDiv);
-        });
+        // This function is now replaced by the implementation in author.js
+        console.log("Articles will be loaded from backend API instead of localStorage");
       }
-
-      // Load articles on page load
-      loadArticles();
+      
+      // Don't load articles here, it's handled by author.js
 
       // Preview button
       document.getElementById('preview-btn').addEventListener('click', function() {
@@ -459,36 +623,23 @@
       // View Blog button
       document.getElementById('view-blog-btn').addEventListener('click', function() {
         playClickSound();
-        window.location.href = 'blog.html';
+        window.location.href = 'blog-template.html';
       });
 
-      // Global functions for article management - properly defined
+      // Global functions for article management are now handled by author.js
+      // These are just stubs for backward compatibility
       window.editArticle = function(id) {
-        const articles = JSON.parse(localStorage.getItem('blogArticles') || '[]');
-        const article = articles.find(a => a.id === id);
-        if (article) {
-          document.getElementById('article-title').value = article.title;
-          document.getElementById('article-category').value = article.category;
-          document.getElementById('article-excerpt').value = article.excerpt;
-          document.getElementById('article-content').value = article.content;
-          document.getElementById('author-name').value = article.author;
-          
-          // Remove the original article
-          const updatedArticles = articles.filter(a => a.id !== id);
-          localStorage.setItem('blogArticles', JSON.stringify(updatedArticles));
-          
-          document.querySelector('#write-article h2').textContent = '✏️ Edit Article';
-          document.querySelector('.content-scroll').scrollTop = 0;
-        }
+        console.log("Edit article now handled by author.js:", id);
+        // Play click sound for UI feedback
+        playClickSound();
+        // The actual implementation is in author.js
       };
 
       window.deleteArticle = function(id) {
-        if (confirm('Are you sure you want to delete this article?')) {
-          const articles = JSON.parse(localStorage.getItem('blogArticles') || '[]');
-          const updatedArticles = articles.filter(a => a.id !== id);
-          localStorage.setItem('blogArticles', JSON.stringify(updatedArticles));
-          loadArticles();
-        }
+        console.log("Delete article now handled by author.js:", id);
+        // Play click sound for UI feedback
+        playClickSound();
+        // The actual implementation is in author.js
       };
 
       window.goHome = function() {
@@ -496,9 +647,12 @@
       };
 
       window.viewBlogs = function() {
-        window.location.href = 'blog.html';
+        window.location.href = 'blog-template.html';
       };
     });
   </script>
+  
+  <!-- Add our custom JavaScript for backend integration -->
+  <script src="js/author.js"></script>
 </body>
 </html>

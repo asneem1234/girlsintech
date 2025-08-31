@@ -196,10 +196,20 @@
       font-size: 13px;
       font-weight: 600;
       cursor: none;
+      transition: background-color 0.2s ease;
     }
     
+    /* Category colors - matching the ones in getCategoryColor function */
+    .category-tag[data-category="General"] { background-color: #D9A3CF; }
+    .category-tag[data-category="Technology"] { background-color: #A3D9CF; }
+    .category-tag[data-category="Design"] { background-color: #CFA3D9; }
+    .category-tag[data-category="Career"] { background-color: #A3CFD9; }
+    .category-tag[data-category="Tutorial"] { background-color: #D9CFA3; }
+    .category-tag[data-category="News"] { background-color: #D9A3A3; }
+    .category-tag[data-category="Events"] { background-color: #A3D9A3; }
+    
     .category-tag:hover {
-      background: #D9A3CF;
+      filter: brightness(1.1);
     }
     
     .category-tag.active {
@@ -238,6 +248,11 @@
       object-fit: cover;
     }
     
+    .featured-text {
+      position: relative;
+      padding-bottom: 40px; /* Make space for the button */
+    }
+    
     .featured-text h3 {
       margin-top: 0;
       font-size: 22px;
@@ -261,43 +276,50 @@
     /* Blog cards */
     .blogs-grid {
       display: grid;
-      gap: 26px;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     }
     
     .blog-card {
       background: #fff;
-      border: 3px solid #000;
-      padding: 14px 16px 60px;
+      border: 2px solid #000;
+      padding: 12px;
       position: relative;
-      border-radius: 18px;
-      min-height: 200px;
-      box-shadow: 4px 4px 0 #000;
+      border-radius: 14px;
+      aspect-ratio: 4/3;
+      box-shadow: 3px 3px 0 #000;
       cursor: none;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
+      overflow: hidden;
+      width: 100%;
+      max-width: 220px;
+      margin: 0 auto;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     
     .blog-card:hover {
-      transform: translate(-3px, -3px);
-      box-shadow: 8px 8px 0 #000;
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 #000;
     }
     
     .blog-card:active {
       transform: translate(0, 0);
-      box-shadow: 4px 4px 0 #000;
+      box-shadow: 3px 3px 0 #000;
     }
     
     .blog-card h3 {
-      margin: 0 0 8px;
-      font-size: 18px;
+      margin: 6px 0 10px;
+      font-size: 15px;
     }
+    
+    /* Note: blog-category styling is now applied inline in JS for color highlighting */
     
     .blog-card p {
       margin: 0;
-      font-size: 13px;
-      line-height: 1.4;
+      font-size: 12px;
+      line-height: 1.3;
       flex: 1;
     }
     
@@ -307,12 +329,13 @@
       bottom: 12px;
       border: 2px solid #000;
       background: #D9A3CF;
-      padding: 6px 14px;
-      font-size: 13px;
+      padding: 6px 12px;
+      font-size: 12px;
       font-weight: 600;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: none;
       box-shadow: 2px 2px 0 #000;
+      color: #000;
     }
     
     .read-btn:hover {
@@ -607,48 +630,48 @@
               <img src="assets/author.png" alt="Team Member">
             </div>
             <h3>Sophia Chen</h3>
-            <p class="team-role">Creative Director</p>
-            <p class="team-bio">Leads our creative vision with over 10 years of experience in digital design and brand strategy.</p>
+            <p class="team-role">Founder & Tech Lead</p>
+            <p class="team-bio">Full-stack developer with 10+ years experience at tech giants. Passionate about mentoring women entering tech fields.</p>
           </div>
           <div class="team-member">
             <div class="team-avatar">
               <img src="assets/author.png" alt="Team Member">
             </div>
-            <h3>Jackson Lee</h3>
-            <p class="team-role">Lead Developer</p>
-            <p class="team-bio">Frontend specialist with a passion for creating elegant, accessible, and responsive interfaces.</p>
+            <h3>Maya Patel</h3>
+            <p class="team-role">Community Director</p>
+            <p class="team-bio">Former tech recruiter focused on building inclusive networks. Organizes mentorship programs and community events.</p>
           </div>
           <div class="team-member">
             <div class="team-avatar">
               <img src="assets/author.png" alt="Team Member">
             </div>
             <h3>Emma Wilson</h3>
-            <p class="team-role">UX Researcher</p>
-            <p class="team-bio">Conducts user testing and research to ensure our designs meet real user needs and expectations.</p>
+            <p class="team-role">Content Lead</p>
+            <p class="team-bio">Technical writer and former software engineer who ensures our platform showcases diverse voices and experiences.</p>
           </div>
           <div class="team-member">
             <div class="team-avatar">
               <img src="assets/author.png" alt="Team Member">
             </div>
-            <h3>Oliver Martinez</h3>
-            <p class="team-role">Content Strategist</p>
-            <p class="team-bio">Develops compelling content strategies that tell our clients' stories effectively.</p>
+            <h3>Priya Sharma</h3>
+            <p class="team-role">Education Coordinator</p>
+            <p class="team-bio">Data scientist who develops learning resources and curates educational content for women at all skill levels.</p>
           </div>
           <div class="team-member">
             <div class="team-avatar">
               <img src="assets/team.png" alt="Team Member">
             </div>
             <h3>Amelia Wong</h3>
-            <p class="team-role">Project Manager</p>
-            <p class="team-bio">Keeps projects on track and ensures clear communication between team members and clients.</p>
+            <p class="team-role">Career Development Lead</p>
+            <p class="team-bio">Former tech HR director who provides guidance on navigating career transitions and advancement in tech.</p>
           </div>
           <div class="team-member">
             <div class="team-avatar">
               <img src="assets/team.png" alt="Team Member">
             </div>
-            <h3>Noah Johnson</h3>
-            <p class="team-role">Visual Designer</p>
-            <p class="team-bio">Creates stunning visual assets that elevate brands and capture audience attention.</p>
+            <h3>Zara Johnson</h3>
+            <p class="team-role">Partnerships Director</p>
+            <p class="team-bio">Connects our community with companies and organizations committed to advancing women in technology fields.</p>
           </div>
         </div>
       </div>
@@ -669,28 +692,28 @@
           <img src="assets/team.gif" alt="About Us" class="about-image">
         </div>
         <h2>Our Story</h2>
-        <p class="about-text">Girlsin was founded in 2023 with a simple mission: create digital experiences that feel as human as the people who use them. What started as a small collective of designers and developers has grown into a studio known for blending playful aesthetics with thoughtful functionality.</p>
+        <p class="about-text">Girlsin.tech was founded in 2023 with a powerful mission: to create a supportive platform where girls and women in technology can share their journeys, learnings, and experiences. What started as a small collective of passionate technologists has grown into a vibrant community empowering women across all stages of their tech careers.</p>
         
         <h2>Our Approach</h2>
-        <p class="about-text">We believe that great design should feel both familiar and surprising. Our work combines nostalgic visual elements with modern usability principles to create interfaces that are intuitive yet delightful. We focus on crafting experiences that respect users' time and attention while still offering moments of joy.</p>
+        <p class="about-text">We believe in the power of shared experiences and authentic storytelling. Our platform combines educational content with real-world project stories and career insights, creating a resource that's both practical and inspiring. We focus on making technology more accessible and inclusive while celebrating the unique perspectives women bring to the field.</p>
         
         <h2>Our Values</h2>
         <div class="values-grid">
           <div class="value-item">
-            <h3>Playfulness</h3>
-            <p>We approach challenges with curiosity and joy, finding creative solutions where others see obstacles.</p>
+            <h3>Community</h3>
+            <p>We foster an inclusive space where women in tech can connect, collaborate, and support each other through challenges and celebrations.</p>
           </div>
           <div class="value-item">
-            <h3>Craft</h3>
-            <p>We obsess over details because we know they make the difference between good work and great work.</p>
+            <h3>Authenticity</h3>
+            <p>We encourage sharing real experiences—both successes and setbacks—because honest stories inspire and prepare others for their own journeys.</p>
           </div>
           <div class="value-item">
-            <h3>Honesty</h3>
-            <p>We create designs that are transparent in their function and authentic in their expression.</p>
+            <h3>Education</h3>
+            <p>We believe in continuous learning and making technical knowledge accessible to women at all stages of their career development.</p>
           </div>
           <div class="value-item">
-            <h3>Growth</h3>
-            <p>We're always learning, iterating, and looking for ways to improve our work and ourselves.</p>
+            <h3>Empowerment</h3>
+            <p>We're committed to equipping women with the tools, confidence, and support network they need to thrive in technology fields.</p>
           </div>
         </div>
       </div>
@@ -709,31 +732,20 @@
       <div class="window-content">
         <!-- Categories -->
         <div class="categories">
-          <div class="category-tag active">All</div>
-          <div class="category-tag">Technology</div>
-          <div class="category-tag">Lifestyle</div>
-          <div class="category-tag">Fashion</div>
-          <div class="category-tag">Travel</div>
-          <div class="category-tag">Food</div>
+          <div class="category-tag active" data-category="">All</div>
+          <div class="category-tag" data-category="Technology">Technology</div>
+          <div class="category-tag" data-category="Tutorial">Tutorial</div>
+          <div class="category-tag" data-category="Career">Career</div>
+          <div class="category-tag" data-category="News">News</div>
+          <div class="category-tag" data-category="Events">Events</div>
+          <div class="category-tag" data-category="Design">Design</div>
         </div>
         
         <!-- Featured Blog -->
         <div class="featured-blog">
           <h2>Featured Post</h2>
           <div class="featured-content">
-            <img src="assets/author.png" alt="Featured" class="featured-image">
-            <div class="featured-text">
-              <h3>The Future of Digital Design in 2025</h3>
-              <p>Exploring how AI-driven tools are transforming the creative landscape and empowering designers to break new boundaries. This comprehensive look at emerging technologies showcases innovative approaches that will define the next era of digital experiences.</p>
-              <div class="author-info">
-                <img src="assets/author.png" alt="Author" class="author-avatar">
-                <div>
-                  <div style="font-weight:600;">Sophia Chen</div>
-                  <div>August 10, 2025</div>
-                </div>
-              </div>
-              <button class="read-btn" data-id="featured">Read Full Article</button>
-            </div>
+            <!-- Featured blog content will be dynamically loaded by JavaScript -->
           </div>
         </div>
         
@@ -748,28 +760,28 @@
     <!-- Side apps -->
     <div class="side-apps">
       <a href="landingpage.html" class="app-icon">
-        <img src="assets/pc.png" alt="MyNudes">
-        <span class="app-name">MyNudes</span>
+        <img src="assets/pc.png" alt="CodeEditor">
+        <span class="app-name">CodeEditor</span>
       </a>
       <a href="landingpage.html" class="app-icon">
-        <img src="assets/author.png" alt="DesignerCC">
-        <span class="app-name">DesignerCC</span>
+        <img src="assets/author.png" alt="WomenInTech">
+        <span class="app-name">WomenInTech</span>
       </a>
       <a href="landingpage.html" class="app-icon">
-        <img src="assets/team.png" alt="Procrastiland">
-        <span class="app-name">Procrastiland Explorer</span>
+        <img src="assets/team.png" alt="TechMentors">
+        <span class="app-name">TechMentors</span>
       </a>
     </div>
 
     <!-- Right side apps -->
     <div class="right-apps">
       <a href="landingpage.html" class="app-icon">
-        <img src="assets/lamp.png" alt="SpotJnamp">
-        <span class="app-name">SpotJnamp</span>
+        <img src="assets/lamp.png" alt="CareerHub">
+        <span class="app-name">CareerHub</span>
       </a>
       <a href="landingpage.html" class="app-icon">
-        <img src="assets/logo.png" alt="Project">
-        <span class="app-name">Trevor's project</span>
+        <img src="assets/logo.png" alt="ProjectShare">
+        <span class="app-name">ProjectShare</span>
       </a>
     </div>
 
@@ -908,88 +920,9 @@
       
       const blogsGrid = document.getElementById('blogsGrid');
       
-      // Blog data - default blogs combined with articles from localStorage
-      function getAllBlogs() {
-        const defaultBlogs = [
-          {id:1, title:'Digital Minimalism in App Design', category:'Technology', author:'Jackson Lee', date:'August 11, 2025', avatar:'assets/author.png', snippet:'How simplicity in UI/UX creates more engaging and accessible digital experiences.'},
-          {id:2, title:'Summer Fashion Trends to Watch', category:'Fashion', author:'Amelia Wong', date:'August 9, 2025', avatar:'assets/author.png', snippet:'Bright colors, sustainable materials, and vintage inspirations dominate this season.'},
-          {id:3, title:'Hidden Cafés in Tokyo', category:'Travel', author:'Sophia Chen', date:'August 8, 2025', avatar:'assets/author.png', snippet:'Exploring intimate coffee shops tucked away in the bustling metropolis.'},
-          {id:4, title:'Plant-Based Recipes for Beginners', category:'Food', author:'Oliver Martinez', date:'August 7, 2025', avatar:'assets/author.png', snippet:'Easy and nutritious meals to kickstart your plant-based journey.'},
-          {id:5, title:'Building a Morning Routine', category:'Lifestyle', author:'Emma Wilson', date:'August 6, 2025', avatar:'assets/author.png', snippet:'Transform your day with these science-backed morning habits.'},
-          {id:6, title:'Web3 Technologies Explained', category:'Technology', author:'Noah Johnson', date:'August 5, 2025', avatar:'assets/author.png', snippet:'Demystifying blockchain, NFTs, and decentralized applications.'},
-          {id:7, title:'Sustainable Home Decor Ideas', category:'Lifestyle', author:'Isabella Garcia', date:'August 4, 2025', avatar:'assets/author.png', snippet:'Eco-friendly approaches to styling your living space with minimal impact.'},
-          {id:8, title:'Street Photography Tips', category:'Lifestyle', author:'Ethan Brown', date:'August 3, 2025', avatar:'assets/author.png', snippet:'Capturing authentic moments in urban environments with simple techniques.'}
-        ];
-        
-        // Get articles from localStorage (created in author.html)
-        const storedArticles = JSON.parse(localStorage.getItem('blogArticles') || '[]');
-        
-        // Convert stored articles to blog format and combine with defaults
-        const authorBlogs = storedArticles.map(article => ({
-          id: article.id,
-          title: article.title,
-          category: article.category,
-          author: article.author,
-          date: article.date,
-          avatar: article.avatar,
-          snippet: article.excerpt
-        }));
-        
-        // Combine and sort by ID (newest first for author articles)
-        return [...authorBlogs, ...defaultBlogs];
-      }
-      
-      // Load blog posts
-      function loadBlogs() {
-        if (blogsGrid) {
-          blogsGrid.innerHTML = ''; // Clear existing content
-          const allBlogs = getAllBlogs();
-          
-          allBlogs.forEach(blog => {
-            const blogCard = document.createElement('div');
-            blogCard.className = 'blog-card';
-            blogCard.innerHTML = `
-              <h3>${blog.title}</h3>
-              <p>${blog.snippet}</p>
-              <div class="author-info">
-                <img src="${blog.avatar}" alt="${blog.author}" class="author-avatar">
-                <div>
-                  <div style="font-weight:600;">${blog.author}</div>
-                  <div>${blog.date}</div>
-                </div>
-              </div>
-              <button class='read-btn' data-id='${blog.id}'>Read</button>
-            `;
-            blogsGrid.appendChild(blogCard);
-          });
-          
-          // Add event listeners to all read buttons
-          const readButtons = document.querySelectorAll('.read-btn');
-          readButtons.forEach(button => {
-            button.addEventListener('click', function(e) {
-              e.stopPropagation(); // Prevent card click event
-              playClickSound();
-              // Redirect to blog-template.html with the blog ID
-              window.location.href = `blog-template.html?id=${this.dataset.id}`;
-            });
-          });
-          
-          // Add click handlers to blog cards themselves
-          const blogCards = document.querySelectorAll('.blog-card');
-          blogCards.forEach(card => {
-            card.addEventListener('click', function(e) {
-              // Only trigger if the click wasn't on the read button
-              if (!e.target.classList.contains('read-btn')) {
-                playClickSound();
-                const readBtn = this.querySelector('.read-btn');
-                if (readBtn) {
-                  window.location.href = `blog-template.html?id=${readBtn.dataset.id}`;
-                }
-              }
-            });
-          });
-        }
-      }
+      // Use the blog.js implementation for loading blogs
+      // We no longer need the inline implementation
+      // as blog.js handles fetching from the backend API
       
       // Category tags functionality
       const categoryTags = document.querySelectorAll('.category-tag');
@@ -1011,8 +944,7 @@
         // Auto-open the blog window when page loads
         blogWindow.style.display = 'flex';
         blogWindow.classList.remove('minimized');
-        // Always load blogs to ensure fresh content including new articles
-        loadBlogs();
+        // No need to call loadBlogs() here as it's handled by blog.js
         
         blogOpener.addEventListener('click', function(e) {
           e.preventDefault();
@@ -1020,11 +952,7 @@
           blogWindow.style.display = 'flex';
           // Reset from minimized state if needed
           blogWindow.classList.remove('minimized');
-          // Always reload blogs to get fresh content
-          loadBlogs();
-          if (blogsGrid && blogsGrid.children.length === 0) {
-            loadBlogs();
-          }
+          // No need to manually call loadBlogs() as it's handled by blog.js
         });
       }
       
@@ -1152,5 +1080,8 @@
       };
     });
   </script>
+  
+  <!-- Add our custom JavaScript for backend integration -->
+  <script src="js/blog.js"></script>
 </body>
 </html>

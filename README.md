@@ -1,7 +1,15 @@
-# Girlsin - Interactive Digital Experience Website
+# Girlsin - Interactive Digital Experience Website with Dynamic Blog
 
 ## Overview
 Girlsin is a playful, nostalgic website that draws inspiration from retro desktop interfaces while delivering modern web experiences. The site features an interactive design with custom cursor interactions, pop-up windows, and a unique desktop-like interface.
+
+## Dynamic Blog System (New)
+
+This project has been enhanced with a dynamic blog system using:
+
+- **Node.js Express Backend**: RESTful API endpoints
+- **Supabase Database**: PostgreSQL storage for blog content
+- **JavaScript Integration**: Frontend connectivity to backend services
 
 ## Features
 
@@ -30,12 +38,20 @@ Girlsin/
 ├── index.html          # Landing page
 ├── blog.html           # Blog listing with popup windows
 ├── blog-template.html  # Template for individual blog posts
-├── blog-post.html      # Example of a specific blog post
+├── author.html         # Author interface for creating blog posts
 ├── team.html           # Team members page
-├── article.html        # Article layout
-├── blogs.html          # Alternative blog listing page
 ├── landingpage.html    # Alternative landing page
 ├── README.md           # Project documentation (this file)
+├── DEPLOYMENT.md       # Deployment instructions
+├── server.js           # Express server setup
+├── routes/             # API route handlers
+│   └── blogs.js        # Blog API endpoints
+├── js/                 # Frontend JavaScript
+│   ├── author.js       # Script for author.html
+│   └── blog.js         # Script for blog.html
+├── schema.sql          # Supabase database schema
+├── package.json        # Node.js dependencies
+├── .env.example        # Template for environment variables
 ├── assets/             # Images and media files
     ├── arrow.png       # Custom cursor
     ├── clickable.png   # Hover state cursor
@@ -85,12 +101,16 @@ Blog posts use a consistent template structure with:
 - Use window controls (red, yellow, green buttons) to manage windows
 - Click the back button to return to previous pages
 
+### Setting Up the Backend
+1. Install dependencies with `npm install`
+2. Configure your `.env` file with Supabase credentials
+3. Start the server with `npm start`
+
 ### Creating New Blog Posts
-1. Duplicate the `blog-template.html` file
-2. Rename it to reflect your blog post title
-3. Replace placeholder content marked with [brackets]
-4. Update images, text, and metadata
-5. Add to the blog listing in the Blog window
+1. Navigate to `author.html`
+2. Fill out the blog post form with title, category, excerpt, content, and author name
+3. Click "Publish Article" to save to the database
+4. View your published post on `blog.html`
 
 ### Modifying the Design
 - Edit CSS variables in the `:root` section to change color scheme

@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feedback Wall - Girlsin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --text: #000;
+      --outline: #000;
+      --radius: 14px;
+      --light-blue: #c4e7f0;
+      --purple: #D9A3CF;
+      --beige: #F5F5DC;
+      --green: #A3D9A5;
+    }
+    
+    * { box-sizing: border-box; }
+    
+    html, body { 
+      margin: 0; 
+      height: 100%; 
+      font-family: 'Inter', Arial, sans-serif; 
+      color: var(--text); 
+    }
+    
+    body {
+      background-image: url('assets/pcbg.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      cursor: none; /* Hide default cursor */
+    }
+    
+    a { color: inherit; text-decoration: none; }
+
+    /* Custom cursor */
+    #custom-cursor {
+      position: fixed;
+      top: -100px;
+      left: -100px;
+      width: 40px;
+      height: 40px;
+      background-image: url('assets/arrow.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-10px, -10px);
+      transition: background-image 0.1s ease;
+      opacity: 0;
+    }
+    
+    #custom-cursor.hovering {
+      background-image: url('assets/clickable.png');
+    }
+    
+    #custom-cursor.clicking {
+      transform: translate(-10px, -8px) scale(0.95);
+    }
+
+    /* Main container */
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    /* Window Popup */
+    .window-popup {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 85%;
+      max-width: 900px;
+      height: 80%;
+      background-color: rgba(245, 245, 240, 0.95);
+      border: 3px solid #000;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      animation: fadeIn 0.3s ease forwards;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .window-popup.minimized {
+      transform: translate(-50%, 100%);
+      transition: transform 0.3s ease;
+      height: 0;
+      overflow: hidden;
+    }
+
+    .window-popup.maximized {
+      width: 95%;
+      height: 90%;
+      max-width: none;
+      transition: all 0.3s ease;
+    }
+
+    .window-header {
+      display: flex;
+      align-items: center;
+      background-color: #f5f5f3;
+      padding: 10px 15px;
+      border-bottom: 2px solid #000;
+      cursor: move; /* Indicates draggable */
+    }
+
+    .window-controls {
+      display: flex;
+      gap: 8px;
+      margin-right: 15px;
+    }
+
+    .window-button {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 1px solid #000;
+      cursor: none;
+    }
+
+    .close-button {
+      background-color: #ff6961;
+    }
+
+    .minimize-button {
+      background-color: #fdfd96;
+    }
+
+    .maximize-button {
+      background-color: #77dd77;
+    }
+
+    .window-title {
+      font-weight: 600;
+      font-size: 16px;
+      flex: 1;
+      text-align: center;
+    }
+
+    .window-content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    
+    /* Feedback Wall Specific Styles */
+    .feedback-section {
+      margin-bottom: 40px;
+    }
+    
+    .feedback-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .feedback-header h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+    
+    .feedback-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .feedback-tab {
+      border: 2px solid #000;
+      background: #fff;
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      font-weight: 600;
+      cursor: none;
+      transition: all 0.2s ease;
+    }
+    
+    .feedback-tab.active {
+      background: var(--purple);
+    }
+    
+    .feedback-tab:hover {
+      transform: translateY(-2px);
+    }
+    
+    .feedback-form {
+      background: #fff;
+      border: 3px solid #000;
+      padding: 25px;
+      border-radius: var(--radius);
+      margin-bottom: 30px;
+      box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.2);
+    }
+    
+    .form-row {
+      margin-bottom: 15px;
+    }
+    
+    .form-row label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid #000;
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .form-textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    .form-button {
+      background: var(--purple);
+      border: 2px solid #000;
+      padding: 10px 20px;
+      border-radius: var(--radius);
+      font-weight: 600;
+      cursor: none;
+      box-shadow: 3px 3px 0 #000;
+      transition: all 0.2s ease;
+    }
+    
+    .form-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 4px 4px 0 #000;
+    }
+    
+    .form-button:active {
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0 #000;
+    }
+    
+    /* Feedback Wall */
+    .feedback-wall {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    
+    .feedback-card {
+      background: #fff;
+      border: 3px solid #000;
+      padding: 20px;
+      border-radius: var(--radius);
+      box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .feedback-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.3);
+    }
+    
+    .feedback-content {
+      flex: 1;
+      margin-bottom: 15px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    
+    .feedback-author {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    
+    .feedback-date {
+      font-size: 12px;
+      color: #777;
+    }
+    
+    .feedback-rating {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+    
+    .feedback-star {
+      color: #FFD700;
+    }
+    
+    /* Feedback types */
+    .feedback-card.positive {
+      border-top: 5px solid var(--green);
+    }
+    
+    .feedback-card.suggestion {
+      border-top: 5px solid var(--light-blue);
+    }
+    
+    .feedback-card.question {
+      border-top: 5px solid var(--purple);
+    }
+    
+    /* Side apps */
+    .side-apps {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .app-icon {
+      width: 60px;
+      height: 60px;
+      background-color: #fff;
+      border: 2px solid #000;
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: none;
+      box-shadow: 2px 2px 0 #000;
+      transition: transform 0.2s ease;
+      position: relative;
+    }
+    
+    .app-icon:hover {
+      transform: translateY(-3px);
+      box-shadow: 2px 5px 0 #000;
+    }
+    
+    .app-icon img {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+      margin-bottom: 3px;
+    }
+    
+    .app-name {
+      font-size: 9px;
+      font-weight: 600;
+      text-align: center;
+    }
+    
+    /* Right side apps */
+    .right-apps {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    /* App dock */
+    .app-dock {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      padding: 10px 20px;
+      background-color: rgba(255, 255, 255, 0.7);
+      border: 3px solid #000;
+      border-radius: 20px;
+      box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5);
+    }
+    
+    .dock-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: none;
+      transition: transform 0.2s ease;
+    }
+    
+    .dock-item:hover {
+      transform: translateY(-5px);
+    }
+    
+    .dock-icon {
+      width: 50px;
+      height: 50px;
+      background-color: #fff;
+      border: 2px solid #000;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 5px;
+    }
+    
+    .dock-icon img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
+    
+    .dock-label {
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .animated {
+      animation: slideIn 0.4s ease-out forwards;
+    }
+    
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      border: 2px dashed #000;
+      border-radius: var(--radius);
+      margin: 20px 0;
+    }
+    
+    .empty-state h3 {
+      margin-top: 0;
+    }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      .side-apps, .right-apps {
+        display: none;
+      }
+      
+      .window-popup {
+        width: 95%;
+      }
+      
+      .feedback-wall {
+        grid-template-columns: 1fr;
+      }
+      
+      .app-dock {
+        padding: 10px;
+        gap: 10px;
+      }
+      
+      .dock-icon {
+        width: 40px;
+        height: 40px;
+      }
+      
+      .dock-icon img {
+        width: 30px;
+        height: 30px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Feedback Wall Window -->
+    <div id="feedback-window" class="window-popup">
+      <div class="window-header">
+        <div class="window-controls">
+          <button class="window-button close-button" title="Close"></button>
+          <button class="window-button minimize-button" title="Minimize"></button>
+          <button class="window-button maximize-button" title="Maximize"></button>
+        </div>
+        <div class="window-title">Feedback Wall</div>
+      </div>
+      <div class="window-content">
+        <!-- Feedback Section -->
+        <div class="feedback-section">
+          <div class="feedback-header">
+            <h2>✨ Share Your Thoughts</h2>
+          </div>
+          
+          <!-- Feedback Tabs -->
+          <div class="feedback-tabs">
+            <div class="feedback-tab active" data-filter="all">All Feedback</div>
+            <div class="feedback-tab" data-filter="positive">Positive</div>
+            <div class="feedback-tab" data-filter="suggestion">Suggestions</div>
+            <div class="feedback-tab" data-filter="question">Questions</div>
+          </div>
+          
+          <!-- Feedback Form -->
+          <div class="feedback-form">
+            <div class="form-row">
+              <label for="feedback-name">Your Name:</label>
+              <input type="text" id="feedback-name" class="form-input" placeholder="Enter your name (optional)">
+            </div>
+            <div class="form-row">
+              <label for="feedback-type">Feedback Type:</label>
+              <select id="feedback-type" class="form-input">
+                <option value="positive">Positive Feedback</option>
+                <option value="suggestion">Suggestion</option>
+                <option value="question">Question</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="feedback-rating">Rating:</label>
+              <div id="feedback-rating" class="feedback-rating">
+                <span class="feedback-star" data-rating="1">★</span>
+                <span class="feedback-star" data-rating="2">★</span>
+                <span class="feedback-star" data-rating="3">★</span>
+                <span class="feedback-star" data-rating="4">★</span>
+                <span class="feedback-star" data-rating="5">★</span>
+              </div>
+            </div>
+            <div class="form-row">
+              <label for="feedback-content">Your Feedback:</label>
+              <textarea id="feedback-content" class="form-textarea" placeholder="Tell us what you think..."></textarea>
+            </div>
+            <button id="submit-feedback" class="form-button">Post Feedback</button>
+          </div>
+          
+          <!-- Feedback Wall -->
+          <h2>📝 Community Feedback</h2>
+          <div id="feedback-wall" class="feedback-wall">
+            <!-- Feedback items will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Side apps -->
+    <div class="side-apps">
+      <a href="landingpage.html" class="app-icon">
+        <img src="assets/pc.png" alt="CodeEditor">
+        <span class="app-name">CodeEditor</span>
+      </a>
+      <a href="landingpage.html" class="app-icon">
+        <img src="assets/author.png" alt="WomenInTech">
+        <span class="app-name">WomenInTech</span>
+      </a>
+      <a href="team.html" class="app-icon">
+        <img src="assets/team.png" alt="Team">
+        <span class="app-name">Team</span>
+      </a>
+    </div>
+    
+    <!-- Right side apps -->
+    <div class="right-apps">
+      <a href="blog.html" class="app-icon">
+        <img src="assets/main.png" alt="Blog">
+        <span class="app-name">Blog</span>
+      </a>
+      <a href="author.html" class="app-icon">
+        <img src="assets/author.png" alt="Author">
+        <span class="app-name">Author</span>
+      </a>
+    </div>
+    
+    <!-- Bottom Dock -->
+    <div class="app-dock">
+      <a href="landingpage.html" class="dock-item">
+        <div class="dock-icon">
+          <img src="assets/pc.png" alt="Home">
+        </div>
+        <span class="dock-label">Home</span>
+      </a>
+      <a href="team.html" class="dock-item">
+        <div class="dock-icon">
+          <img src="assets/team.png" alt="Team">
+        </div>
+        <span class="dock-label">Team</span>
+      </a>
+      <a href="blog.html" class="dock-item">
+        <div class="dock-icon">
+          <img src="assets/main.png" alt="Blog">
+        </div>
+        <span class="dock-label">Blog</span>
+      </a>
+      <a href="author.html" class="dock-item">
+        <div class="dock-icon">
+          <img src="assets/author.png" alt="Author">
+        </div>
+        <span class="dock-label">Author</span>
+      </a>
+      <a href="feedbackwall.html" class="dock-item">
+        <div class="dock-icon">
+          <img src="assets/main0.png" alt="Feedback">
+        </div>
+        <span class="dock-label">Feedback</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Custom cursor -->
+  <div id="custom-cursor"></div>
+
+  <!-- Audio element for click sound -->
+  <audio id="click-sound" preload="auto" style="display: none;">
+    <source src="assets/click.mp3" type="audio/mp3">
+  </audio>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Custom cursor implementation
+      const customCursor = document.getElementById('custom-cursor');
+      
+      // Move cursor with mouse
+      let firstMove = true;
+      document.addEventListener('mousemove', function(e) {
+        if (firstMove) {
+          customCursor.style.opacity = '1';
+          firstMove = false;
+        }
+        customCursor.style.left = e.clientX + 'px';
+        customCursor.style.top = e.clientY + 'px';
+      });
+      
+      // Add clicking state
+      document.addEventListener('mousedown', function() {
+        customCursor.classList.add('clicking');
+      });
+      
+      document.addEventListener('mouseup', function() {
+        customCursor.classList.remove('clicking');
+      });
+      
+      // Handle cursor leaving window
+      document.addEventListener('mouseleave', function() {
+        customCursor.style.display = 'none';
+      });
+      
+      document.addEventListener('mouseenter', function() {
+        customCursor.style.display = 'block';
+      });
+      
+      // Click sound function
+      function playClickSound() {
+        const clickSound = document.getElementById('click-sound');
+        if (clickSound) {
+          clickSound.currentTime = 0;
+          clickSound.play().catch(e => console.log("Audio play failed:", e));
+        }
+      }
+      
+      // Add hover and click events to all clickable elements
+      const clickableElements = document.querySelectorAll('a, button, .feedback-tab, .feedback-star');
+      clickableElements.forEach(function(element) {
+        element.addEventListener('mouseenter', function() {
+          customCursor.classList.add('hovering');
+        });
+
+        element.addEventListener('mouseleave', function() {
+          customCursor.classList.remove('hovering');
+        });
+
+        element.addEventListener('click', playClickSound);
+      });
+      
+      // Window controls functionality
+      const closeButtons = document.querySelectorAll('.close-button');
+      const minimizeButtons = document.querySelectorAll('.minimize-button');
+      const maximizeButtons = document.querySelectorAll('.maximize-button');
+      
+      // Close buttons
+      closeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const parentWindow = this.closest('.window-popup');
+          parentWindow.style.animation = 'fadeOut 0.3s ease forwards';
+          setTimeout(() => {
+            parentWindow.style.display = 'none';
+            parentWindow.style.animation = '';
+          }, 300);
+        });
+      });
+      
+      // Minimize buttons
+      minimizeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const parentWindow = this.closest('.window-popup');
+          parentWindow.classList.add('minimized');
+        });
+      });
+      
+      // Maximize buttons
+      maximizeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const parentWindow = this.closest('.window-popup');
+          parentWindow.classList.toggle('maximized');
+        });
+      });
+      
+      // Make windows draggable
+      document.querySelectorAll('.window-popup').forEach(window => {
+        const header = window.querySelector('.window-header');
+        let isDragging = false;
+        let offsetX, offsetY;
+        
+        header.addEventListener('mousedown', function(e) {
+          if (!window.classList.contains('maximized')) {
+            isDragging = true;
+            const rect = window.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+          }
+        });
+        
+        document.addEventListener('mousemove', function(e) {
+          if (isDragging) {
+            window.style.transform = 'none';
+            window.style.left = (e.clientX - offsetX) + 'px';
+            window.style.top = (e.clientY - offsetY) + 'px';
+          }
+        });
+        
+        document.addEventListener('mouseup', function() {
+          isDragging = false;
+        });
+      });
+      
+      // Feedback functionality
+      const feedbackForm = document.querySelector('.feedback-form');
+      const feedbackWall = document.getElementById('feedback-wall');
+      const submitFeedback = document.getElementById('submit-feedback');
+      const feedbackTabs = document.querySelectorAll('.feedback-tab');
+      const feedbackStars = document.querySelectorAll('.feedback-star');
+      let currentRating = 0;
+      let currentFilter = 'all';
+      
+      // Star rating functionality
+      feedbackStars.forEach(star => {
+        star.addEventListener('click', function() {
+          const rating = parseInt(this.dataset.rating);
+          currentRating = rating;
+          updateStarRating();
+        });
+        
+        star.addEventListener('mouseenter', function() {
+          const rating = parseInt(this.dataset.rating);
+          highlightStars(rating);
+        });
+        
+        star.addEventListener('mouseleave', function() {
+          highlightStars(currentRating);
+        });
+      });
+      
+      function updateStarRating() {
+        highlightStars(currentRating);
+      }
+      
+      function highlightStars(rating) {
+        feedbackStars.forEach(star => {
+          const starRating = parseInt(star.dataset.rating);
+          star.style.color = starRating <= rating ? '#FFD700' : '#ccc';
+        });
+      }
+      
+      // Filter tabs functionality
+      feedbackTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          feedbackTabs.forEach(t => t.classList.remove('active'));
+          this.classList.add('active');
+          
+          currentFilter = this.dataset.filter;
+          filterFeedback();
+        });
+      });
+      
+      function filterFeedback() {
+        const feedbackItems = document.querySelectorAll('.feedback-card');
+        feedbackItems.forEach(item => {
+          if (currentFilter === 'all' || item.classList.contains(currentFilter)) {
+            item.style.display = 'flex';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      }
+      
+      // Submit feedback
+      submitFeedback.addEventListener('click', function() {
+        const nameInput = document.getElementById('feedback-name');
+        const typeSelect = document.getElementById('feedback-type');
+        const contentTextarea = document.getElementById('feedback-content');
+        
+        const name = nameInput.value.trim() || 'Anonymous';
+        const type = typeSelect.value;
+        const content = contentTextarea.value.trim();
+        
+        if (!content) {
+          alert('Please enter your feedback!');
+          return;
+        }
+        
+        // Create a new feedback item
+        addFeedback({
+          name,
+          type,
+          content,
+          rating: currentRating,
+          date: new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+          })
+        });
+        
+        // Reset form
+        nameInput.value = '';
+        typeSelect.value = 'positive';
+        contentTextarea.value = '';
+        currentRating = 0;
+        updateStarRating();
+        
+        // Save to localStorage
+        saveFeedback();
+      });
+      
+      // Add a feedback item to the wall
+      function addFeedback(feedback) {
+        const feedbackItem = document.createElement('div');
+        feedbackItem.className = `feedback-card ${feedback.type} animated`;
+        feedbackItem.style.animationDelay = `${document.querySelectorAll('.feedback-card').length * 0.1}s`;
+        
+        const stars = '★'.repeat(feedback.rating) + '☆'.repeat(5 - feedback.rating);
+        
+        feedbackItem.innerHTML = `
+          <div class="feedback-rating" title="${feedback.rating}/5 stars">
+            ${stars}
+          </div>
+          <div class="feedback-content">${feedback.content}</div>
+          <div class="feedback-author">${feedback.name}</div>
+          <div class="feedback-date">${feedback.date}</div>
+        `;
+        
+        feedbackWall.prepend(feedbackItem);
+        
+        // Update filters
+        filterFeedback();
+      }
+      
+      // Save feedback to localStorage
+      function saveFeedback() {
+        const feedbackItems = document.querySelectorAll('.feedback-card');
+        const feedbackData = [];
+        
+        feedbackItems.forEach(item => {
+          const rating = item.querySelector('.feedback-rating').title.split('/')[0];
+          const content = item.querySelector('.feedback-content').textContent;
+          const name = item.querySelector('.feedback-author').textContent;
+          const date = item.querySelector('.feedback-date').textContent;
+          const type = item.classList.contains('positive') ? 'positive' : 
+                      item.classList.contains('suggestion') ? 'suggestion' : 'question';
+          
+          feedbackData.push({ rating, content, name, date, type });
+        });
+        
+        localStorage.setItem('feedbackData', JSON.stringify(feedbackData));
+      }
+      
+      // Load feedback from localStorage
+      function loadFeedback() {
+        const feedbackData = JSON.parse(localStorage.getItem('feedbackData') || '[]');
+        
+        if (feedbackData.length === 0) {
+          // Add placeholder feedback if none exists
+          feedbackWall.innerHTML = `
+            <div class="empty-state">
+              <h3>No feedback yet!</h3>
+              <p>Be the first to share your thoughts about Girlsin.tech!</p>
+            </div>
+          `;
+          return;
+        }
+        
+        feedbackData.forEach(feedback => {
+          addFeedback({
+            name: feedback.name,
+            type: feedback.type,
+            content: feedback.content,
+            rating: parseInt(feedback.rating),
+            date: feedback.date
+          });
+        });
+      }
+      
+      // Initialize the page
+      loadFeedback();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog Post - Girlsin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --text: #000;
+      --outline: #000;
+      --radius: 14px;
+      --light-blue: #c4e7f0;
+      --purple: #D9A3CF;
+      --beige: #F5F5DC;
+    }
+    
+    * { 
+      box-sizing: border-box;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+    }
+    
+    html, body { 
+      margin: 0; 
+      height: 100%; 
+      font-family: 'Inter', Arial, sans-serif; 
+      color: var(--text); 
+    }
+    
+    body {
+      background-color: var(--beige);
+      display: flex;
+      flex-direction: column;
+      cursor: none; /* Hide default cursor */
+    }
+    
+    a { color: inherit; text-decoration: none; }
+
+    /* Custom cursor */
+    #custom-cursor {
+      position: fixed;
+      top: -100px;
+      left: -100px;
+      width: 40px;
+      height: 40px;
+      background-image: url('assets/arrow.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-10px, -10px);
+      transition: background-image 0.1s ease;
+      opacity: 0;
+    }
+    
+    #custom-cursor.hovering {
+      background-image: url('assets/clickable.png');
+    }
+    
+    #custom-cursor.clicking {
+      transform: translate(-10px, -8px) scale(0.95);
+    }
+    
+    /* Layout structure */
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      width: 100%;
+    }
+    
+    /* Header */
+    .blog-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+    
+    .back-button {
+      align-self: flex-start;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 2px solid var(--outline);
+      background: #fff;
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      cursor: none;
+      font-weight: 500;
+      box-shadow: 3px 3px 0 #000;
+      margin-bottom: 30px;
+      transition: transform 0.2s ease;
+    }
+    
+    .back-button:hover {
+      transform: translateX(-3px);
+    }
+    
+    .back-button:active {
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0 #000;
+    }
+    
+    .blog-title {
+      font-size: 32px;
+      margin: 0 0 15px;
+    }
+    
+    .blog-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+    }
+    
+    .author-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background-color: white;
+      border: 2px solid var(--outline);
+      border-radius: 20px;
+      padding: 5px 15px 5px 5px;
+    }
+    
+    .author-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #000;
+      overflow: hidden;
+    }
+    
+    .author-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .category-tag {
+      border: 2px solid #000;
+      background: var(--purple);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    
+    .featured-image {
+      width: 100%;
+      border-radius: var(--radius);
+      border: 3px solid #000;
+      margin-bottom: 40px;
+      box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.7);
+    }
+    
+    /* Blog content */
+    .blog-content {
+      background: #fff;
+      border: 3px solid #000;
+      border-radius: var(--radius);
+      padding: 30px;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      word-break: break-word;
+      box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.7);
+      margin-bottom: 40px;
+    }
+    
+    .blog-content p {
+      line-height: 1.7;
+      margin: 0 0 20px;
+      font-size: 16px;
+      max-width: 100%;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      word-break: break-word;
+    }
+    
+    .blog-content h2 {
+      margin: 40px 0 15px;
+      font-size: 24px;
+    }
+    
+    .blog-content img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+    
+    .blog-content blockquote {
+      border-left: 5px solid var(--purple);
+      padding-left: 20px;
+      margin-left: 0;
+      font-style: italic;
+      color: #444;
+      max-width: 100%;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      word-break: break-word;
+    }
+    
+    /* Related posts */
+    .related-posts {
+      margin-top: 60px;
+    }
+    
+    .related-posts h3 {
+      font-size: 24px;
+      margin: 0 0 20px;
+      text-align: center;
+    }
+    
+    .related-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    
+    .related-post {
+      background: #fff;
+      border: 3px solid #000;
+      padding: 14px 16px 50px;
+      position: relative;
+      border-radius: 18px;
+      box-shadow: 4px 4px 0 #000;
+      cursor: none;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      word-break: break-word;
+    }
+    
+    .related-post:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 7px 7px 0 #000;
+    }
+    
+    /* Loading styles */
+    #related-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      width: 100%;
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: var(--purple);
+      border-radius: 50%;
+      margin-bottom: 15px;
+      animation: spin 1s linear infinite;
+    }
+    
+    .related-post h4 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+    
+    .related-post p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.4;
+      flex: 1;
+    }
+    
+    .read-btn {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      border: 2px solid #000;
+      background: var(--purple);
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: none;
+      box-shadow: 2px 2px 0 #000;
+    }
+    
+    .read-btn:hover {
+      background: #c391b9;
+    }
+    
+    .read-btn:active {
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0 #000;
+    }
+    
+    /* Footer */
+    .blog-footer {
+      margin-top: 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      text-align: center;
+    }
+    
+    .social-share {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .social-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #000;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 2px 2px 0 #000;
+      cursor: none;
+      transition: transform 0.2s ease;
+    }
+    
+    .social-icon:hover {
+      transform: translateY(-3px);
+    }
+    
+    .social-icon:active {
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0 #000;
+    }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 15px;
+      }
+      
+      .blog-title {
+        font-size: 26px;
+      }
+      
+      .blog-content {
+        padding: 20px;
+      }
+      
+      .related-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Animation container */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    
+    /* Loading and Error States */
+    .loading-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 0;
+      text-align: center;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: var(--purple);
+      border-radius: 50%;
+      margin-bottom: 15px;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .error-message {
+      background-color: #ffe0e0;
+      border: 2px solid #ff6b6b;
+      border-radius: var(--radius);
+      padding: 15px 20px;
+      margin: 20px 0;
+      color: #d32f2f;
+      font-weight: 500;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Back button -->
+    <header class="blog-header">
+      <div class="back-button">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Back to Blogs
+      </div>
+      
+      <!-- Loading indicator -->
+      <div id="loading-indicator" style="display: none;" class="loading-indicator">
+        <div class="spinner"></div>
+        <p>Loading article...</p>
+      </div>
+      
+      <!-- Error message -->
+      <div id="error-message" class="error-message" style="display: none;"></div>
+      
+      <h1 id="blog-title" class="blog-title">Loading article...</h1>
+      
+      <div class="blog-meta">
+        <div class="author-info">
+          <div class="author-avatar">
+            <img src="assets/author.png" alt="Author">
+          </div>
+          <div>
+            <div id="blog-author" style="font-weight:600;">Author</div>
+            <div id="blog-date">Date</div>
+          </div>
+        </div>
+        
+        <div class="meta-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          Reading time varies
+        </div>
+        
+        <div id="blog-category" class="category-tag">Category</div>
+      </div>
+      
+      <img src="assets/author.png" alt="Featured Image" class="featured-image">
+    </header>
+    
+    <!-- Blog content -->
+    <article id="blog-content" class="blog-content">
+      <!-- Content will be loaded dynamically -->
+    </article>
+    
+    <!-- Related posts section -->
+    <section class="related-posts">
+      <h2>You might also like</h2>
+      <div class="related-grid" id="related-blogs">
+        <!-- Related posts will be loaded dynamically -->
+        <div class="loading" id="related-loading">
+          <div class="loading-spinner"></div>
+          <p>Loading related posts...</p>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Footer with social sharing -->
+    <footer class="blog-footer">
+      <div>
+        <div style="margin-bottom:10px; font-weight:600;">Share this article</div>
+        <div class="social-share">
+          <a href="#" class="social-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+            </svg>
+          </a>
+          <a href="#" class="social-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+            </svg>
+          </a>
+          <a href="#" class="social-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+              <rect x="2" y="9" width="4" height="12"></rect>
+              <circle cx="4" cy="4" r="2"></circle>
+            </svg>
+          </a>
+          <a href="#" class="social-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+          </a>
+        </div>
+      </div>
+      
+      <div>© 2025 Girlsin. All rights reserved.</div>
+    </footer>
+  </div>
+  
+  <!-- Custom cursor -->
+  <div id="custom-cursor"></div>
+  
+  <!-- Audio element for click sound -->
+  <audio id="click-sound" preload="auto" style="display: none;">
+    <source src="assets/click.mp3" type="audio/mp3">
+  </audio>
+  
+  <script>
+    // Custom cursor implementation
+    let customCursor;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      // Create cursor element
+      customCursor = document.getElementById('custom-cursor');
+      
+      // Move cursor with mouse
+      let firstMove = true;
+      document.addEventListener('mousemove', function(e) {
+        if (firstMove) {
+          customCursor.style.opacity = '1';
+          firstMove = false;
+        }
+        customCursor.style.left = e.clientX + 'px';
+        customCursor.style.top = e.clientY + 'px';
+      });
+      
+      // Add clicking state
+      document.addEventListener('mousedown', function() {
+        customCursor.classList.add('clicking');
+      });
+      
+      document.addEventListener('mouseup', function() {
+        customCursor.classList.remove('clicking');
+      });
+      
+      // Handle cursor leaving window
+      document.addEventListener('mouseleave', function() {
+        customCursor.style.display = 'none';
+      });
+      
+      document.addEventListener('mouseenter', function() {
+        customCursor.style.display = 'block';
+      });
+      
+      // Click sound function
+      function playClickSound() {
+        const clickSound = document.getElementById('click-sound');
+        if (clickSound) {
+          clickSound.currentTime = 0;
+          clickSound.play().catch(e => console.log("Audio play failed:", e));
+        }
+      }
+      
+      // Add hover and click events to all clickable elements
+      const clickableElements = document.querySelectorAll('a, button, .read-btn, .social-icon');
+      clickableElements.forEach(function(element) {
+        element.addEventListener('mouseenter', function() {
+          customCursor.classList.add('hovering');
+        });
+
+        element.addEventListener('mouseleave', function() {
+          customCursor.classList.remove('hovering');
+        });
+
+        element.addEventListener('click', playClickSound);
+      });
+      
+      // Get URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const blogId = urlParams.get('id');
+      
+      // Back button logic
+      const goBackBtn = document.querySelector('.back-button');
+      if(goBackBtn) {
+        goBackBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          playClickSound();
+          if(document.referrer && document.referrer.includes('blog.html')) {
+            history.back();
+          } else {
+            window.location.href = 'blog.html';
+          }
+        });
+      }
+    });
+  </script>
+  
+  <script src="js/blog-template.js"></script>
+</body>
+</html>
