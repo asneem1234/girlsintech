@@ -18,6 +18,10 @@ logs
 build/
 dist/
 out/
+.next/
+
+# Vercel
+.vercel
 
 # Editor directories and files
 .idea/
