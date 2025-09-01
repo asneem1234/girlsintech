@@ -4,12 +4,955 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Girlsin</title>
-    <meta http-equiv="refresh" content="0;url=landingpage.html">
-    <script type="text/javascript">
-        window.location.href = "landingpage.html";
+    <!-- GSAP Library for animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        // Verify GSAP is loaded
+        window.addEventListener('DOMContentLoaded', function() {
+            if (window.gsap) {
+                console.log("GSAP loaded successfully:", gsap.version);
+            } else {
+                console.error("GSAP failed to load!");
+            }
+        });
     </script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: auto;
+            cursor: auto; /* show default cursor */
+        }
+        
+        /* Custom cursor element that follows the mouse */
+        #custom-cursor {
+            position: fixed;
+            top: -100px; /* Position off-screen initially */
+            left: -100px; /* Position off-screen initially */
+            width: 40px; /* Smaller size than the original image */
+            height: 40px;
+            background-image: url('assets/arrow.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            pointer-events: none; /* Makes sure it doesn't interfere with clicking */
+            z-index: 9999;
+            transform: translate(-10px, -10px); /* Offset to position the pointer correctly */
+            transition: background-image 0.1s ease;
+            opacity: 0; /* Start invisible */
+        }
+        
+        /* Change cursor when hovering over clickable elements */
+        #custom-cursor.hovering {
+            background-image: url('assets/clickable.png');
+        }
+        
+        /* While mouse is pressed down we can style it differently if needed */
+        #custom-cursor.clicking {
+            transform: translate(-10px, -8px) scale(0.95); /* Slight movement when clicking */
+        }
+        body {
+            background-color: #ffe7d8 !important; /* enforce light background */
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        /* Main background sits behind everything */
+        .main-bg { 
+            position: absolute; 
+            inset: 0; 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            object-position: center center; 
+            z-index: 0; 
+        }
+        .bg-container img:not(.main-bg) {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            z-index:1;
+        }
+        
+        /* Responsive adjustments to keep clickable areas aligned */
+        @media screen and (max-width: 1200px) {
+            .photo-link {
+                left: 79%;
+                top: 31%;
+            }
+        }
+        
+        @media screen and (max-width: 768px) {
+            .photo-link {
+                left: 78%;
+                top: 32%;
+            }
+            
+            .book-link {
+                left: 47%;
+                top: 76%;
+            }
+        }
+        .container {
+            padding: 20px;
+            z-index: 1;
+        }
+    </style>
+    <style>
+        /* Common hover effect styles for all clickable elements */
+        .clickable {
+            cursor: auto;
+            transition: transform 0.2s ease; /* Adding back a quick transition for smooth raising */
+        }
+        .clickable:hover {
+            transform: scale(1.1) translateY(-5px); /* Added translateY to create "raise up" effect */
+        }
+        
+        /* Clickable elements without hover effect */
+        .clickable-no-hover {
+            cursor: auto;
+        }
+        
+        /* Uncomment this line to see all clickable areas for debugging
+        .clickable { outline: 1px solid red; } */
+        
+        /* PC styles removed */
+        /* No additional hover effects for PC image */
+        
+        /* Author image styles */
+        .overlay-author {
+            cursor: auto;
+            width:150px !important; /* restored original / larger size */
+            height:auto;
+        }
+        
+        /* Hover effect removed */
+        
+        #author-link {
+            transition: transform 0.2s ease;
+            z-index: 20;
+        }
+        /* Author speech bubble */
+        .author-wrapper { position:absolute; }
+        .author-bubble {
+            position:absolute;
+            left:70px; /* horizontal offset from author image */
+            top:-40px; /* place above */
+            width:180px; /* adjust as needed */
+            height:auto;
+            opacity:0;
+            pointer-events:none;
+            transform: translateY(6px) scale(.95);
+            transition: opacity .25s ease, transform .25s ease;
+            z-index:25;
+        }
+        .author-wrapper:hover .author-bubble, .author-wrapper:focus-within .author-bubble {
+            opacity:1;
+            transform: translateY(0) scale(1);
+        }
+        
+        /* Team image styles - blended with background */
+        .overlay-team {
+            cursor: auto;
+            /* Removed transition effect */
+        }
+        
+        /* Removed hover transform effect */
+        
+        #team-link {
+            opacity: 0.98;
+            transition: opacity 0.2s ease;
+            z-index: 20;
+        }
+        #team-link:hover {
+            opacity: 1;
+        }
+        /* Team speech bubble */
+        .team-wrapper { position:absolute; }
+        .team-bubble {
+            position:absolute;
+            left:75px; /* offset to right of team image */
+            top:-30px; /* slightly above */
+            width:190px;
+            height:auto;
+            opacity:0;
+            pointer-events:none;
+            transform: translateY(6px) scale(.95);
+            transition: opacity .25s ease, transform .25s ease;
+            z-index:25;
+        }
+        .team-wrapper:hover .team-bubble, .team-wrapper:focus-within .team-bubble {
+            opacity:1;
+            transform: translateY(0) scale(1);
+        }
+        
+        /* Still GIF styles removed */
+
+        /* Lamp styles */
+        .overlay-lamp-wrapper {
+            position:absolute;
+            left:63%; /* moved further right */
+            top: 66%;  /* moved further down */
+            transform:translate(-50%,-50%);
+            z-index:11; /* Above table / near PC */
+        }
+        .overlay-lamp {
+            width:130px; /* Decreased from 160px to 130px */
+            height:auto;
+            cursor:auto;
+            /* Removed transition for hover effect */
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.18));
+        }
+        @media (max-width: 900px) {
+            .overlay-lamp { width:130px; }
+        }
+        @media (max-width: 600px) {
+            .overlay-lamp { width:110px; }
+        }
+        /* Removed hover effect for lamp */
+    body.dark-purple-bg { transition: filter 0.6s ease; }
+    /* Dark mode: adjust main background tones via filter only */
+    body.dark-purple-bg .main-bg { filter: brightness(0.42) contrast(1.08) saturate(0.8) hue-rotate(-8deg); }
+        
+        .overlay-window {
+            position: absolute;
+            left: -20%; /* Moved a little to the right from -25% */
+            top: -23%; /* Maintaining the vertical position */
+            z-index: 2;
+            width: 850px; /* Maintaining the width */
+            height: auto;
+            transform-origin: center center;
+        }
+        
+        /* Sleeping cat styles */
+        .sleeping-cat {
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        }
+        
+        /* Interactive elements */
+        .interactive {
+            position: absolute;  
+            z-index: 2;
+            cursor: url('assets/arrow.png?v=1') 1 1, pointer !important;
+        }
+        .interactive {
+            transition: transform 0.2s ease;
+        }
+        .interactive:hover {
+            transform: scale(1.1) translateY(-5px); /* Added translateY to create "raise up" effect */
+        }
+        
+        /* Book link */
+        .book-link {
+            position: absolute;
+            left: 39%;  /* Adjusted to align with book in image */
+            top: 77%;   /* Adjusted to align with book in image */
+            width: 100px;
+            height: 50px;
+            z-index: 10;
+            cursor: pointer;
+            display: block;
+        }
+        .book-link {
+            transition: transform 0.2s ease;
+        }
+        .book-link:hover {
+            transform: scale(1.1) translateY(-5px); /* Added translateY to create "raise up" effect */
+        }
+        
+        /* Photo link */
+        .photo-link {
+            position: absolute;
+            left: 59%;  /* Adjusted to match the photo frame position in your screenshot */
+            top: 28%;   /* Adjusted to match the photo frame position in your screenshot */
+            width: 130px;
+            height: 100px;
+            z-index: 10;
+            cursor: pointer;
+            display: block;
+        }
+        .photo-link {
+            transition: transform 0.2s ease;
+        }
+        .photo-link:hover {
+            transform: scale(1.1) translateY(-5px); /* Added translateY to create "raise up" effect */
+        }
+        
+        .doodle-bubble {
+            display: none; /* Removed yellow text boxes */
+        }
+        
+        /* Logo in top right corner */
+        .logo {
+            width: 250px;
+            height: auto;
+            display: block;
+        }
+        
+        /* Transition overlay for page transitions */
+        #transition-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0);
+            backdrop-filter: blur(0px);
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            /* Removed transition property to avoid conflicts with GSAP */
+        }
+        
+        /* PC wrapper removed */
+        
+        /* Password Modal */
+        .password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            cursor: none;
+        }
+        .password-box {
+            background: #F5F5DC;
+            border: 4px solid #000;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 8px 8px 0 #000;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .password-box h2 {
+            margin: 0 0 20px;
+            font-size: 24px;
+            font-family: 'Inter', Arial, sans-serif;
+        }
+        .password-input {
+            width: 100%;
+            padding: 12px;
+            border: 3px solid #000;
+            border-radius: 14px;
+            font-size: 16px;
+            margin: 15px 0;
+            font-family: 'Inter', Arial, sans-serif;
+        }
+        .password-btn {
+            background: #D9A3CF;
+            border: 3px solid #000;
+            padding: 12px 24px;
+            border-radius: 14px;
+            font-weight: 600;
+            cursor: none;
+            box-shadow: 3px 3px 0 #000;
+            margin: 10px;
+            font-family: 'Inter', Arial, sans-serif;
+            font-size: 14px;
+        }
+        .password-btn:hover {
+            background: #c391b9;
+        }
+        .password-btn:active {
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0 #000;
+        }
+        .password-btn.secondary {
+            background: #A3D9A5;
+        }
+        .password-btn.secondary:hover {
+            background: #92c794;
+        }
+        .error-msg {
+            color: #ff4444;
+            font-weight: 600;
+            margin-top: 10px;
+            font-family: 'Inter', Arial, sans-serif;
+        }
+    </style>
 </head>
 <body>
-    <p>If you are not redirected automatically, please <a href="landingpage.html">click here</a>.</p>
+    <!-- Logo in top right corner -->
+    <a href="index.html" id="logo-link" style="position: fixed; top: -20px; right: 20px; z-index: 100;">
+        <img src="assets/logo.png" alt="Girlsin Logo" class="logo" id="logo-image">
+    </a>
+    
+    <!-- Transition overlay for page animations -->
+    <div id="transition-overlay"></div>
+    
+    <!-- Password Modal -->
+    <div class="password-modal" id="password-modal">
+        <div class="password-box">
+            <h2>🔐 Access Required</h2>
+            <p>Enter the password to access the Author Panel:</p>
+            <input type="password" id="password-input" class="password-input" placeholder="Enter password...">
+            <div>
+                <button id="submit-password" class="password-btn">Submit</button>
+                <button id="cancel-password" class="password-btn secondary">Cancel</button>
+            </div>
+            <div id="error-message" class="error-msg" style="display: none;">Incorrect password! Try again.</div>
+        </div>
+    </div>
+    
+    <div class="bg-container">
+    <img src="assets/main.png" alt="Main Background" class="main-bg">
+        <!-- Window repositioned to the left -->
+    <img src="assets/window.png" alt="Window" id="room-window" class="overlay-window">
+        <!-- Cat sleeping GIF on left side -->
+    <div class="cat-wrapper" style="position:absolute; left:9%; top:82%; transform:translate(-50%,-50%); z-index:12;">
+        <img src="assets/cat.gif" alt="Sleeping Cat" class="sleeping-cat" style="width:650px; height:auto; object-fit:contain;">
+    </div>
+        <!-- PC element removed -->
+
+            <!-- Lamp (click to switch background color) -->
+            <div class="overlay-lamp-wrapper">
+                <img src="assets/lamp.png" alt="Study Lamp" id="lamp" class="overlay-lamp" title="Click to turn on night mode">
+            </div>
+        
+        <!-- Author image below the PC - only the image is clickable -->
+    <div class="author-wrapper" style="position:absolute; left:38%; top:75%; transform:translate(-50%,-50%); z-index:15;">
+            <a id="author-link" class="clickable-no-hover" style="display:inline-block; width:auto; height:auto; cursor:none; position:relative;">
+                <img id="author-image" src="assets/author.png" alt="Author" class="overlay-author" style="opacity:1;">
+            </a>
+            <img src="assets/authors.png" alt="About the author" class="author-bubble">
+        </div>
+        
+        <!-- PC image to the right of author image - clickable, links to blog.html -->
+        <div class="pc-wrapper" style="position:absolute; left:50%; top:66%; transform:translate(-50%,-50%); z-index:14;">
+            <a href="blog.html" id="pc-link" class="clickable-no-hover" style="display:inline-block; width:350px; height:275px; cursor:none; position:relative;">
+                <img id="pc-image" src="assets/pc.png" alt="PC" class="pc-static-image" style="width:250px; height:195px; object-fit:contain; opacity:1;">
+            </a>
+            <img src="assets/articlesbub.png" alt="Articles" class="pc-bubble" style="position:absolute; left:160px; top:-80px; width:180px; height:auto; opacity:0; pointer-events:none; transform: translateY(6px) scale(.95); transition: opacity .25s ease, transform .25s ease; z-index:25;">
+        </div>
+
+       
+
+       
+        
+        <!-- Team image integrated with the background wall - only the image is clickable -->
+        <div class="team-wrapper" style="position:absolute; left:59%; top:24%; transform:translate(-50%,-50%); z-index:5;">
+            <a href="team.html" id="team-link" style="display:inline-block; width:120px; height:120px; cursor:none; mix-blend-mode: multiply; position:relative;">
+                <img src="assets/team.png" alt="Team" id="team-image" class="overlay-team" style="width:120px; height:120px; object-fit:contain; filter: brightness(0.97) contrast(0.95); box-shadow: none;">
+            </a>
+            <img src="assets/meetteam.png" alt="Meet the team" class="team-bubble">
+        </div>
+        
+        <!-- Doodle bubbles (now hidden) -->
+        <div class="doodle-bubble" id="book-bubble">Doodle: What's inside this book?</div>
+        <div class="doodle-bubble" id="photo-bubble">Doodle: Who are these people?</div>
+    </div>
+    <div class="container">
+        <!--<h1>Welcome to Girlsin</h1>-->
+        <!-- Your content goes here -->
+    </div>
+    <script>
+        // Preload cursor images & report if missing
+        (function(){
+            const imgs = ['assets/cursor.png','assets/onclick.png','assets/window.png','assets/authors.png','assets/meetteam.png','assets/articlesbub.png','assets/logo.gif','assets/Cat-Sleeping-Loop-Video-Creati-unscreen.gif'];
+            imgs.forEach(src=>{const i=new Image(); i.onload=()=>console.log('Loaded asset',src); i.onerror=()=>console.warn('Failed to load asset',src); i.src=src;});
+        })();
+        // Add this script to verify the elements are there and set up event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Page loaded - setting up click handlers");
+            
+            // Direct click handlers for each element
+            const pcLink = document.getElementById('pc-link');
+            if (pcLink) {
+                console.log("PC link found");
+                // Removed default navigation click handler - using GSAP animation instead
+            }
+
+            // Lamp click -> change background color to dark purple (toggle)
+            const lamp = document.getElementById('lamp');
+            if (lamp) {
+                lamp.addEventListener('click', function(e){
+                    e.preventDefault();
+                    const dark = document.body.classList.toggle('dark-purple-bg');
+                });
+            }
+
+            // Window animation on hover - direct swap like author/team
+            // Window element - No hover effects
+            (function(){
+                const winImg = document.getElementById('room-window');
+                if(!winImg) return;
+                
+                // Set static size and position
+                winImg.style.width = '850px';
+                winImg.style.height = 'auto';
+                winImg.style.left = '-20%';
+            })();
+            
+            const bookLink = document.getElementById('book-link');
+           
+            
+            const photoLink = document.getElementById('photo-area');
+            if (photoLink) {
+                console.log("Photo link found");
+                photoLink.addEventListener('click', function(e) {
+                    console.log("Photo clicked");
+                    window.location.href = 'photo.html';
+                });
+            }
+            
+            // Add global click effect for all clickable elements
+            document.addEventListener('mousedown', function() {
+                document.documentElement.classList.add('cursor-clicking');
+            });
+            
+            document.addEventListener('mouseup', function() {
+                document.documentElement.classList.remove('cursor-clicking');
+            });
+            // Also remove on mouseleave (e.g., if mouse released outside window)
+            document.addEventListener('mouseleave', function() {
+                document.documentElement.classList.remove('cursor-clicking');
+            });
+            
+            // Author image hover effect - switch to GIF on hover (play once)
+            const authorLink = document.getElementById('author-link');
+            const authorImage = document.getElementById('author-image');
+            if (authorLink && authorImage) {
+                // Preload the GIF to get its duration
+                const authorGif = new Image();
+                authorGif.src = 'assets/author.gif';
+                
+                let gifTimeout;
+                
+                authorLink.addEventListener('mouseenter', function() {
+                    // Clear any existing timeout
+                    if (gifTimeout) {
+                        clearTimeout(gifTimeout);
+                    }
+                    
+                    // Set src to GIF to start animation
+                    authorImage.src = 'assets/author.gif';
+                    
+                    // Estimate GIF duration - we'll use 3 seconds as default
+                    // You may need to adjust this value based on actual GIF length
+                    const estimatedDuration = 1000; // 3 seconds
+                    
+                    // Set a timer to switch back to PNG after the animation plays once
+                    gifTimeout = setTimeout(function() {
+                        authorImage.src = 'assets/author.png';
+                    }, estimatedDuration);
+                });
+                
+                authorLink.addEventListener('mouseleave', function() {
+                    // If mouse leaves before animation completes, switch back to PNG
+                    authorImage.src = 'assets/author.png';
+                    
+                    // Clear the timeout
+                    if (gifTimeout) {
+                        clearTimeout(gifTimeout);
+                    }
+                });
+            }
+        });
+
+        // Doodle bubble logic (robust positioning)
+        function showBubble(bubbleId, areaId) {
+            const bubble = document.getElementById(bubbleId);
+            const area = document.getElementById(areaId);
+            if (!bubble || !area) return; // Skip if elements don't exist
+            
+            area.addEventListener('mouseenter', function(e) {
+                bubble.style.opacity = 1;
+                bubble.style.left = (e.clientX + 20) + 'px';
+                bubble.style.top = (e.clientY - 10) + 'px';
+            });
+            area.addEventListener('mousemove', function(e) {
+                bubble.style.left = (e.clientX + 20) + 'px';
+                bubble.style.top = (e.clientY - 10) + 'px';
+            });
+            area.addEventListener('mouseleave', function() {
+                bubble.style.opacity = 0;
+            });
+        }
+        showBubble('book-bubble', 'book-link');
+        showBubble('photo-bubble', 'photo-area');
+
+    // Removed dynamic sampling so manual light/dark colors show clearly.
+    // PC hover effect removed
+
+    // Simple team image hover effect - swap PNG to GIF on hover and increase size
+    document.addEventListener('DOMContentLoaded', function() {
+        const teamImage = document.getElementById('team-image');
+        const teamLink = document.getElementById('team-link');
+        
+        if (teamImage) {
+            const staticSrc = 'assets/team.png';
+            const animatedSrc = 'assets/team.gif';
+            
+            // Original size values
+            const originalStyle = {
+                width: '120px',
+                height: '120px'
+            };
+            
+            // Larger size for GIF
+            const largerStyle = {
+                width: '210px',
+                height: '210px'
+            };
+            
+            // Preload the GIF for smoother transition
+            const preloadGif = new Image();
+            preloadGif.src = animatedSrc;
+            
+            // When mouse enters the image
+            teamImage.addEventListener('mouseenter', function() {
+                // Change image to GIF
+                teamImage.src = animatedSrc;
+                
+                // Increase the size
+                teamImage.style.width = largerStyle.width;
+                teamImage.style.height = largerStyle.height;
+                
+                // Adjust parent container size
+                teamLink.style.width = largerStyle.width;
+                teamLink.style.height = largerStyle.height;
+                
+                // Center the enlarged image, move it more to the right and lower
+                teamLink.style.transform = 'translate(0px, 0px)';
+            });
+            
+            // When mouse leaves
+            teamLink.addEventListener('mouseleave', function() {
+                // Change back to static PNG
+                teamImage.src = staticSrc;
+                
+                // Restore original size
+                teamImage.style.width = originalStyle.width;
+                teamImage.style.height = originalStyle.height;
+                
+                // Restore parent container size
+                teamLink.style.width = originalStyle.width;
+                teamLink.style.height = originalStyle.height;
+                
+                // Reset positioning
+                teamLink.style.transform = '';
+            });
+        }
+    });
+
+    // Custom cursor implementation
+    // Define custom cursor as a global variable so it can be accessed by animation code
+    let customCursor;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create the cursor element
+        customCursor = document.createElement('div');
+        customCursor.id = 'custom-cursor';
+        document.body.appendChild(customCursor);
+        
+        // Move the cursor with mouse
+        let firstMove = true;
+        document.addEventListener('mousemove', function(e) {
+            if (firstMove) {
+                // Show the cursor on first mouse movement
+                customCursor.style.opacity = '1';
+                firstMove = false;
+            }
+            customCursor.style.left = e.clientX + 'px';
+            customCursor.style.top = e.clientY + 'px';
+        });
+        
+        // Add clicking state
+        document.addEventListener('mousedown', function() {
+            customCursor.classList.add('clicking');
+        });
+        
+        document.addEventListener('mouseup', function() {
+            customCursor.classList.remove('clicking');
+        });
+        
+        // Handle cursor leaving the window
+        document.addEventListener('mouseleave', function() {
+            customCursor.style.display = 'none';
+        });
+        
+        document.addEventListener('mouseenter', function() {
+            customCursor.style.display = 'block';
+        });
+        
+        // Change cursor for clickable elements
+        const clickableElements = document.querySelectorAll('a, button, .clickable, .clickable-no-hover, #lamp, #team-link, #pc-link, #author-link');
+        
+        // Get the audio element for click sound
+        const clickSound = document.getElementById('click-sound');
+        
+        // Function to play click sound
+        function playClickSound() {
+            if (clickSound) {
+                try {
+                    clickSound.currentTime = 0;
+                    const playPromise = clickSound.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(function(error) {
+                            console.log('Audio playback error:', error);
+                            if (error.name === 'NotAllowedError') {
+                                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                                const source = audioContext.createBufferSource();
+                                const clickBuffer = audioContext.createBuffer(1, 1024, 22050);
+                                const clickData = clickBuffer.getChannelData(0);
+                                for (let i = 0; i < clickData.length; i++) {
+                                    clickData[i] = Math.random() * 2 - 1;
+                                }
+                                source.buffer = clickBuffer;
+                                source.connect(audioContext.destination);
+                                source.start(0);
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.log('Audio play error:', e);
+                }
+            }
+        }
+        
+        // Add specific listeners for the main interactive elements
+        const pcLink = document.getElementById('pc-link');
+        const authorLink = document.getElementById('author-link');
+        const teamLink = document.getElementById('team-link');
+        const lampElement = document.getElementById('lamp');
+        
+        // PC click handler to navigate to article.html
+        if (pcLink) {
+            pcLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                playClickSound();
+                console.log("PC clicked - navigating to blog.html");
+                
+                // Add a small delay to allow the click sound to play
+                setTimeout(function() {
+                    window.location.href = 'blog.html';
+                }, 50);
+            });
+            
+            // PC hover effect - switch to GIF on hover with increased size and show bubble
+            const pcImage = document.getElementById('pc-image');
+            const pcWrapper = document.querySelector('.pc-wrapper');
+            const pcBubble = document.querySelector('.pc-bubble');
+            
+            if (pcImage) {
+                // Static image dimensions - even smaller size
+                const staticWidth = '250px';
+                const staticHeight = '195px';
+                
+                // Paths to images
+                const staticSrc = 'assets/pc.png';
+                const animatedSrc = 'assets/pc.gif';
+                
+                // GIF size - larger than static
+                const gifWidth = '350px';
+                const gifHeight = '275px';
+                
+                // Preload the GIF for smoother transition
+                const preloadGif = new Image();
+                preloadGif.src = animatedSrc;
+                
+                // When mouse enters the PC image
+                pcLink.addEventListener('mouseenter', function() {
+                    // Change to GIF with larger dimensions
+                    pcImage.src = animatedSrc;
+                    pcImage.style.width = gifWidth;
+                    pcImage.style.height = gifHeight;
+                    pcImage.style.objectFit = 'contain';
+                    
+                    // Make a very subtle adjustment upward with same left position
+                    pcImage.style.transform = 'translateY(-40px) translateX(-45px)';
+                    
+                    // Show the articles bubble
+                    if (pcBubble) {
+                        pcBubble.style.opacity = '1';
+                        pcBubble.style.transform = 'translateY(0) scale(1)';
+                    }
+                });
+                
+                // When mouse leaves
+                pcLink.addEventListener('mouseleave', function() {
+                    // Change back to static PNG with smaller dimensions
+                    pcImage.src = staticSrc;
+                    pcImage.style.width = staticWidth;
+                    pcImage.style.height = staticHeight;
+                    pcImage.style.objectFit = 'contain';
+                    
+                    // Reset position adjustment - ensuring no vertical shift
+                    pcImage.style.transform = 'translateY(0)';
+                    
+                    // Hide the articles bubble
+                    if (pcBubble) {
+                        pcBubble.style.opacity = '0';
+                        pcBubble.style.transform = 'translateY(6px) scale(.95)';
+                    }
+                });
+            }
+        }
+        
+        // Logo hover effect - switch to GIF on hover with increased size
+        const logoLink = document.getElementById('logo-link');
+        const logoImage = document.getElementById('logo-image');
+        if (logoLink && logoImage) {
+            // Image paths
+            const staticLogoSrc = 'assets/logo.png';
+            const animatedLogoSrc = 'assets/logo.gif';
+            
+            // Save original dimensions
+            const originalWidth = logoImage.offsetWidth || 250; // Default from CSS if not rendered yet
+            const originalRight = 20; // Default right position from CSS
+            // Increased size for GIF (30% larger)
+            const gifWidth = originalWidth * 1.25;
+
+            // Preload the GIF for smoother transition
+            const preloadLogoGif = new Image();
+            preloadLogoGif.src = animatedLogoSrc;
+            
+            // When mouse enters the logo
+            logoLink.addEventListener('mouseenter', function() {
+                // Store original width if not saved yet
+                if (!logoImage.originalWidth) {
+                    logoImage.originalWidth = logoImage.offsetWidth;
+                    logoImage.originalHeight = logoImage.offsetHeight;
+                }
+                
+                // Change to GIF with increased size
+                logoImage.src = animatedLogoSrc;
+                logoImage.style.width = gifWidth + 'px';
+                
+                // Adjust the position to keep it aligned on the right edge
+                logoLink.style.right = (originalRight - (gifWidth - originalWidth) / 2) + 'px';
+            });
+            
+            // When mouse leaves
+            logoLink.addEventListener('mouseleave', function() {
+                // Change back to static PNG with original size
+                logoImage.src = staticLogoSrc;
+                logoImage.style.width = originalWidth + 'px';
+                
+                // Reset position
+                logoLink.style.right = originalRight + 'px';
+            });
+        }
+        
+        // Author link - show password modal
+        if (authorLink) {
+            authorLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log("Author link clicked - showing password modal");
+                playClickSound();
+                const passwordModal = document.getElementById('password-modal');
+                const passwordInput = document.getElementById('password-input');
+                if (passwordModal && passwordInput) {
+                    passwordModal.style.display = 'flex';
+                    passwordInput.focus();
+                    console.log("Password modal shown and input focused");
+                } else {
+                    console.error("Password modal elements not found!");
+                }
+            });
+        }
+        
+        if (teamLink) teamLink.addEventListener('click', playClickSound);
+        if (lampElement) lampElement.addEventListener('click', playClickSound);
+        
+        // Add general listeners for all clickable elements
+        clickableElements.forEach(function(element) {
+            element.addEventListener('mouseenter', function() {
+                customCursor.classList.add('hovering');
+            });
+
+            element.addEventListener('mouseleave', function() {
+                customCursor.classList.remove('hovering');
+            });
+
+            // Add click sound when element is clicked
+            element.addEventListener('click', playClickSound);
+        });
+        
+        // Password Modal Logic
+        const CORRECT_PASSWORD = "HEHE123";
+        const passwordModal = document.getElementById('password-modal');
+        const passwordInput = document.getElementById('password-input');
+        const submitBtn = document.getElementById('submit-password');
+        const cancelBtn = document.getElementById('cancel-password');
+        const errorMsg = document.getElementById('error-message');
+
+        function checkPassword() {
+            const enteredPassword = passwordInput.value.trim();
+            if (enteredPassword === CORRECT_PASSWORD) {
+                passwordModal.style.display = 'none';
+                playClickSound();
+                window.location.href = 'author.html';
+            } else {
+                errorMsg.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
+                playClickSound();
+            }
+        }
+
+        if (submitBtn) {
+            submitBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                checkPassword();
+            });
+        }
+        
+        if (passwordInput) {
+            passwordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    checkPassword();
+                }
+            });
+        }
+
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function() {
+                passwordModal.style.display = 'none';
+                playClickSound();
+            });
+        }
+        
+        // Add hover effects to password modal buttons
+        [submitBtn, cancelBtn].forEach(btn => {
+            if (btn) {
+                btn.addEventListener('mouseenter', function() {
+                    customCursor.classList.add('hovering');
+                });
+                btn.addEventListener('mouseleave', function() {
+                    customCursor.classList.remove('hovering');
+                });
+                btn.addEventListener('click', playClickSound);
+            }
+        });
+    });
+    </script>
+    
+    <!-- Audio element for click sound (preloaded but hidden) -->
+    <audio id="click-sound" preload="auto" style="display: none;">
+        <source src="assets/click.mp3" type="audio/mp3">
+    </audio>
 </body>
 </html>
