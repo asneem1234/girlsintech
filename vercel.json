@@ -12,6 +12,10 @@
       "dest": "server.js"
     },
     {
+      "src": "/$",
+      "dest": "/landingpage.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/$1"
     }
