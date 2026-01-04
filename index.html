@@ -23,34 +23,7 @@
             height: 100%;
             width: 100%;
             overflow: auto;
-            cursor: auto; /* show default cursor */
-        }
-        
-        /* Custom cursor element that follows the mouse */
-        #custom-cursor {
-            position: fixed;
-            top: -100px; /* Position off-screen initially */
-            left: -100px; /* Position off-screen initially */
-            width: 40px; /* Smaller size than the original image */
-            height: 40px;
-            background-image: url('assets/arrow.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            pointer-events: none; /* Makes sure it doesn't interfere with clicking */
-            z-index: 9999;
-            transform: translate(-10px, -10px); /* Offset to position the pointer correctly */
-            transition: background-image 0.1s ease;
-            opacity: 0; /* Start invisible */
-        }
-        
-        /* Change cursor when hovering over clickable elements */
-        #custom-cursor.hovering {
-            background-image: url('assets/clickable.png');
-        }
-        
-        /* While mouse is pressed down we can style it differently if needed */
-        #custom-cursor.clicking {
-            transform: translate(-10px, -8px) scale(0.95); /* Slight movement when clicking */
+            cursor: auto;
         }
         body {
             background-color: #ffe7d8 !important; /* enforce light background */
@@ -420,8 +393,8 @@
         <!-- Window repositioned to the left -->
     <img src="assets/window.png" alt="Window" id="room-window" class="overlay-window">
         <!-- Cat sleeping GIF on left side -->
-    <div class="cat-wrapper" style="position:absolute; left:9%; top:82%; transform:translate(-50%,-50%); z-index:12;">
-        <img src="assets/cat.gif" alt="Sleeping Cat" class="sleeping-cat" style="width:650px; height:auto; object-fit:contain;">
+    <div class="cat-wrapper" style="position:absolute; left:13%; top:70%; transform:translate(-50%,-50%); z-index:12;">
+        <img src="assets/desk.png" alt="Sleeping Cat" class="sleeping-cat" style="width:380px; height:auto; object-fit:contain;">
     </div>
         <!-- PC element removed -->
 
@@ -657,45 +630,7 @@
     });
 
     // Custom cursor implementation
-    // Define custom cursor as a global variable so it can be accessed by animation code
-    let customCursor;
-    
     document.addEventListener('DOMContentLoaded', function() {
-        // Create the cursor element
-        customCursor = document.createElement('div');
-        customCursor.id = 'custom-cursor';
-        document.body.appendChild(customCursor);
-        
-        // Move the cursor with mouse
-        let firstMove = true;
-        document.addEventListener('mousemove', function(e) {
-            if (firstMove) {
-                // Show the cursor on first mouse movement
-                customCursor.style.opacity = '1';
-                firstMove = false;
-            }
-            customCursor.style.left = e.clientX + 'px';
-            customCursor.style.top = e.clientY + 'px';
-        });
-        
-        // Add clicking state
-        document.addEventListener('mousedown', function() {
-            customCursor.classList.add('clicking');
-        });
-        
-        document.addEventListener('mouseup', function() {
-            customCursor.classList.remove('clicking');
-        });
-        
-        // Handle cursor leaving the window
-        document.addEventListener('mouseleave', function() {
-            customCursor.style.display = 'none';
-        });
-        
-        document.addEventListener('mouseenter', function() {
-            customCursor.style.display = 'block';
-        });
-        
         // Change cursor for clickable elements
         const clickableElements = document.querySelectorAll('a, button, .clickable, .clickable-no-hover, #lamp, #team-link, #pc-link, #author-link');
         
@@ -878,14 +813,6 @@
         
         // Add general listeners for all clickable elements
         clickableElements.forEach(function(element) {
-            element.addEventListener('mouseenter', function() {
-                customCursor.classList.add('hovering');
-            });
-
-            element.addEventListener('mouseleave', function() {
-                customCursor.classList.remove('hovering');
-            });
-
             // Add click sound when element is clicked
             element.addEventListener('click', playClickSound);
         });

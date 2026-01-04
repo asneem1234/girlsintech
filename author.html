@@ -381,14 +381,6 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-
-    /* Dock */
-    .dock { position:fixed; bottom:14px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,0.7); backdrop-filter:blur(6px); border:3px solid #000; border-radius:30px; display:flex; gap:18px; padding:14px 28px; box-shadow:6px 6px 0 #000; z-index:600; }
-    .dock-item { width:60px; text-align:center; font-size:11px; font-weight:600; cursor:auto; position:relative; }
-    .dock-item img, .dock-item .dock-icon { width:54px; height:54px; border:3px solid #000; background:#fff; border-radius:18px; display:flex; align-items:center; justify-content:center; box-shadow:3px 3px 0 #000; }
-    .dock-item span { display:block; margin-top:6px; }
-    .dock-item:hover img, .dock-item:hover .dock-icon { transform:translateY(-6px); }
-    .dock-icon svg { width:32px; height:32px; stroke-width:2.2; }
   </style>
 </head>
 <body>
@@ -468,6 +460,15 @@
             </div>
             
             <div class="form-group">
+              <label for="article-image">Article Image (optional):</label>
+              <input type="file" id="article-image" class="form-input" accept="image/*">
+              <small style="color: #666; font-size: 12px;">Upload an image for your article (JPG, PNG, GIF)</small>
+              <div id="image-preview" style="margin-top: 10px; display: none;">
+                <img id="preview-img" style="max-width: 200px; border: 2px solid #000; border-radius: 10px;" alt="Preview">
+              </div>
+            </div>
+            
+            <div class="form-group">
               <label for="article-content">Article Content:</label>
               <textarea id="article-content" class="form-textarea" placeholder="Write your article content here..." required></textarea>
             </div>
@@ -498,30 +499,6 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Bottom Dock -->
-  <div class="dock" id="dock">
-    <div class="dock-item" onclick="goHome()">
-      <div class="dock-icon">
-        <svg viewBox="0 0 24 24" fill="none">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-        </svg>
-      </div>
-      <span>Home</span>
-    </div>
-    <div class="dock-item" onclick="viewBlogs()">
-      <div class="dock-icon">
-        <img src="assets/pc.png" alt="Blogs">
-      </div>
-      <span>Blogs</span>
-    </div>
-    <div class="dock-item">
-      <div class="dock-icon">
-        <img src="assets/author.png" alt="Author">
-      </div>
-      <span>Author</span>
     </div>
   </div>
 
@@ -569,7 +546,7 @@
       }
       
       // Add hover and click events to all clickable elements
-      const clickableElements = document.querySelectorAll('button, .dock-item, .channels li, .icon-btn');
+      const clickableElements = document.querySelectorAll('button, .channels li, .icon-btn');
       clickableElements.forEach(function(element) {
         element.addEventListener('mouseenter', function() {
           cursor.classList.add('hovering');
@@ -582,77 +559,18 @@
         element.addEventListener('click', playClickSound);
       });
 
-      // UI Logic - Click sound for form submission
-      // Note: The actual form submission is now handled by author.js
-      document.getElementById('article-form').addEventListener('submit', function() {
-        playClickSound();
-      });
-
-      // Load and display articles
-      // Note: The loadArticles function is now handled by author.js
-      function loadArticles() {
-        // This function is now replaced by the implementation in author.js
-        console.log("Articles will be loaded from backend API instead of localStorage");
-      }
-      
-      // Don't load articles here, it's handled by author.js
-
-      // Preview button
-      document.getElementById('preview-btn').addEventListener('click', function() {
-        playClickSound();
-        const title = document.getElementById('article-title').value;
-        const content = document.getElementById('article-content').value;
-        
-        if (!title || !content) {
-          alert('Please fill in title and content to preview!');
-          return;
-        }
-        
-        const previewWindow = window.open('', '_blank');
-        previewWindow.document.write(`
-          <html>
-            <head><title>Preview: ${title}</title></head>
-            <body style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;">
-              <h1>${title}</h1>
-              <div style="white-space: pre-wrap;">${content}</div>
-            </body>
-          </html>
-        `);
-      });
-
-      // View Blog button
-      document.getElementById('view-blog-btn').addEventListener('click', function() {
-        playClickSound();
-        window.location.href = 'blog-template.html';
-      });
-
-      // Global functions for article management are now handled by author.js
-      // These are just stubs for backward compatibility
-      window.editArticle = function(id) {
-        console.log("Edit article now handled by author.js:", id);
-        // Play click sound for UI feedback
-        playClickSound();
-        // The actual implementation is in author.js
-      };
-
-      window.deleteArticle = function(id) {
-        console.log("Delete article now handled by author.js:", id);
-        // Play click sound for UI feedback
-        playClickSound();
-        // The actual implementation is in author.js
-      };
-
+      // Global navigation functions
       window.goHome = function() {
         window.location.href = 'landingpage.html';
       };
 
       window.viewBlogs = function() {
-        window.location.href = 'blog-template.html';
+        window.location.href = 'blog.html';
       };
     });
   </script>
   
-  <!-- Add our custom JavaScript for backend integration -->
+  <!-- Add our custom JavaScript for article management -->
   <script src="js/author.js"></script>
 </body>
 </html>

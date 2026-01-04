@@ -1,13 +1,31 @@
-// author.js
+// author.js - Article management using localStorage
 document.addEventListener('DOMContentLoaded', function() {
-  // Configuration - Update with your backend URL
-  const API_URL = 'http://localhost:3000/api/blogs';
+  // LocalStorage key for articles
+  const STORAGE_KEY = 'girlsin_articles';
 
   // Cache DOM elements
   const articleForm = document.getElementById('article-form');
   const articlesContainer = document.getElementById('articles-container');
   const viewBlogBtn = document.getElementById('view-blog-btn');
   const previewBtn = document.getElementById('preview-btn');
+
+  // Track current editing article
+  let editingArticleId = null;
+
+  /**
+   * Get articles from localStorage
+   */
+  function getArticles() {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  }
+
+  /**
+   * Save articles to localStorage
+   */
+  function saveArticles(articles) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(articles));
+  }
 
   /**
    * Initialize the page
@@ -28,13 +46,30 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
     
+    // Image upload preview
+    const imageInput = document.getElementById('article-image');
+    if (imageInput) {
+      imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            const previewContainer = document.getElementById('image-preview');
+            const previewImg = document.getElementById('preview-img');
+            previewImg.src = event.target.result;
+            previewContainer.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+    
     // Load existing articles
     loadArticles();
   }
 
   /**
-   * Handle form submission for creating a new blog article
-   * @param {Event} e - Form submit event
+   * Handle form submission for creating/updating a blog article
    */
   async function handleFormSubmit(e) {
     e.preventDefault();
@@ -43,16 +78,28 @@ document.addEventListener('DOMContentLoaded', function() {
       // Show loading state
       const submitBtn = articleForm.querySelector('button[type="submit"]');
       const originalText = submitBtn.textContent;
-      submitBtn.textContent = '⏳ Publishing...';
+      submitBtn.textContent = editingArticleId ? '⏳ Updating...' : '⏳ Publishing...';
       submitBtn.disabled = true;
 
       // Get form values
+      const authorName = document.getElementById('author-name').value;
+      
+      // Determine profile picture based on author name
+      let profilePic = 'assets/random.png'; // default
+      const nameLower = authorName.toLowerCase().trim();
+      if (nameLower === 'keerthi') {
+        profilePic = 'assets/kee.png';
+      } else if (nameLower === 'asneem') {
+        profilePic = 'assets/an.png';
+      }
+      
       const formData = {
         title: document.getElementById('article-title').value,
         category: document.getElementById('article-category').value,
         excerpt: document.getElementById('article-excerpt').value,
         content: document.getElementById('article-content').value,
-        author: document.getElementById('author-name').value
+        author: authorName,
+        profilePic: profilePic
       };
 
       // Validate form data
@@ -60,29 +107,59 @@ document.addEventListener('DOMContentLoaded', function() {
         throw new Error('Please fill in all fields');
       }
 
-      // Send data to backend
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      const data = await response.json();
-
-      // Check if request was successful
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to publish article');
+      // Handle image upload
+      const imageInput = document.getElementById('article-image');
+      if (imageInput && imageInput.files && imageInput.files[0]) {
+        const file = imageInput.files[0];
+        const reader = new FileReader();
+        
+        // Wait for image to be read
+        await new Promise((resolve, reject) => {
+          reader.onload = function(event) {
+            formData.image = event.target.result;
+            resolve();
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
       }
 
-      // Show success message
-      showNotification('Article published successfully!', 'success');
+      // Get existing articles
+      const articles = getArticles();
 
-      // Reset form
+      if (editingArticleId) {
+        // Update existing article
+        const index = articles.findIndex(a => a.id === editingArticleId);
+        if (index !== -1) {
+          articles[index] = {
+            ...articles[index],
+            ...formData,
+            updated_at: new Date().toISOString()
+          };
+        }
+        showNotification('Article updated successfully!', 'success');
+      } else {
+        // Create new article
+        const newArticle = {
+          id: Date.now().toString(),
+          ...formData,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        articles.unshift(newArticle);
+        showNotification('Article published successfully!', 'success');
+      }
+
+      // Save to localStorage
+      saveArticles(articles);
+
+      // Reset form and editing state
       articleForm.reset();
+      document.getElementById('image-preview').style.display = 'none';
+      editingArticleId = null;
+      submitBtn.textContent = '📤 Publish Article';
 
-      // Reload articles to show the new one
+      // Reload articles
       loadArticles();
       
     } catch (error) {
@@ -91,34 +168,16 @@ document.addEventListener('DOMContentLoaded', function() {
     } finally {
       // Reset button state
       const submitBtn = articleForm.querySelector('button[type="submit"]');
-      submitBtn.textContent = '📤 Publish Article';
       submitBtn.disabled = false;
     }
   }
 
   /**
-   * Load existing articles from the backend
+   * Load existing articles from localStorage
    */
-  async function loadArticles() {
+  function loadArticles() {
     try {
-      // Show loading state
-      articlesContainer.innerHTML = `
-        <div class="loading-state">
-          <div class="loading-spinner"></div>
-          <p>Loading your articles...</p>
-        </div>
-      `;
-
-      // Fetch articles from backend
-      const response = await fetch(API_URL);
-      
-      // Check if request was successful
-      if (!response.ok) {
-        throw new Error('Failed to fetch articles');
-      }
-
-      const result = await response.json();
-      const articles = result.data || [];
+      const articles = getArticles();
 
       // Display articles or show empty state
       const emptyState = document.getElementById('empty-state');
@@ -149,8 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
           const articleId = this.dataset.id;
-          // You would implement editing functionality here
-          alert('Edit functionality will be implemented in a future update');
+          editArticle(articleId);
         });
       });
 
@@ -162,8 +220,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /**
    * Create HTML for an article card
-   * @param {Object} article - The article object
-   * @returns {string} HTML string for the article card
    */
   function createArticleCard(article) {
     const date = new Date(article.created_at).toLocaleDateString('en-US', {
@@ -176,7 +232,8 @@ document.addEventListener('DOMContentLoaded', function() {
       <div class="article-item" data-id="${article.id}">
         <div class="article-info">
           <h4>${article.title}</h4>
-          <p>${article.category} • ${article.excerpt.substring(0, 100)}${article.excerpt.length > 100 ? '...' : ''}</p>
+          <p><strong>${article.category}</strong> • ${article.excerpt.substring(0, 100)}${article.excerpt.length > 100 ? '...' : ''}</p>
+          <small>By ${article.author} • ${date}</small>
         </div>
         <div class="article-actions">
           <button class="btn-small btn-edit edit-article-btn" data-id="${article.id}">✏️ Edit</button>
@@ -187,28 +244,52 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   /**
-   * Delete an article by ID
-   * @param {string} id - The article ID to delete
+   * Edit an article by ID
    */
-  async function deleteArticle(id) {
+  function editArticle(id) {
+    playClickSound();
+    const articles = getArticles();
+    const article = articles.find(a => a.id === id);
+    
+    if (!article) {
+      showNotification('Article not found', 'error');
+      return;
+    }
+
+    // Populate form with article data
+    document.getElementById('article-title').value = article.title;
+    document.getElementById('article-category').value = article.category;
+    document.getElementById('article-excerpt').value = article.excerpt;
+    document.getElementById('article-content').value = article.content;
+    document.getElementById('author-name').value = article.author;
+
+    // Set editing state
+    editingArticleId = id;
+
+    // Update button text
+    const submitBtn = articleForm.querySelector('button[type="submit"]');
+    submitBtn.textContent = '💾 Update Article';
+
+    // Scroll to form
+    articleForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    showNotification('Editing article - make your changes and click Update', 'info');
+  }
+
+  /**
+   * Delete an article by ID
+   */
+  function deleteArticle(id) {
+    playClickSound();
     try {
-      const response = await fetch(`${API_URL}/${id}`, {
-        method: 'DELETE'
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Failed to delete article');
-      }
-
-      // Show success message
+      const articles = getArticles();
+      const filteredArticles = articles.filter(a => a.id !== id);
+      saveArticles(filteredArticles);
       showNotification('Article deleted successfully', 'success');
-
-      // Reload articles
       loadArticles();
     } catch (error) {
       console.error('Error deleting article:', error);
-      showNotification(error.message || 'Failed to delete article', 'error');
+      showNotification('Failed to delete article', 'error');
     }
   }
 
@@ -216,58 +297,123 @@ document.addEventListener('DOMContentLoaded', function() {
    * Preview the article before publishing
    */
   function previewArticle() {
+    playClickSound();
     const title = document.getElementById('article-title').value;
-    const category = document.getElementById('article-category').value;
-    const excerpt = document.getElementById('article-excerpt').value;
     const content = document.getElementById('article-content').value;
     const author = document.getElementById('author-name').value;
-
-    // Validate form data
-    if (!title || !category || !excerpt || !content || !author) {
-      showNotification('Please fill in all fields to preview', 'error');
+    const category = document.getElementById('article-category').value;
+    
+    if (!title || !content) {
+      alert('Please fill in title and content to preview!');
       return;
     }
-
-    // Create and show preview modal (you would implement this UI)
-    alert(`
-      Title: ${title}
-      Category: ${category}
-      Author: ${author}
-      Excerpt: ${excerpt}
-      
-      Content Preview:
-      ${content.substring(0, 200)}${content.length > 200 ? '...' : ''}
-    `);
     
-    // Alternatively, you could implement a more sophisticated preview modal
+    const previewWindow = window.open('', '_blank');
+    previewWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Preview: ${title}</title>
+          <style>
+            body { 
+              font-family: 'Inter', Arial, sans-serif; 
+              max-width: 800px; 
+              margin: 40px auto; 
+              padding: 20px;
+              line-height: 1.6;
+            }
+            h1 { 
+              border-bottom: 3px solid #000; 
+              padding-bottom: 10px;
+              margin-bottom: 20px;
+            }
+            .meta {
+              color: #666;
+              margin-bottom: 20px;
+              font-size: 14px;
+            }
+            .category {
+              display: inline-block;
+              background: #D9A3CF;
+              padding: 4px 12px;
+              border-radius: 8px;
+              border: 2px solid #000;
+              font-weight: 600;
+              margin-right: 10px;
+            }
+            .content { 
+              white-space: pre-wrap; 
+              font-size: 16px;
+            }
+          </style>
+        </head>
+        <body>
+          <h1>${title}</h1>
+          <div class="meta">
+            <span class="category">${category}</span>
+            <span>By ${author}</span>
+          </div>
+          <div class="content">${content}</div>
+        </body>
+      </html>
+    `);
   }
 
   /**
-   * Show notification to user
-   * @param {string} message - The message to show
-   * @param {string} type - The notification type (success, error)
+   * Show notification message
    */
   function showNotification(message, type = 'info') {
-    // You could implement a more sophisticated notification system
-    if (type === 'error') {
-      alert(`❌ ${message}`);
-    } else {
-      alert(`✅ ${message}`);
+    // Create notification element if it doesn't exist
+    let notification = document.getElementById('notification');
+    if (!notification) {
+      notification = document.createElement('div');
+      notification.id = 'notification';
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        background: #fff;
+        border: 3px solid #000;
+        border-radius: 12px;
+        box-shadow: 4px 4px 0 #000;
+        z-index: 10000;
+        max-width: 300px;
+        font-weight: 600;
+        transition: opacity 0.3s ease;
+      `;
+      document.body.appendChild(notification);
+    }
+
+    // Set color based on type
+    const colors = {
+      success: '#A3D9A5',
+      error: '#D9A3A3',
+      info: '#A3D9CF'
+    };
+    notification.style.background = colors[type] || colors.info;
+    notification.textContent = message;
+    notification.style.opacity = '1';
+
+    // Hide after 3 seconds
+    setTimeout(() => {
+      notification.style.opacity = '0';
+    }, 3000);
+  }
+
+  /**
+   * Play click sound (if available)
+   */
+  function playClickSound() {
+    if (window.playClickSound && typeof window.playClickSound === 'function') {
+      window.playClickSound();
     }
   }
 
-  // Initialize the page
+  // Make functions globally accessible
+  window.editArticle = editArticle;
+  window.deleteArticle = deleteArticle;
+
+  // Initialize
   init();
-
-  // Expose deleteArticle function globally to override the stub
-  window.deleteArticle = function(id) {
-    deleteArticle(id);
-  };
-
-  // Expose editArticle function globally (placeholder for future implementation)
-  window.editArticle = function(id) {
-    alert("Edit functionality will be implemented in a future update");
-    // In a full implementation, this would populate the form with article data
-    // and set up form for update instead of create
-  };
 });
