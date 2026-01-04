@@ -745,65 +745,75 @@
         <div class="featured-blog">
           <h2>Featured Post</h2>
           <div class="featured-content">
-            <!-- Featured blog content will be dynamically loaded by JavaScript -->
+            <img src="assets/team.gif" alt="Featured" class="featured-image">
+            <div class="featured-text">
+              <h3>Breaking Into Tech: A Journey of Growth and Discovery</h3>
+              <div class="author-info">
+                <img src="assets/author.png" alt="Author" class="author-avatar">
+                <span>by Sarah Johnson • Career • 5 min read</span>
+              </div>
+              <p>My transition from marketing to software development wasn't easy, but it taught me invaluable lessons about perseverance, continuous learning, and the importance of community support...</p>
+              <button class="read-btn">Read More</button>
+            </div>
           </div>
         </div>
         
         <!-- Blog Grid -->
         <h2>Latest Blogs</h2>
         <div class="blogs-grid" id="blogsGrid">
-          <!-- Blog cards will be inserted here by JavaScript -->
+          <div class="blog-card">
+            <span class="blog-category" style="background-color: #A3D9CF;">Technology</span>
+            <h3>Understanding React Hooks</h3>
+            <p>A comprehensive guide to using React Hooks in your applications for better state management.</p>
+            <button class="read-btn">Read</button>
+          </div>
+          <div class="blog-card">
+            <span class="blog-category" style="background-color: #D9CFA3;">Tutorial</span>
+            <h3>CSS Grid Mastery</h3>
+            <p>Learn how to create responsive layouts with CSS Grid and modern design techniques.</p>
+            <button class="read-btn">Read</button>
+          </div>
+          <div class="blog-card">
+            <span class="blog-category" style="background-color: #A3CFD9;">Career</span>
+            <h3>Negotiating Your First Tech Salary</h3>
+            <p>Tips and strategies for women entering tech to confidently negotiate compensation packages.</p>
+            <button class="read-btn">Read</button>
+          </div>
+          <div class="blog-card">
+            <span class="blog-category" style="background-color: #CFA3D9;">Design</span>
+            <h3>UI/UX Design Principles</h3>
+            <p>Essential design principles every developer should know to create better user experiences.</p>
+            <button class="read-btn">Read</button>
+          </div>
+          <div class="blog-card">
+            <span class="blog-category" style="background-color: #D9A3A3;">News</span>
+            <h3>Women in Tech: 2026 Report</h3>
+            <p>Latest statistics and trends showing progress in diversity and inclusion in the tech industry.</p>
+            <button class="read-btn">Read</button>
+          </div>
+          <div class="blog-card">
+            <span class="blog-category" style="background-color: #A3D9A3;">Events</span>
+            <h3>Upcoming Tech Meetups</h3>
+            <p>Join us for networking events, workshops, and talks designed for women in technology.</p>
+            <button class="read-btn">Read</button>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Side apps -->
     <div class="side-apps">
-      <a href="landingpage.html" class="app-icon">
-        <img src="assets/pc.png" alt="CodeEditor">
-        <span class="app-name">CodeEditor</span>
-      </a>
-      <a href="landingpage.html" class="app-icon">
-        <img src="assets/author.png" alt="WomenInTech">
-        <span class="app-name">WomenInTech</span>
-      </a>
-      <a href="landingpage.html" class="app-icon">
-        <img src="assets/team.png" alt="TechMentors">
-        <span class="app-name">TechMentors</span>
-      </a>
-    </div>
-
-    <!-- Right side apps -->
-    <div class="right-apps">
-      <a href="landingpage.html" class="app-icon">
-        <img src="assets/lamp.png" alt="CareerHub">
-        <span class="app-name">CareerHub</span>
-      </a>
-      <a href="landingpage.html" class="app-icon">
-        <img src="assets/logo.png" alt="ProjectShare">
-        <span class="app-name">ProjectShare</span>
-      </a>
-    </div>
-
-    <!-- Bottom app dock -->
-    <div class="app-dock">
-      <a href="team.html" class="dock-item">
-        <div class="dock-icon">
-          <img src="assets/team.png" alt="Team">
-        </div>
-        <span class="dock-label">Team</span>
-      </a>
       <a href="landingpage.html" class="dock-item">
         <div class="dock-icon">
           <img src="assets/author.png" alt="About">
         </div>
         <span class="dock-label">About Us</span>
       </a>
-      <a href="#" id="blog-opener" class="dock-item">
+      <a href="#" id="blogs-opener" class="dock-item">
         <div class="dock-icon">
-          <img src="assets/pc.png" alt="Blog">
+          <img src="assets/pc.png" alt="Blogs">
         </div>
-        <span class="dock-label">Blog</span>
+        <span class="dock-label">Blogs</span>
       </a>
       <a href="landingpage.html" class="dock-item">
         <div class="dock-icon">
@@ -811,13 +821,8 @@
         </div>
         <span class="dock-label">Girlsin</span>
       </a>
-      <a href="landingpage.html" class="dock-item">
-        <div class="dock-icon">
-          <img src="assets/lamp.png" alt="Help">
-        </div>
-        <span class="dock-label">Help</span>
-      </a>
     </div>
+
   </div>
 
   <!-- Custom cursor -->
@@ -910,8 +915,9 @@
       
       // Button references
       const blogOpener = document.getElementById('blog-opener');
+      const blogsOpener = document.getElementById('blogs-opener');
+      const aboutOpener = document.querySelector('.side-apps .dock-item:nth-child(1)');
       const teamOpener = document.querySelector('.dock-item:nth-child(1)');
-      const aboutOpener = document.querySelector('.dock-item:nth-child(2)');
       
       // Window control buttons - we'll handle these by parent window
       const closeButtons = document.querySelectorAll('.close-button');
@@ -953,6 +959,24 @@
           // Reset from minimized state if needed
           blogWindow.classList.remove('minimized');
           // No need to manually call loadBlogs() as it's handled by blog.js
+        });
+      }
+      
+      // Blogs window opener (side icon)
+      if (blogsOpener) {
+        blogsOpener.addEventListener('click', function(e) {
+          e.preventDefault();
+          playClickSound();
+          
+          // Hide other windows
+          teamWindow.style.display = 'none';
+          aboutWindow.style.display = 'none';
+          
+          // Show blog window
+          blogWindow.style.display = 'flex';
+          blogWindow.classList.remove('minimized');
+          blogWindow.classList.remove('maximized');
+          blogWindow.style.transform = 'translate(-50%, -50%)';
         });
       }
       

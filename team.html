@@ -48,7 +48,7 @@
     .team-header p { margin: 0; font-size: 16px; opacity: 0.8; }
     
     /* Team member cards */
-    .team-grid { display:grid; gap:26px; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); }
+    .team-grid { display:grid; gap:26px; grid-template-columns:repeat(2,minmax(260px,1fr)); max-width: 800px; margin: 0 auto; justify-content: center; }
     .team-card { 
       background:#fff; 
       border:3px solid #000; 
@@ -141,45 +141,17 @@
     const teamMembers = [
       {
         id: 1,
-        name: "Alex Johnson",
-        role: "UI/UX Designer",
-        bio: "Creating intuitive user interfaces with a focus on accessibility and modern aesthetics.",
-        image: "assets/team.gif"
+        name: "Asneem",
+        role: "Full-Stack Developer & Co-Founder",
+        bio: "Passionate about creating inclusive tech spaces for women. Specializes in building scalable web applications and mentoring aspiring developers. Loves solving complex problems with elegant code.",
+        image: "assets/author.png"
       },
       {
         id: 2,
-        name: "Taylor Reid",
-        role: "Frontend Developer",
-        bio: "Building responsive web applications using the latest frameworks and best practices.",
-        image: "assets/team.gif"
-      },
-      {
-        id: 3,
-        name: "Jordan Smith",
-        role: "Backend Engineer",
-        bio: "Developing scalable server architecture and efficient database solutions.",
-        image: "assets/team.gif"
-      },
-      {
-        id: 4,
-        name: "Casey Morgan",
-        role: "Project Manager",
-        bio: "Coordinating team efforts and ensuring timely delivery of all project milestones.",
-        image: "assets/team.gif"
-      },
-      {
-        id: 5,
-        name: "Riley Cooper",
-        role: "Content Strategist",
-        bio: "Creating engaging content that connects with audiences and supports our brand mission.",
-        image: "assets/team.gif"
-      },
-      {
-        id: 6,
-        name: "Jamie Parker",
-        role: "QA Specialist",
-        bio: "Ensuring quality through comprehensive testing and detailed feedback loops.",
-        image: "assets/team.gif"
+        name: "Keerthi",
+        role: "Frontend Developer & Co-Founder",
+        bio: "Dedicated to crafting beautiful, user-friendly interfaces that empower women in tech. Expert in modern frameworks and design systems. Believes in the power of community-driven learning.",
+        image: "assets/author.png"
       }
     ];
 
