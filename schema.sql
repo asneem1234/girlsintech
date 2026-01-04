@@ -6,6 +6,8 @@ CREATE TABLE blogs (
   excerpt TEXT NOT NULL,
   content TEXT NOT NULL,
   author VARCHAR(100) NOT NULL,
+  image TEXT,
+  profilePic VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

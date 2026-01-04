@@ -1,166 +1,98 @@
-// blog.js - Reading articles from localStorage
+// blog.js - Reading articles from Supabase
 document.addEventListener('DOMContentLoaded', function() {
   console.log('Blog.js loaded and running');
   
-  // LocalStorage key for articles (same as author.js)
-  const STORAGE_KEY = 'girlsin_articles';
-  
-  // Cache DOM elements
   const blogsGrid = document.getElementById('blogsGrid');
   const featuredBlog = document.querySelector('.featured-content');
-  const categoryLinks = document.querySelectorAll('.category-link');
   const categoryTags = document.querySelectorAll('.category-tag');
   const blogSearch = document.getElementById('blog-search');
-  
-  // Track current filter
   let currentCategory = '';
   let currentSearchQuery = '';
   
-  /**
-   * Get articles from localStorage
-   */
-  function getArticles() {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
+  async function getArticles() {
+    try {
+      const { data, error } = await supabaseClient
+        .from('blogs')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching articles:', error);
+      return [];
+    }
   }
   
-  /**
-   * Get profile picture based on author name
-   */
   function getProfilePic(authorName) {
     if (!authorName) return 'assets/random.png';
     const nameLower = authorName.toLowerCase().trim();
-    if (nameLower === 'keerthi') {
-      return 'assets/kee.png';
-    } else if (nameLower === 'asneem') {
-      return 'assets/an.png';
-    }
+    if (nameLower === 'keerthi') return 'assets/kee.png';
+    else if (nameLower === 'asneem') return 'assets/an.png';
     return 'assets/random.png';
   }
   
-  /**
-   * Initialize the blog page
-   */
   function init() {
-    console.log('Loading blogs from localStorage');
-    // Load all blogs on page load
+    console.log('Loading blogs from Supabase');
     loadBlogs();
     
-    // Setup category filter tags (for blog.html window)
     if (categoryTags) {
       categoryTags.forEach(tag => {
         tag.addEventListener('click', function() {
-          // Remove active class from all tags
           categoryTags.forEach(t => t.classList.remove('active'));
-          
-          // Add active class to clicked tag
           this.classList.add('active');
-          
-          // Get category from data attribute
           currentCategory = this.dataset.category || '';
-          
-          // Load filtered blogs
           loadBlogs(currentCategory, currentSearchQuery);
         });
       });
     }
     
-    // Setup category filter links (for blog-template.html)
-    if (categoryLinks) {
-      categoryLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-          e.preventDefault();
-          
-          // Remove active class from all links
-          categoryLinks.forEach(l => l.classList.remove('active'));
-          
-          // Add active class to clicked link
-          this.classList.add('active');
-          
-          // Get category from data attribute
-          currentCategory = this.dataset.category || '';
-          
-          // Load filtered blogs
-          loadBlogs(currentCategory, currentSearchQuery);
-        });
-      });
-    }
-    
-    // Setup search
     if (blogSearch) {
-      blogSearch.addEventListener('input', debounce(function(e) {
-        currentSearchQuery = e.target.value.trim();
+      blogSearch.addEventListener('input', function() {
+        currentSearchQuery = this.value.toLowerCase();
         loadBlogs(currentCategory, currentSearchQuery);
-      }, 500));
+      });
     }
   }
   
-  /**
-   * Load blogs from localStorage
-   * @param {string} category - Optional category filter
-   * @param {string} searchQuery - Optional search query
-   */
-  function loadBlogs(category = '', searchQuery = '') {
+  async function loadBlogs(category = '', searchQuery = '') {
     try {
-      // Get blogs from localStorage
-      let blogs = getArticles();
+      let blogs = await getArticles();
       
-      // Filter by category if provided
       if (category) {
         blogs = blogs.filter(blog => blog.category === category);
       }
       
-      // Filter by search query if provided
       if (searchQuery) {
         blogs = blogs.filter(blog => 
-          blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          blog.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          blog.content.toLowerCase().includes(searchQuery.toLowerCase())
+          blog.title.toLowerCase().includes(searchQuery) ||
+          blog.excerpt.toLowerCase().includes(searchQuery) ||
+          blog.author.toLowerCase().includes(searchQuery)
         );
       }
       
-      // Handle no results
       if (blogs.length === 0) {
-        blogsGrid.innerHTML = `
-          <div class="no-results">
-            <p>No articles found${category ? ' in ' + category : ''}${searchQuery ? ' matching "' + searchQuery + '"' : ''}.</p>
-          </div>
-        `;
-        if (featuredBlog) {
-          featuredBlog.innerHTML = '<p>No featured article available</p>';
-        }
+        if (blogsGrid) blogsGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px;">No articles found</p>';
+        if (featuredBlog) featuredBlog.innerHTML = '<p>No featured article yet</p>';
         return;
       }
       
-      // Set featured blog (first blog)
-      if (blogs.length > 0 && featuredBlog) {
-        updateFeaturedBlog(blogs[0]);
-      }
-      
-      // Display all blogs in the grid (or remaining if featured is shown)
-      const blogsToDisplay = featuredBlog ? blogs.slice(1) : blogs;
-      blogsGrid.innerHTML = blogsToDisplay.map(blog => createBlogCard(blog)).join('');
-      
+      if (featuredBlog) updateFeaturedBlog(blogs[0]);
+      if (blogsGrid) blogsGrid.innerHTML = blogs.map(blog => createBlogCard(blog)).join('');
     } catch (error) {
       console.error('Error loading blogs:', error);
-      blogsGrid.innerHTML = '<p>Failed to load articles. Please try again later.</p>';
+      if (blogsGrid) blogsGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: red;">Failed to load articles</p>';
     }
   }
   
-  /**
-   * Update the featured blog section
-   */
   function updateFeaturedBlog(blog) {
-    if (!featuredBlog) return;
+    const date = blog.created_at ? 
+      new Date(blog.created_at).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }) : '';
     
-    const date = new Date(blog.created_at).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-    
-    // Use uploaded image or default
-    const blogImage = blog.image || 'assets/team.gif';
+    const blogImage = blog.image || 'assets/default-blog.png';
     
     featuredBlog.innerHTML = `
       <img src="${blogImage}" alt="${blog.title}" class="featured-image">
@@ -168,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <h3>${blog.title}</h3>
         <p>${blog.excerpt}</p>
         <div class="author-info">
-          <img src="${blog.profilePic || getProfilePic(blog.author)}" alt="${blog.author}" class="author-avatar">
+          <img src="${blog.profilepic || getProfilePic(blog.author)}" alt="${blog.author}" class="author-avatar">
           <div>
             <div style="font-weight:600;">${blog.author}</div>
             <div>${date}</div>
@@ -179,28 +111,24 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
   }
   
-  /**
-   * Create HTML for a blog card
-   */
   function createBlogCard(blog) {
     const date = blog.created_at ? 
       new Date(blog.created_at).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
-      }) : 
-      (blog.date || "");
+      }) : '';
     
     return `
       <div class="blog-card" data-id="${blog.id}" onclick="viewArticleContent('${blog.id}')">
         <h3>${blog.title}</h3>
         <span class="blog-category" style="background-color: ${getCategoryColor(blog.category)}; color: #fff; padding: 4px 8px; border-radius: 6px; font-weight: 600;">${blog.category || 'General'}</span>
-        <div class="blog-excerpt" style="margin-top: 10px; margin-bottom: 40px; font-size: 12px; line-height: 1.4; height: 65px; overflow: hidden; text-overflow: ellipsis;">
+        <div class="blog-excerpt" style="margin-top: 10px; margin-bottom: 40px; font-size: 12px; line-height: 1.4; height: 65px; overflow: hidden;">
           ${blog.excerpt || 'Click to read this interesting article...'}
         </div>
         <div style="position: absolute; bottom: 55px; left: 15px;">
           <div class="blog-author" style="display: flex; align-items: center; gap: 4px; margin-bottom: 4px;">
-            <img src="${blog.profilePic || getProfilePic(blog.author)}" alt="${blog.author}" class="author-avatar-small" style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid: #000;">
+            <img src="${blog.profilepic || getProfilePic(blog.author)}" alt="${blog.author}" class="author-avatar-small" style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #000;">
             <span style="font-size: 12px;">${blog.author}</span>
           </div>
           <div class="blog-date" style="font-size: 11px;">${date}</div>
@@ -210,9 +138,6 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
   }
   
-  /**
-   * Get a color for a category
-   */
   function getCategoryColor(category) {
     const colors = {
       'General': '#D9A3CF',
@@ -223,94 +148,86 @@ document.addEventListener('DOMContentLoaded', function() {
       'News': '#D9A3A3',
       'Events': '#A3D9A3'
     };
-    
-    return colors[category] || colors['General'];
+    return colors[category] || '#D9A3CF';
   }
   
-  /**
-   * View article content in a new window or modal
-   */
-  function viewArticleContent(id) {
-    const STORAGE_KEY = 'girlsin_articles';
-    const data = localStorage.getItem(STORAGE_KEY);
-    const articles = data ? JSON.parse(data) : [];
-    const article = articles.find(a => a.id === id);
-    
-    if (!article) {
-      alert('Article not found');
-      return;
-    }
-
-    const date = new Date(article.created_at).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-
-    // Open article in a new window with nice formatting
-    const articleWindow = window.open('', '_blank');
-    articleWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
+  window.viewArticleContent = async function(articleId) {
+    try {
+      const { data: article, error } = await supabaseClient
+        .from('blogs')
+        .select('*')
+        .eq('id', articleId)
+        .single();
+      
+      if (error) throw error;
+      if (!article) {
+        alert('Article not found');
+        return;
+      }
+      
+      const date = new Date(article.created_at).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      
+      const articleWindow = window.open('', '_blank', 'width=900,height=700');
+      articleWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
         <head>
-          <title>${article.title} - Girlsin.tech</title>
-          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+          <title>${article.title}</title>
           <style>
-            body { 
-              font-family: 'Inter', Arial, sans-serif; 
-              max-width: 800px; 
-              margin: 40px auto; 
+            body {
+              font-family: 'Inter', Arial, sans-serif;
+              max-width: 800px;
+              margin: 40px auto;
               padding: 20px;
-              line-height: 1.6;
-              background: #f5f5f0;
+              background: #ffe7d8;
+              color: #000;
             }
             .article-container {
               background: #fff;
               border: 3px solid #000;
-              border-radius: 18px;
+              border-radius: 14px;
               padding: 40px;
-              box-shadow: 6px 6px 0 #000;
+              box-shadow: 4px 4px 0 #000;
             }
-            ${article.image ? `
             .article-image {
               width: 100%;
               max-height: 400px;
               object-fit: cover;
-              border: 3px solid #000;
-              border-radius: 12px;
-              margin-bottom: 30px;
-            }
-            ` : ''}
-            h1 { 
-              border-bottom: 3px solid #000; 
-              padding-bottom: 15px;
+              border: 2px solid #000;
+              border-radius: 10px;
               margin-bottom: 20px;
+            }
+            h1 {
+              margin: 0 0 10px;
               font-size: 32px;
+              line-height: 1.2;
             }
             .meta {
               display: flex;
               align-items: center;
               gap: 15px;
-              margin-bottom: 30px;
-              padding: 15px;
-              background: #f5f5f0;
-              border-radius: 12px;
-              border: 2px solid #000;
+              margin: 20px 0;
+              padding: 15px 0;
+              border-top: 2px solid #000;
+              border-bottom: 2px solid #000;
             }
             .category {
-              display: inline-block;
               background: ${getCategoryColor(article.category)};
               color: #fff;
-              padding: 6px 14px;
+              padding: 6px 12px;
               border-radius: 8px;
-              border: 2px solid #000;
               font-weight: 600;
-              font-size: 14px;
+              border: 2px solid #000;
             }
             .author-info {
               display: flex;
               align-items: center;
               gap: 10px;
+              margin-left: auto;
             }
             .author-avatar {
               width: 40px;
@@ -318,27 +235,29 @@ document.addEventListener('DOMContentLoaded', function() {
               border-radius: 50%;
               border: 2px solid #000;
             }
-            .content { 
-              white-space: pre-wrap; 
-              font-size: 16px;
+            .content {
               line-height: 1.8;
+              font-size: 16px;
+              margin: 30px 0;
+              white-space: pre-wrap;
             }
             .back-btn {
-              margin-top: 30px;
-              padding: 10px 20px;
-              background: #D9A3CF;
+              background: #A3D9CF;
               border: 2px solid #000;
-              border-radius: 10px;
+              border-radius: 12px;
+              padding: 12px 24px;
               font-weight: 600;
               cursor: pointer;
               box-shadow: 3px 3px 0 #000;
+              transition: transform 0.2s;
             }
             .back-btn:hover {
-              background: #c391b9;
+              transform: translate(-2px, -2px);
+              box-shadow: 5px 5px 0 #000;
             }
             .back-btn:active {
-              transform: translate(1px, 1px);
-              box-shadow: 2px 2px 0 #000;
+              transform: translate(0, 0);
+              box-shadow: 3px 3px 0 #000;
             }
           </style>
         </head>
@@ -349,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="meta">
               <span class="category">${article.category}</span>
               <div class="author-info">
-                <img src="${article.profilePic || getProfilePic(article.author)}" alt="${article.author}" class="author-avatar">
+                <img src="${article.profilepic || getProfilePic(article.author)}" alt="${article.author}" class="author-avatar">
                 <div>
                   <div style="font-weight: 600;">${article.author}</div>
                   <div style="font-size: 14px; color: #666;">${date}</div>
@@ -361,30 +280,12 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
         </body>
       </html>
-    `);
-  }
-
-  // Make function globally accessible
-  window.viewArticleContent = viewArticleContent;
+      `);
+    } catch (error) {
+      console.error('Error loading article:', error);
+      alert('Failed to load article. Please try again.');
+    }
+  };
   
-  /**
-   * Open a full blog post by redirecting to blog-template.html
-   */
-  function openBlogPost(id) {
-    viewArticleContent(id);
-  }
-  
-  /**
-   * Debounce function to limit how often a function is called
-   */
-  function debounce(func, wait) {
-    let timeout;
-    return function(...args) {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => func.apply(this, args), wait);
-    };
-  }
-  
-  // Initialize the page
   init();
 });
