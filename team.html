@@ -144,7 +144,8 @@
         name: "Asneem",
         role: "Full-Stack Developer & Co-Founder",
         bio: "Passionate about creating inclusive tech spaces for women. Specializes in building scalable web applications and mentoring aspiring developers. Loves solving complex problems with elegant code.",
-        image: "assets/an.png"
+        image: "assets/an.png",
+        link: "profile.html"
       },
       {
         id: 2,
@@ -159,6 +160,13 @@
     teamMembers.forEach(member => {
       const el = document.createElement('div');
       el.className = 'team-card';
+      if (member.link) {
+        el.onclick = () => {
+          setTimeout(() => {
+            window.location.href = member.link;
+          }, 100); // Give time for click sound to play
+        };
+      }
       el.innerHTML = 
         '<img src="' + member.image + '" alt="' + member.name + '">' +
         '<h3>' + member.name + '</h3>' +
