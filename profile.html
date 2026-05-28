@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Author Profile - Girlsin.tech</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --beige: #F5F5DC;
+      --green: #A3D9A5;
+      --pink: #D89BBE;
+      --pink-light: #EAC4DB;
+      --text: #1a1a1a;
+      --outline: #000;
+      --radius: 18px;
+      --white: #fff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      background: var(--green);
+      min-height: 100vh;
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    #custom-cursor {
+      position: fixed;
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid #000;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      top: -100px;
+      left: -100px;
+      background: var(--pink-light);
+      mix-blend-mode: multiply;
+      transition: transform 0.1s ease, background 0.2s;
+    }
+    #custom-cursor.clicking {
+      transform: scale(0.7);
+      background: var(--pink);
+    }
+
+    /* Header */
+    .header {
+      background: var(--beige);
+      border-bottom: 3px solid var(--outline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 28px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      font-weight: 400;
+      letter-spacing: -0.5px;
+    }
+    .logo span { color: var(--pink); font-style: italic; }
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border: 2px solid var(--outline);
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 3px 3px 0 #000;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .icon-btn:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 #000; }
+    .icon-btn:active { transform: translate(1px,1px); box-shadow: 1px 1px 0 #000; }
+    .icon-btn svg { width: 18px; height: 18px; }
+
+    /* Page wrapper */
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 20px 80px; }
+
+    /* ── Profile card ── */
+    .profile-card {
+      background: var(--white);
+      border: 3px solid var(--outline);
+      border-radius: var(--radius);
+      box-shadow: 6px 6px 0 #000;
+      padding: 36px 40px 30px;
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      margin-bottom: 52px;
+      position: relative;
+      overflow: hidden;
+      animation: slideDown 0.5s cubic-bezier(.4,0,.2,1) both;
+    }
+    @keyframes slideDown {
+      from { opacity:0; transform: translateY(-24px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+    /* decorative blob */
+    .profile-card::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 180px; height: 180px;
+      background: var(--green);
+      border-radius: 50%;
+      opacity: 0.35;
+    }
+
+    .avatar-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
+    .avatar-wrap img {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #000;
+      display: block;
+    }
+    /* fallback initials avatar */
+    .avatar-fallback {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 3px solid #000;
+      background: var(--pink-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Serif Display', serif;
+      font-size: 38px;
+      color: #fff;
+    }
+    .online-dot {
+      position: absolute;
+      bottom: 6px; right: 6px;
+      width: 14px; height: 14px;
+      background: #4ade80;
+      border: 2px solid #000;
+      border-radius: 50%;
+    }
+
+    .profile-info { flex: 1; }
+    .profile-info h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 30px;
+      font-weight: 400;
+      margin-bottom: 4px;
+      line-height: 1.15;
+    }
+    .designation {
+      display: inline-block;
+      background: var(--pink-light);
+      border: 1.5px solid var(--outline);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #7a3e60;
+      margin-bottom: 14px;
+      box-shadow: 2px 2px 0 #000;
+    }
+    .profile-bio {
+      font-size: 14.5px;
+      line-height: 1.65;
+      color: #444;
+      max-width: 480px;
+      margin-bottom: 18px;
+    }
+    .profile-stats {
+      display: flex;
+      gap: 24px;
+    }
+    .stat {
+      text-align: center;
+      background: var(--beige);
+      border: 2px solid var(--outline);
+      border-radius: 12px;
+      padding: 8px 18px;
+      box-shadow: 2px 2px 0 #000;
+    }
+    .stat-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      display: block;
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Blogs section ── */
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 26px;
+      font-weight: 400;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 2px;
+      background: #000;
+      opacity: 0.15;
+    }
+
+    /* Blog grid */
+    .blogs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 22px;
+    }
+
+    /* Blog card — mimics the screenshot style */
+    .blog-card {
+      background: var(--white);
+      border: 2.5px solid var(--outline);
+      border-radius: var(--radius);
+      box-shadow: 4px 4px 0 #000;
+      padding: 22px 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      animation: cardIn 0.45s ease both;
+    }
+    .blog-card:nth-child(1) { animation-delay: 0.05s; }
+    .blog-card:nth-child(2) { animation-delay: 0.12s; }
+    .blog-card:nth-child(3) { animation-delay: 0.19s; }
+    .blog-card:nth-child(4) { animation-delay: 0.26s; }
+    .blog-card:nth-child(5) { animation-delay: 0.33s; }
+    @keyframes cardIn {
+      from { opacity:0; transform: translateY(20px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+    .blog-card:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 7px 7px 0 #000;
+    }
+    .blog-card:active {
+      transform: translate(0,0);
+      box-shadow: 3px 3px 0 #000;
+    }
+
+    .blog-title-text {
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+    .blog-tag {
+      display: inline-block;
+      background: var(--pink);
+      border-radius: 8px;
+      padding: 5px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      width: 100%;
+      text-align: center;
+    }
+    .blog-excerpt {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.55;
+      flex: 1;
+    }
+
+    .blog-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 6px;
+    }
+    .author-mini {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .author-mini .mini-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1.5px solid #000;
+      object-fit: cover;
+      background: var(--pink-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #7a3e60;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .author-mini .mini-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    .author-info { display: flex; flex-direction: column; }
+    .author-name-sm { font-size: 12.5px; font-weight: 600; }
+    .blog-date { font-size: 11px; color: #888; }
+
+    .read-btn {
+      background: var(--pink-light);
+      border: 2px solid var(--outline);
+      border-radius: 10px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 2px 2px 0 #000;
+      font-family: 'DM Sans', sans-serif;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .read-btn:hover { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 #000; }
+    .read-btn:active { transform: translate(1px,1px); box-shadow: 1px 1px 0 #000; }
+
+    /* Responsive */
+    @media(max-width: 640px) {
+      .profile-card { flex-direction: column; align-items: flex-start; padding: 24px 20px; }
+      .profile-card::before { display: none; }
+      .profile-stats { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="custom-cursor"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <button class="icon-btn" title="Back" onclick="history.back()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+        <line x1="9" y1="12" x2="21" y2="12"/>
+      </svg>
+    </button>
+    <div class="logo">girls<span>in</span>.tech</div>
+    <button class="icon-btn" title="Share">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+      </svg>
+    </button>
+  </header>
+
+  <div class="page">
+
+    <!-- Profile Card -->
+    <div class="profile-card">
+      <div class="avatar-wrap">
+        <div class="avatar-fallback">A</div>
+        <div class="online-dot"></div>
+      </div>
+      <div class="profile-info">
+        <h1>Asneem</h1>
+        <div class="designation">Full-Stack Developer &amp; Co-Founder</div>
+        <p class="profile-bio">
+          Passionate about creating inclusive tech spaces for women. Specializes in building scalable web applications and mentoring aspiring developers. Loves solving complex problems with elegant code.
+        </p>
+        <div class="profile-stats">
+          <div class="stat">
+            <span class="stat-num">12</span>
+            <span class="stat-label">Posts</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">4.8k</span>
+            <span class="stat-label">Reads</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">231</span>
+            <span class="stat-label">Followers</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Blogs -->
+    <div class="section-title">Latest Blogs</div>
+    <div class="blogs-grid" id="blogsGrid"></div>
+
+  </div>
+
+  <!-- Supabase Client Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script>
+    const author = { name: "Asneem", initials: "A", image: "assets/an.png" };
+    const grid = document.getElementById('blogsGrid');
+
+    async function loadAsneemBlogs() {
+      try {
+        const { data: blogs, error } = await supabaseClient
+          .from('blogs')
+          .select('*')
+          .ilike('author', '%Asneem%')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (!blogs || blogs.length === 0) {
+          grid.innerHTML = '<p style="text-align:center;width:100%;">No blogs found for Asneem yet.</p>';
+          return;
+        }
+
+        blogs.forEach(blog => {
+          const card = document.createElement('div');
+          card.className = 'blog-card';
+
+          let dateStr = "Unknown Date";
+          if (blog.created_at) {
+            const d = new Date(blog.created_at);
+            dateStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+          }
+
+          card.innerHTML = `
+            <div class="blog-title-text">${blog.title}</div>
+            <div class="blog-tag">${blog.category || 'Blog'}</div>
+            <p class="blog-excerpt">${blog.excerpt || ''}</p>
+            <div class="blog-footer">
+              <div class="author-mini">
+                <div class="mini-avatar">${author.initials}</div>
+                <div class="author-info">
+                  <span class="author-name-sm">${author.name}</span>
+                  <span class="blog-date">${dateStr}</span>
+                </div>
+              </div>
+              <button class="read-btn" onclick="window.location.href='blog-template.html?id=${blog.id}'">Read</button>
+            </div>
+          \`;
+          grid.appendChild(card);
+        });
+      } catch (err) {
+        console.error("Error loading blogs:", err);
+        grid.innerHTML = '<p style="text-align:center;width:100%;">Error loading blogs.</p>';
+      }
+    }
+
+    loadAsneemBlogs();
+
+    // Custom cursor
+    const cursor = document.getElementById('custom-cursor');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX - 9 + 'px';
+      cursor.style.top  = e.clientY - 9 + 'px';
+    });
+    document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
+    document.addEventListener('mouseup',   () => cursor.classList.remove('clicking'));
+  </script>
+</body>
+</html>
