@@ -121,14 +121,7 @@
       font-size: 38px;
       color: #fff;
     }
-    .online-dot {
-      position: absolute;
-      bottom: 6px; right: 6px;
-      width: 14px; height: 14px;
-      background: #4ade80;
-      border: 2px solid #000;
-      border-radius: 50%;
-    }
+    /* online-dot removed */
 
     .profile-info { flex: 1; }
     .profile-info h1 {
@@ -349,8 +342,7 @@
     <!-- Profile Card -->
     <div class="profile-card">
       <div class="avatar-wrap">
-        <div class="avatar-fallback">A</div>
-        <div class="online-dot"></div>
+        <img src="assets/an.png" alt="Asneem" onerror="this.style.display='none'">
       </div>
       <div class="profile-info">
         <h1>Asneem</h1>
@@ -358,20 +350,7 @@
         <p class="profile-bio">
           Passionate about creating inclusive tech spaces for women. Specializes in building scalable web applications and mentoring aspiring developers. Loves solving complex problems with elegant code.
         </p>
-        <div class="profile-stats">
-          <div class="stat">
-            <span class="stat-num">12</span>
-            <span class="stat-label">Posts</span>
-          </div>
-          <div class="stat">
-            <span class="stat-num">4.8k</span>
-            <span class="stat-label">Reads</span>
-          </div>
-          <div class="stat">
-            <span class="stat-num">231</span>
-            <span class="stat-label">Followers</span>
-          </div>
-        </div>
+        <!-- profile stats removed per request -->
       </div>
     </div>
 
