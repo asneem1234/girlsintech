@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const blogDate = document.getElementById('blog-date');
   const blogAuthor = document.getElementById('blog-author');
   const blogContent = document.getElementById('blog-content');
+  const blogImage = document.getElementById('blog-image');
   const relatedPosts = document.getElementById('related-posts');
   const loadingIndicator = document.getElementById('loading-indicator');
   const errorMessage = document.getElementById('error-message');
@@ -103,6 +104,12 @@ document.addEventListener('DOMContentLoaded', function() {
       blogDate.textContent = date;
     }
     if (blogAuthor) blogAuthor.textContent = blog.author;
+    if (blogImage && blog.image) {
+      blogImage.src = blog.image;
+      blogImage.style.display = 'block';
+    } else if (blogImage) {
+      blogImage.style.display = 'none';
+    }
     if (blogContent) {
       // Convert newlines to <p> tags for better formatting
       const formattedContent = blog.content
