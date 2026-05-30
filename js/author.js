@@ -166,17 +166,35 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   async function editArticle(id) {
-    playClickSound();
-    const articles = await getArticles();
-    const article = articles.find(a => a.id === id);
-    if (!article) {
-      showNotification('Article not found', 'error');
-      return;
+    try {
+      playClickSound();
+
+      // First try to delete via Supabase client
+      const { data, error } = await supabaseClient.from('blogs').delete().eq('id', id);
+      if (!error) {
+        console.log('Deleted via Supabase:', data);
+        showNotification('Article deleted successfully!', 'success');
+        await loadArticles();
+        return;
+      }
+
+      // If Supabase client failed, try the server API as a fallback
+      console.warn('Supabase delete error, falling back to API:', error);
+      const resp = await fetch(`/api/blogs/${id}`, { method: 'DELETE' });
+      if (resp.ok) {
+        console.log('Deleted via API route:', resp.status);
+        showNotification('Article deleted successfully!', 'success');
+        await loadArticles();
+        return;
+      }
+
+      // If fallback also failed, surface the response
+      const body = await resp.text().catch(() => '');
+      throw new Error(`API delete failed: ${resp.status} ${body}`);
+    } catch (error) {
+      console.error('Error deleting article:', error);
+      showNotification('Failed to delete article: ' + (error.message || ''), 'error');
     }
-    document.getElementById('article-title').value = article.title;
-    document.getElementById('article-category').value = article.category;
-    document.getElementById('article-excerpt').value = article.excerpt;
-    document.getElementById('article-content').value = article.content;
     document.getElementById('author-name').value = article.author;
     if (article.image) {
       document.getElementById('preview-img').src = article.image;
