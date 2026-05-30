@@ -318,7 +318,7 @@
 </head>
 <body>
 
-  <div id="custom-cursor"></div>
+  <!-- Custom cursor removed to restore native pointer -->
 
   <!-- Header -->
   <header class="header">
@@ -417,14 +417,7 @@
 
     loadAsneemBlogs();
 
-    // Custom cursor
-    const cursor = document.getElementById('custom-cursor');
-    document.addEventListener('mousemove', e => {
-      cursor.style.left = e.clientX - 9 + 'px';
-      cursor.style.top  = e.clientY - 9 + 'px';
-    });
-    document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
-    document.addEventListener('mouseup',   () => cursor.classList.remove('clicking'));
+    // Custom cursor removed — native cursor restored
   </script>
 </body>
 </html>

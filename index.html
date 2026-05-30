@@ -306,7 +306,7 @@
             align-items: center;
             justify-content: center;
             z-index: 10000;
-            cursor: none;
+            cursor: auto;
         }
         .password-box {
             background: #F5F5DC;
@@ -338,7 +338,7 @@
             padding: 12px 24px;
             border-radius: 14px;
             font-weight: 600;
-            cursor: none;
+            cursor: auto;
             box-shadow: 3px 3px 0 #000;
             margin: 10px;
             font-family: 'Inter', Arial, sans-serif;
@@ -405,7 +405,7 @@
         
         <!-- Author image below the PC - only the image is clickable -->
     <div class="author-wrapper" style="position:absolute; left:38%; top:75%; transform:translate(-50%,-50%); z-index:15;">
-            <a id="author-link" class="clickable-no-hover" style="display:inline-block; width:auto; height:auto; cursor:none; position:relative;">
+            <a id="author-link" class="clickable-no-hover" style="display:inline-block; width:auto; height:auto; cursor:auto; position:relative;">
                 <img id="author-image" src="assets/author.png" alt="Author" class="overlay-author" style="opacity:1;">
             </a>
             <img src="assets/authors.png" alt="About the author" class="author-bubble">
@@ -413,7 +413,7 @@
         
         <!-- PC image to the right of author image - clickable, links to blog.html -->
         <div class="pc-wrapper" style="position:absolute; left:50%; top:66%; transform:translate(-50%,-50%); z-index:14;">
-            <a href="blog.html" id="pc-link" class="clickable-no-hover" style="display:inline-block; width:350px; height:275px; cursor:none; position:relative;">
+            <a href="blog.html" id="pc-link" class="clickable-no-hover" style="display:inline-block; width:350px; height:275px; cursor:auto; position:relative;">
                 <img id="pc-image" src="assets/pc.png" alt="PC" class="pc-static-image" style="width:250px; height:195px; object-fit:contain; opacity:1;">
             </a>
             <img src="assets/articlesbub.png" alt="Articles" class="pc-bubble" style="position:absolute; left:160px; top:-80px; width:180px; height:auto; opacity:0; pointer-events:none; transform: translateY(6px) scale(.95); transition: opacity .25s ease, transform .25s ease; z-index:25;">
@@ -865,12 +865,6 @@
         // Add hover effects to password modal buttons
         [submitBtn, cancelBtn].forEach(btn => {
             if (btn) {
-                btn.addEventListener('mouseenter', function() {
-                    customCursor.classList.add('hovering');
-                });
-                btn.addEventListener('mouseleave', function() {
-                    customCursor.classList.remove('hovering');
-                });
                 btn.addEventListener('click', playClickSound);
             }
         });

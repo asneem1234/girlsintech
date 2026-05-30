@@ -16,23 +16,10 @@
     }
     * { box-sizing:border-box; }
     html,body { margin:0; height:100%; font-family: 'Inter', Arial, sans-serif; color:var(--text); background:var(--green); }
-    body { display:flex; flex-direction:column; cursor: none; } /* Hide default cursor */
+    body { display:flex; flex-direction:column; cursor: auto; }
     a { color:inherit; }
     
-    /* Custom cursor */
-    #custom-cursor {
-      position: fixed;
-      top: -100px;
-      left: -100px;
-      width: 24px;
-      height: 24px;
-      background-image: url('assets/cursor.jpeg');
-      background-size: contain;
-      background-repeat: no-repeat;
-      pointer-events: none;
-      z-index: 9999;
-      transition: transform 0.08s ease;
-    }
+    /* Custom cursor removed */
     
     /* Simple header */
     .header { background:var(--beige); border-bottom:3px solid var(--outline); display:flex; align-items:center; justify-content:space-between; padding:12px 24px; position:relative; }
@@ -224,25 +211,7 @@
       card.addEventListener('click', playClickSound);
     });
     
-    // Custom cursor implementation
-    const cursor = document.createElement('div');
-    cursor.id = 'custom-cursor';
-    document.body.appendChild(cursor);
-    
-    document.addEventListener('mousemove', function(e) {
-      const x = e.clientX;
-      const y = e.clientY;
-      cursor.style.left = x + 'px';
-      cursor.style.top = y + 'px';
-    });
-    
-    document.addEventListener('mousedown', function() {
-      cursor.style.transform = 'scale(0.8)';
-    });
-    
-    document.addEventListener('mouseup', function() {
-      cursor.style.transform = 'scale(1)';
-    });
+    // Custom cursor removed; native pointer restored
   </script>
 </body>
 </html>

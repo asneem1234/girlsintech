@@ -27,7 +27,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      cursor: none; /* Hide default cursor */
+      cursor: auto; /* Restore native cursor */
     }
     a { color: inherit; text-decoration: none; }
 
@@ -89,7 +89,7 @@
       align-items: center;
       justify-content: center;
       border-radius: var(--radius);
-      cursor: none;
+      cursor: auto;
       box-shadow: 2px 2px 0 #000;
     }
     
@@ -152,7 +152,7 @@
       height: 16px;
       border-radius: 50%;
       border: 1px solid #000;
-      cursor: none;
+      cursor: auto;
     }
 
     .close-button {
@@ -195,7 +195,7 @@
       border-radius: 20px;
       font-size: 13px;
       font-weight: 600;
-      cursor: none;
+      cursor: auto;
       transition: background-color 0.2s ease;
     }
     
@@ -288,7 +288,7 @@
       border-radius: 14px;
       min-height: 280px;
       box-shadow: 3px 3px 0 #000;
-      cursor: none;
+      cursor: auto;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
@@ -333,7 +333,7 @@
       font-size: 12px;
       font-weight: 600;
       border-radius: 8px;
-      cursor: none;
+      cursor: auto;
       box-shadow: 2px 2px 0 #000;
       color: #000;
     }
@@ -480,7 +480,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      cursor: none;
+      cursor: auto;
       transition: transform 0.2s ease;
     }
     
@@ -536,7 +536,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      cursor: none;
+      cursor: auto;
       box-shadow: 2px 2px 0 #000;
       transition: transform 0.2s ease;
       position: relative;
@@ -785,8 +785,7 @@
 
   </div>
 
-  <!-- Custom cursor -->
-  <div id="custom-cursor"></div>
+  <!-- Custom cursor removed to restore native pointer -->
 
   <!-- Audio element for click sound -->
   <audio id="click-sound" preload="auto" style="display: none;">
@@ -794,77 +793,24 @@
   </audio>
 
   <script>
-    // Custom cursor implementation
-    let customCursor;
-    
+    // Removed custom cursor; keep click sound behavior for interactive elements
     document.addEventListener('DOMContentLoaded', function() {
-      // Create cursor element
-      customCursor = document.createElement('div');
-      customCursor.id = 'custom-cursor';
-      document.body.appendChild(customCursor);
-      
-      // Move cursor with mouse
-      let firstMove = true;
-      document.addEventListener('mousemove', function(e) {
-        if (firstMove) {
-          customCursor.style.opacity = '1';
-          firstMove = false;
-        }
-        customCursor.style.left = e.clientX + 'px';
-        customCursor.style.top = e.clientY + 'px';
-      });
-      
-      // Add clicking state
-      document.addEventListener('mousedown', function() {
-        customCursor.classList.add('clicking');
-      });
-      
-      document.addEventListener('mouseup', function() {
-        customCursor.classList.remove('clicking');
-      });
-      
-      // Handle cursor leaving window
-      document.addEventListener('mouseleave', function() {
-        customCursor.style.display = 'none';
-      });
-      
-      document.addEventListener('mouseenter', function() {
-        customCursor.style.display = 'block';
-      });
-      
-      // Change cursor for clickable elements
       const clickableElements = document.querySelectorAll('a, button, .dock-item, .app-icon');
-      
-      // Get click sound element
       const clickSound = document.getElementById('click-sound');
-      
-      // Function to play click sound
+
       function playClickSound() {
         if (clickSound) {
           try {
             clickSound.currentTime = 0;
             const playPromise = clickSound.play();
-            if (playPromise !== undefined) {
-              playPromise.catch(function(error) {
-                console.log('Audio playback error:', error);
-              });
-            }
+            if (playPromise !== undefined) playPromise.catch(() => {});
           } catch (e) {
             console.log('Audio play error:', e);
           }
         }
       }
-      
-      // Add hover and click events to all clickable elements
+
       clickableElements.forEach(function(element) {
-        element.addEventListener('mouseenter', function() {
-          customCursor.classList.add('hovering');
-        });
-
-        element.addEventListener('mouseleave', function() {
-          customCursor.classList.remove('hovering');
-        });
-
         element.addEventListener('click', playClickSound);
       });
 

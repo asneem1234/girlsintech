@@ -692,8 +692,7 @@
     </div>
   </div>
 
-  <!-- Custom cursor -->
-  <div id="custom-cursor"></div>
+  <!-- Custom cursor removed to restore native pointer -->
 
   <!-- Audio element for click sound -->
   <audio id="click-sound" preload="auto" style="display: none;">
@@ -705,26 +704,33 @@
       console.log("Author page loaded");
       
       const cursor = document.getElementById('custom-cursor');
-      
-      let firstMove = true;
-      document.addEventListener('mousemove', function(e) {
-        if (firstMove) { cursor.style.opacity = '1'; firstMove = false; }
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-      });
-      
-      document.addEventListener('mousedown', function() { cursor.classList.add('clicking'); });
-      document.addEventListener('mouseup',   function() { cursor.classList.remove('clicking'); });
-      
+
+      if (cursor) {
+        let firstMove = true;
+        document.addEventListener('mousemove', function(e) {
+          if (firstMove) { cursor.style.opacity = '1'; firstMove = false; }
+          cursor.style.left = e.clientX + 'px';
+          cursor.style.top = e.clientY + 'px';
+        });
+
+        document.addEventListener('mousedown', function() { cursor.classList.add('clicking'); });
+        document.addEventListener('mouseup',   function() { cursor.classList.remove('clicking'); });
+
+        const clickableElements = document.querySelectorAll('button, .channels li, .icon-btn');
+        clickableElements.forEach(function(element) {
+          element.addEventListener('mouseenter', function() { cursor.classList.add('hovering'); });
+          element.addEventListener('mouseleave', function() { cursor.classList.remove('hovering'); });
+        });
+      }
+
       function playClickSound() {
         const clickSound = document.getElementById('click-sound');
         if (clickSound) { clickSound.currentTime = 0; clickSound.play().catch(e => console.log("Audio play failed:", e)); }
       }
-      
-      const clickableElements = document.querySelectorAll('button, .channels li, .icon-btn');
-      clickableElements.forEach(function(element) {
-        element.addEventListener('mouseenter', function() { cursor.classList.add('hovering'); });
-        element.addEventListener('mouseleave', function() { cursor.classList.remove('hovering'); });
+
+      // Attach click sound to buttons even when custom cursor is removed
+      const clickablesForSound = document.querySelectorAll('button, .channels li, .icon-btn');
+      clickablesForSound.forEach(function(element) {
         element.addEventListener('click', playClickSound);
       });
 

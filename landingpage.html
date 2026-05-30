@@ -306,7 +306,7 @@
             align-items: center;
             justify-content: center;
             z-index: 10000;
-            cursor: none;
+            cursor: auto;
         }
         .password-box {
             background: #F5F5DC;
@@ -332,13 +332,13 @@
             margin: 15px 0;
             font-family: 'Inter', Arial, sans-serif;
         }
-        .password-btn {
+            .password-btn {
             background: #D9A3CF;
             border: 3px solid #000;
             padding: 12px 24px;
             border-radius: 14px;
             font-weight: 600;
-            cursor: none;
+            cursor: auto;
             box-shadow: 3px 3px 0 #000;
             margin: 10px;
             font-family: 'Inter', Arial, sans-serif;
@@ -862,15 +862,9 @@
             });
         }
         
-        // Add hover effects to password modal buttons
+        // Attach click sound to modal buttons (custom cursor removed)
         [submitBtn, cancelBtn].forEach(btn => {
             if (btn) {
-                btn.addEventListener('mouseenter', function() {
-                    customCursor.classList.add('hovering');
-                });
-                btn.addEventListener('mouseleave', function() {
-                    customCursor.classList.remove('hovering');
-                });
                 btn.addEventListener('click', playClickSound);
             }
         });

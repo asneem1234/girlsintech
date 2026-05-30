@@ -32,7 +32,7 @@
       background-color: var(--beige);
       display: flex;
       flex-direction: column;
-      cursor: none; /* Hide default cursor */
+      cursor: auto;
     }
     
     a { color: inherit; text-decoration: none; }
@@ -88,7 +88,7 @@
       background: #fff;
       padding: 8px 16px;
       border-radius: var(--radius);
-      cursor: none;
+      cursor: auto;
       font-weight: 500;
       box-shadow: 3px 3px 0 #000;
       margin-bottom: 30px;
@@ -236,7 +236,7 @@
       position: relative;
       border-radius: 18px;
       box-shadow: 4px 4px 0 #000;
-      cursor: none;
+      cursor: auto;
       min-height: 180px;
       display: flex;
       flex-direction: column;
@@ -292,7 +292,7 @@
       font-size: 12px;
       font-weight: 600;
       border-radius: 10px;
-      cursor: none;
+      cursor: auto;
       box-shadow: 2px 2px 0 #000;
     }
     
@@ -335,7 +335,7 @@
       font-size: 13px;
       font-weight: 600;
       border-radius: 10px;
-      cursor: none;
+      cursor: auto;
       box-shadow: 2px 2px 0 #000;
       text-decoration: none;
       color: inherit;
@@ -372,7 +372,7 @@
       align-items: center;
       justify-content: center;
       box-shadow: 2px 2px 0 #000;
-      cursor: none;
+      cursor: auto;
       transition: transform 0.2s ease;
     }
     
@@ -544,8 +544,7 @@
     </footer>
   </div>
   
-  <!-- Custom cursor -->
-  <div id="custom-cursor"></div>
+  <!-- Custom cursor removed to restore native pointer -->
   
   <!-- Audio element for click sound -->
   <audio id="click-sound" preload="auto" style="display: none;">
@@ -553,65 +552,8 @@
   </audio>
   
   <script>
-    // Custom cursor implementation
-    let customCursor;
-    
+    // Removed custom cursor JS; keep other page scripts below
     document.addEventListener('DOMContentLoaded', function() {
-      // Create cursor element
-      customCursor = document.getElementById('custom-cursor');
-      
-      // Move cursor with mouse
-      let firstMove = true;
-      document.addEventListener('mousemove', function(e) {
-        if (firstMove) {
-          customCursor.style.opacity = '1';
-          firstMove = false;
-        }
-        customCursor.style.left = e.clientX + 'px';
-        customCursor.style.top = e.clientY + 'px';
-      });
-      
-      // Add clicking state
-      document.addEventListener('mousedown', function() {
-        customCursor.classList.add('clicking');
-      });
-      
-      document.addEventListener('mouseup', function() {
-        customCursor.classList.remove('clicking');
-      });
-      
-      // Handle cursor leaving window
-      document.addEventListener('mouseleave', function() {
-        customCursor.style.display = 'none';
-      });
-      
-      document.addEventListener('mouseenter', function() {
-        customCursor.style.display = 'block';
-      });
-      
-      // Click sound function
-      function playClickSound() {
-        const clickSound = document.getElementById('click-sound');
-        if (clickSound) {
-          clickSound.currentTime = 0;
-          clickSound.play().catch(e => console.log("Audio play failed:", e));
-        }
-      }
-      
-      // Add hover and click events to all clickable elements
-      const clickableElements = document.querySelectorAll('a, button, .read-btn, .social-icon');
-      clickableElements.forEach(function(element) {
-        element.addEventListener('mouseenter', function() {
-          customCursor.classList.add('hovering');
-        });
-
-        element.addEventListener('mouseleave', function() {
-          customCursor.classList.remove('hovering');
-        });
-
-        element.addEventListener('click', playClickSound);
-      });
-      
       // Get URL parameters
       const urlParams = new URLSearchParams(window.location.search);
       const blogId = urlParams.get('id');
