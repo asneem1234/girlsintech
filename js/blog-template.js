@@ -1,8 +1,5 @@
 // blog-template.js
 document.addEventListener('DOMContentLoaded', function() {
-  // Configuration - Update with your backend URL
-  const API_URL = 'http://localhost:3000/api/blogs';
-  
   // Get URL parameters
   const urlParams = new URLSearchParams(window.location.search);
   const blogId = urlParams.get('id');
@@ -58,16 +55,15 @@ document.addEventListener('DOMContentLoaded', function() {
       // Show loading state
       showLoading(true);
       
-      // Fetch the blog from the backend
-      const response = await fetch(`${API_URL}/${id}`);
+      const { data: blog, error } = await supabaseClient
+        .from('blogs')
+        .select('*')
+        .eq('id', id)
+        .single();
       
-      // Check if the request was successful
-      if (!response.ok) {
-        throw new Error('Failed to fetch blog post');
+      if (error) {
+        throw new Error('Failed to fetch blog post: ' + error.message);
       }
-      
-      const result = await response.json();
-      const blog = result.data;
       
       if (!blog) {
         throw new Error('Blog post not found');
@@ -137,19 +133,17 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingIndicator.style.display = 'flex';
       }
       
-      // Fetch all blogs from the API
-      const response = await fetch(API_URL);
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch related posts');
+      const { data: blogs, error } = await supabaseClient
+        .from('blogs')
+        .select('*');
+        
+      if (error) {
+        throw new Error('Failed to fetch related posts: ' + error.message);
       }
-      
-      const result = await response.json();
-      const blogs = result.data || [];
       
       // Filter blogs to get related posts (same category, excluding current)
       // If no category match is found, just get other random posts
-      const relatedBlogs = blogs
+      const relatedBlogs = (blogs || [])
         .filter(blog => blog.id !== currentBlogId)
         .sort((a, b) => {
           // Prioritize same category blogs but include others too
