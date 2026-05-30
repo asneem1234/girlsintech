@@ -79,7 +79,12 @@ document.addEventListener('DOMContentLoaded', function() {
       if (featuredBlog) updateFeaturedBlog(blogs[0]);
       if (blogsGrid) {
         blogsGrid.innerHTML = blogs.map(blog => createBlogCard(blog)).join('');
-        attachShareHandlers();
+        // Defensive cleanup: remove any share/copy UI that may have been added to cards
+        try {
+          document.querySelectorAll('#blogsGrid .share-btn, #blogsGrid .copy-btn, #blogsGrid .social-share, #blogsGrid .copy-link').forEach(el => el.remove());
+        } catch (e) {
+          console.warn('Cleanup of card share buttons failed', e);
+        }
       }
     } catch (error) {
       console.error('Error loading blogs:', error);
@@ -121,9 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
         month: 'long',
         day: 'numeric'
       }) : '';
-
-    const postUrl = `${location.origin}/blog-template.html?id=${blog.id}`;
-
+    
     return `
       <div class="blog-card" data-id="${blog.id}" onclick="viewArticleContent('${blog.id}')">
         <h3>${blog.title}</h3>
@@ -138,20 +141,9 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
           <div class="blog-date" style="font-size: 11px;">${date}</div>
         </div>
-        <div style="position:absolute; right:12px; bottom:48px; display:flex; gap:8px; align-items:center;">
-          <input class="share-url" readonly value="${postUrl}" style="padding:6px 8px; border:1px solid #ddd; border-radius:8px; width:180px; font-size:12px;" />
-          <button class="share-copy" data-url="${postUrl}" style="border:2px solid #000; background:#D9A3CF; padding:6px 10px; border-radius:8px; font-weight:600; cursor:auto;">Copy</button>
-          ${typeof navigator !== 'undefined' && navigator.share ? `<button class="share-native" data-url="${postUrl}" data-title="${escapeHtml(blog.title)}" style="border:2px solid #000; background:#D9A3CF; padding:6px 10px; border-radius:8px; font-weight:600; cursor:auto;">Share</button>` : `<a class="share-twitter" href="https://twitter.com/intent/tweet?url=${encodeURIComponent(postUrl)}&text=${encodeURIComponent(blog.title || '')}" target="_blank" style="border:2px solid #000; background:#D9A3CF; padding:6px 10px; border-radius:8px; font-weight:600; display:inline-flex; align-items:center; justify-content:center;">Tweet</a>`}
-        </div>
         <button class="read-btn" onclick="event.stopPropagation(); viewArticleContent('${blog.id}')" style="position: absolute; right: 12px; bottom: 12px; background-color: #D9A3CF; font-size: 12px; padding: 6px 12px;">Read</button>
       </div>
     `;
-  }
-
-  // HTML escape helper
-  function escapeHtml(str) {
-    if (!str) return '';
-    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
   
   function getCategoryColor(category) {
@@ -165,38 +157,6 @@ document.addEventListener('DOMContentLoaded', function() {
       'Events': '#A3D9A3'
     };
     return colors[category] || '#D9A3CF';
-  }
-
-  function attachShareHandlers() {
-    // Copy buttons
-    document.querySelectorAll('.share-copy').forEach(btn => {
-      btn.addEventListener('click', async function(e) {
-        e.stopPropagation();
-        const url = this.dataset.url;
-        try {
-          await navigator.clipboard.writeText(url);
-          const prev = this.textContent;
-          this.textContent = 'Copied!';
-          setTimeout(() => this.textContent = prev, 2000);
-        } catch (err) {
-          alert('Copy failed — please copy the URL manually.');
-        }
-      });
-    });
-
-    // Native share buttons
-    document.querySelectorAll('.share-native').forEach(btn => {
-      btn.addEventListener('click', async function(e) {
-        e.stopPropagation();
-        const url = this.dataset.url;
-        const title = this.dataset.title || document.title;
-        try {
-          await navigator.share({ title, url });
-        } catch (err) {
-          console.log('Share failed', err);
-        }
-      });
-    });
   }
   
   window.viewArticleContent = async function(articleId) {
@@ -213,119 +173,89 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
       
-      const date = new Date(article.created_at).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
-      
+      const shareUrl = new URL(`blog-template.html?id=${encodeURIComponent(articleId)}`, window.location.href).href;
       const articleWindow = window.open('', '_blank', 'width=900,height=700');
       articleWindow.document.write(`
         <!DOCTYPE html>
         <html>
         <head>
-          <title>${article.title}</title>
+          <title>Share ${article.title}</title>
           <style>
             body {
               font-family: 'Inter', Arial, sans-serif;
-              max-width: 800px;
-              margin: 40px auto;
-              padding: 20px;
+              min-height: 100vh;
+              margin: 0;
+              display: grid;
+              place-items: center;
               background: #ffe7d8;
-              color: #000;
             }
-            .article-container {
+            .share-shell {
               background: #fff;
               border: 3px solid #000;
-              border-radius: 14px;
-              padding: 40px;
+              border-radius: 16px;
+              padding: 28px;
               box-shadow: 4px 4px 0 #000;
             }
-            .article-image {
-              width: 100%;
-              max-height: 400px;
-              object-fit: cover;
-              border: 2px solid #000;
-              border-radius: 10px;
-              margin-bottom: 20px;
-            }
-            h1 {
-              margin: 0 0 10px;
-              font-size: 32px;
-              line-height: 1.2;
-            }
-            .meta {
-              display: flex;
-              align-items: center;
-              gap: 15px;
-              margin: 20px 0;
-              padding: 15px 0;
-              border-top: 2px solid #000;
-              border-bottom: 2px solid #000;
-            }
-            .category {
-              background: ${getCategoryColor(article.category)};
-              color: #fff;
-              padding: 6px 12px;
-              border-radius: 8px;
-              font-weight: 600;
-              border: 2px solid #000;
-            }
-            .author-info {
-              display: flex;
-              align-items: center;
-              gap: 10px;
-              margin-left: auto;
-            }
-            .author-avatar {
-              width: 40px;
-              height: 40px;
-              border-radius: 50%;
-              border: 2px solid #000;
-            }
-            .content {
-              line-height: 1.8;
-              font-size: 16px;
-              margin: 30px 0;
-              white-space: pre-wrap;
-            }
-            .back-btn {
+            .share-btn {
+              appearance: none;
               background: #A3D9CF;
               border: 2px solid #000;
               border-radius: 12px;
               padding: 12px 24px;
-              font-weight: 600;
+              font-weight: 700;
+              font-size: 15px;
               cursor: pointer;
               box-shadow: 3px 3px 0 #000;
-              transition: transform 0.2s;
+              transition: transform 0.2s, box-shadow 0.2s;
             }
-            .back-btn:hover {
+            .share-btn:hover {
               transform: translate(-2px, -2px);
               box-shadow: 5px 5px 0 #000;
             }
-            .back-btn:active {
+            .share-btn:active {
               transform: translate(0, 0);
               box-shadow: 3px 3px 0 #000;
+            }
+            .share-btn:focus {
+              outline: none;
             }
           </style>
         </head>
         <body>
-          <div class="article-container">
-            ${article.image ? `<img src="${article.image}" alt="${article.title}" class="article-image">` : ''}
-            <h1>${article.title}</h1>
-            <div class="meta">
-              <span class="category">${article.category}</span>
-              <div class="author-info">
-                <img src="${article.profilepic || getProfilePic(article.author)}" alt="${article.author}" class="author-avatar">
-                <div>
-                  <div style="font-weight: 600;">${article.author}</div>
-                  <div style="font-size: 14px; color: #666;">${date}</div>
-                </div>
-              </div>
-            </div>
-            <div class="content">${article.content}</div>
-            <button class="back-btn" onclick="window.close()">← Close</button>
+          <div class="share-shell">
+            <button class="share-btn" id="share-btn" type="button">Share</button>
           </div>
+          <script>
+            const shareBtn = document.getElementById('share-btn');
+            const shareData = {
+              title: ${JSON.stringify(article.title || 'Girlsin.tech Blog')},
+              text: ${JSON.stringify(article.title || 'Check out this article')},
+              url: ${JSON.stringify(shareUrl)}
+            };
+
+            shareBtn.addEventListener('click', async () => {
+              try {
+                if (navigator.share) {
+                  await navigator.share(shareData);
+                  return;
+                }
+
+                if (navigator.clipboard) {
+                  await navigator.clipboard.writeText(shareData.url);
+                  shareBtn.textContent = 'Link copied';
+                  setTimeout(() => {
+                    shareBtn.textContent = 'Share';
+                  }, 1500);
+                  return;
+                }
+
+                const fallbackUrl = 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(shareData.url) + '&text=' + encodeURIComponent(shareData.text);
+                window.open(fallbackUrl, '_blank', 'noopener,noreferrer');
+              } catch (err) {
+                console.error('Share action failed:', err);
+              }
+            });
+          </script>
         </body>
       </html>
       `);
