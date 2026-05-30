@@ -174,91 +174,127 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       
       const shareUrl = new URL(`blog-template.html?id=${encodeURIComponent(articleId)}`, window.location.href).href;
-      const articleWindow = window.open('', '_blank', 'width=900,height=700');
-      articleWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Share ${article.title}</title>
-          <style>
-            body {
-              font-family: 'Inter', Arial, sans-serif;
-              min-height: 100vh;
-              margin: 0;
-              display: grid;
-              place-items: center;
-              background: #ffe7d8;
-            }
-            .share-shell {
-              background: #fff;
-              border: 3px solid #000;
-              border-radius: 16px;
-              padding: 28px;
-              box-shadow: 4px 4px 0 #000;
-            }
-            .share-btn {
-              appearance: none;
-              background: #A3D9CF;
-              border: 2px solid #000;
-              border-radius: 12px;
-              padding: 12px 24px;
-              font-weight: 700;
-              font-size: 15px;
-              cursor: pointer;
-              box-shadow: 3px 3px 0 #000;
-              transition: transform 0.2s, box-shadow 0.2s;
-            }
-            .share-btn:hover {
-              transform: translate(-2px, -2px);
-              box-shadow: 5px 5px 0 #000;
-            }
-            .share-btn:active {
-              transform: translate(0, 0);
-              box-shadow: 3px 3px 0 #000;
-            }
-            .share-btn:focus {
-              outline: none;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="share-shell">
-            <button class="share-btn" id="share-btn" type="button">Share</button>
-          </div>
-          <script>
-            const shareBtn = document.getElementById('share-btn');
-            const shareData = {
-              title: ${JSON.stringify(article.title || 'Girlsin.tech Blog')},
-              text: ${JSON.stringify(article.title || 'Check out this article')},
-              url: ${JSON.stringify(shareUrl)}
-            };
+        const date = article.created_at ? new Date(article.created_at).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }) : '';
 
-            shareBtn.addEventListener('click', async () => {
-              try {
-                if (navigator.share) {
-                  await navigator.share(shareData);
-                  return;
-                }
-
-                if (navigator.clipboard) {
-                  await navigator.clipboard.writeText(shareData.url);
-                  shareBtn.textContent = 'Link copied';
-                  setTimeout(() => {
-                    shareBtn.textContent = 'Share';
-                  }, 1500);
-                  return;
-                }
-
-                const fallbackUrl = 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(shareData.url) + '&text=' + encodeURIComponent(shareData.text);
-                window.open(fallbackUrl, '_blank', 'noopener,noreferrer');
-              } catch (err) {
-                console.error('Share action failed:', err);
+        const articleWindow = window.open('', '_blank', 'width=900,height=700');
+        articleWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>${article.title}</title>
+            <style>
+              body {
+                font-family: 'Inter', Arial, sans-serif;
+                max-width: 900px;
+                margin: 40px auto;
+                padding: 20px;
+                background: #ffe7d8;
+                color: #000;
               }
-            });
-          </script>
-        </body>
-      </html>
-      `);
+              .article-container {
+                background: #fff;
+                border: 3px solid #000;
+                border-radius: 14px;
+                padding: 24px;
+                box-shadow: 4px 4px 0 #000;
+                display: flex;
+                flex-direction: column;
+                gap: 18px;
+              }
+              .article-image {
+                width: 100%;
+                max-height: 400px;
+                object-fit: cover;
+                border: 2px solid #000;
+                border-radius: 10px;
+              }
+              h1 {
+                margin: 0;
+                font-size: 28px;
+                line-height: 1.2;
+              }
+              .meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-size: 14px;
+                color: #333;
+              }
+              .category {
+                background: ${getCategoryColor(article.category)};
+                color: #fff;
+                padding: 6px 12px;
+                border-radius: 8px;
+                font-weight: 600;
+                border: 2px solid #000;
+              }
+              .author-info { display:flex; align-items:center; gap:10px; margin-left:auto }
+              .author-avatar { width:40px; height:40px; border-radius:50%; border:2px solid #000 }
+              .content { line-height:1.8; font-size:16px; white-space: pre-wrap }
+              .controls { display:flex; gap:12px; justify-content:flex-end; margin-top:6px }
+              .btn {
+                border:2px solid #000; background:#A3D9CF; border-radius:12px; padding:10px 16px; font-weight:700; cursor:pointer; box-shadow:3px 3px 0 #000
+              }
+              .btn.secondary { background:#D9A3CF }
+            </style>
+          </head>
+          <body>
+            <div class="article-container">
+              ${article.image ? `<img src="${article.image}" alt="${article.title}" class="article-image">` : ''}
+              <h1>${article.title}</h1>
+              <div class="meta">
+                <span class="category">${article.category || 'General'}</span>
+                <div class="author-info">
+                  <img src="${article.profilepic || getProfilePic(article.author)}" alt="${article.author}" class="author-avatar">
+                  <div>
+                    <div style="font-weight:600">${article.author}</div>
+                    <div style="font-size:12px; color:#666">${date}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="content">${article.content}</div>
+              <div class="controls">
+                <button class="btn secondary" id="close-btn">Close</button>
+                <button class="btn" id="share-btn">Share</button>
+              </div>
+            </div>
+            <script>
+              const shareBtn = document.getElementById('share-btn');
+              const closeBtn = document.getElementById('close-btn');
+              const shareData = {
+                title: ${JSON.stringify(article.title || 'Girlsin.tech Blog')},
+                text: ${JSON.stringify(article.title || 'Check out this article')},
+                url: ${JSON.stringify(new URL(`blog-template.html?id=${encodeURIComponent(articleId)}`, window.location.href).href)}
+              };
+
+              closeBtn.addEventListener('click', () => window.close());
+
+              shareBtn.addEventListener('click', async () => {
+                try {
+                  if (navigator.share) {
+                    await navigator.share(shareData);
+                    return;
+                  }
+                  if (navigator.clipboard) {
+                    await navigator.clipboard.writeText(shareData.url);
+                    shareBtn.textContent = 'Link copied';
+                    setTimeout(() => { shareBtn.textContent = 'Share' }, 1500);
+                    return;
+                  }
+                  const fallbackUrl = 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(shareData.url) + '&text=' + encodeURIComponent(shareData.text);
+                  window.open(fallbackUrl, '_blank', 'noopener,noreferrer');
+                } catch (err) {
+                  console.error('Share failed', err);
+                }
+              });
+            </script>
+          </body>
+        </html>
+        `);
     } catch (error) {
       console.error('Error loading article:', error);
       alert('Failed to load article. Please try again.');
