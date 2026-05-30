@@ -104,6 +104,18 @@ document.addEventListener('DOMContentLoaded', function() {
       blogDate.textContent = date;
     }
     if (blogAuthor) blogAuthor.textContent = blog.author;
+    // Set author avatar image if provided
+    const authorAvatarImg = document.getElementById('blog-author-avatar');
+    if (authorAvatarImg) {
+      if (blog.profilePic) {
+        authorAvatarImg.src = blog.profilePic;
+      } else if (blog.profile_pic) {
+        authorAvatarImg.src = blog.profile_pic;
+      } else {
+        authorAvatarImg.src = 'assets/author.png';
+      }
+      authorAvatarImg.alt = blog.author || 'Author';
+    }
     if (blogImage && blog.image) {
       blogImage.src = blog.image;
       blogImage.style.display = 'block';
