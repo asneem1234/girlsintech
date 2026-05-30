@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
       } else if (blog.profile_pic) {
         authorAvatarImg.src = blog.profile_pic;
       } else {
-        authorAvatarImg.src = 'assets/author.png';
+        authorAvatarImg.src = 'assets/an.png';
       }
       authorAvatarImg.alt = blog.author || 'Author';
     }
