@@ -77,7 +77,10 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       
       if (featuredBlog) updateFeaturedBlog(blogs[0]);
-      if (blogsGrid) blogsGrid.innerHTML = blogs.map(blog => createBlogCard(blog)).join('');
+      if (blogsGrid) {
+        blogsGrid.innerHTML = blogs.map(blog => createBlogCard(blog)).join('');
+        attachShareHandlers();
+      }
     } catch (error) {
       console.error('Error loading blogs:', error);
       if (blogsGrid) blogsGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: red;">Failed to load articles</p>';
@@ -118,7 +121,9 @@ document.addEventListener('DOMContentLoaded', function() {
         month: 'long',
         day: 'numeric'
       }) : '';
-    
+
+    const postUrl = `${location.origin}/blog-template.html?id=${blog.id}`;
+
     return `
       <div class="blog-card" data-id="${blog.id}" onclick="viewArticleContent('${blog.id}')">
         <h3>${blog.title}</h3>
@@ -133,9 +138,20 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
           <div class="blog-date" style="font-size: 11px;">${date}</div>
         </div>
+        <div style="position:absolute; right:12px; bottom:48px; display:flex; gap:8px; align-items:center;">
+          <input class="share-url" readonly value="${postUrl}" style="padding:6px 8px; border:1px solid #ddd; border-radius:8px; width:180px; font-size:12px;" />
+          <button class="share-copy" data-url="${postUrl}" style="border:2px solid #000; background:#D9A3CF; padding:6px 10px; border-radius:8px; font-weight:600; cursor:auto;">Copy</button>
+          ${typeof navigator !== 'undefined' && navigator.share ? `<button class="share-native" data-url="${postUrl}" data-title="${escapeHtml(blog.title)}" style="border:2px solid #000; background:#D9A3CF; padding:6px 10px; border-radius:8px; font-weight:600; cursor:auto;">Share</button>` : `<a class="share-twitter" href="https://twitter.com/intent/tweet?url=${encodeURIComponent(postUrl)}&text=${encodeURIComponent(blog.title || '')}" target="_blank" style="border:2px solid #000; background:#D9A3CF; padding:6px 10px; border-radius:8px; font-weight:600; display:inline-flex; align-items:center; justify-content:center;">Tweet</a>`}
+        </div>
         <button class="read-btn" onclick="event.stopPropagation(); viewArticleContent('${blog.id}')" style="position: absolute; right: 12px; bottom: 12px; background-color: #D9A3CF; font-size: 12px; padding: 6px 12px;">Read</button>
       </div>
     `;
+  }
+
+  // HTML escape helper
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
   
   function getCategoryColor(category) {
@@ -149,6 +165,38 @@ document.addEventListener('DOMContentLoaded', function() {
       'Events': '#A3D9A3'
     };
     return colors[category] || '#D9A3CF';
+  }
+
+  function attachShareHandlers() {
+    // Copy buttons
+    document.querySelectorAll('.share-copy').forEach(btn => {
+      btn.addEventListener('click', async function(e) {
+        e.stopPropagation();
+        const url = this.dataset.url;
+        try {
+          await navigator.clipboard.writeText(url);
+          const prev = this.textContent;
+          this.textContent = 'Copied!';
+          setTimeout(() => this.textContent = prev, 2000);
+        } catch (err) {
+          alert('Copy failed — please copy the URL manually.');
+        }
+      });
+    });
+
+    // Native share buttons
+    document.querySelectorAll('.share-native').forEach(btn => {
+      btn.addEventListener('click', async function(e) {
+        e.stopPropagation();
+        const url = this.dataset.url;
+        const title = this.dataset.title || document.title;
+        try {
+          await navigator.share({ title, url });
+        } catch (err) {
+          console.log('Share failed', err);
+        }
+      });
+    });
   }
   
   window.viewArticleContent = async function(articleId) {
