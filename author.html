@@ -152,7 +152,7 @@
       transition: transform 0.2s, box-shadow 0.2s;
     }
     .form-btn:hover {
-      background: #c68abd; /* Lighter purple */
+      background: #c68abd;
       transform: translateY(-2px);
       box-shadow: 4px 4px 0 #000;
     }
@@ -165,7 +165,7 @@
       color: black;
     }
     .form-btn.secondary:hover {
-      background: #8ac28c; /* Lighter green */
+      background: #8ac28c;
       transform: translateY(-2px);
       box-shadow: 4px 4px 0 #000;
     }
@@ -294,14 +294,14 @@
       color: white;
     }
     .btn-edit:hover {
-      background: #c68abd; /* Lighter purple */
+      background: #c68abd;
     }
     .btn-delete {
       background: #ff6b6b;
       color: white;
     }
     .btn-delete:hover {
-      background: #ff8282; /* Lighter red */
+      background: #ff8282;
     }
     
     /* Empty State */
@@ -313,26 +313,22 @@
       border-radius: var(--radius);
       margin: 20px 0;
     }
-    
     .empty-state-icon {
       font-size: 60px;
       margin-bottom: 20px;
       animation: float 3s ease-in-out infinite;
     }
-    
     .empty-state h3 {
       font-size: 22px;
       margin-bottom: 10px;
       color: var(--text);
     }
-    
     .empty-state p {
       color: #666;
       line-height: 1.5;
       max-width: 400px;
       margin: 0 auto;
     }
-    
     @keyframes float {
       0% { transform: translateY(0px); }
       50% { transform: translateY(-10px); }
@@ -340,47 +336,142 @@
     }
     
     /* Page Transitions */
-    .content-area {
-      animation: fadeIn 0.4s ease-out;
-    }
-    
+    .content-area { animation: fadeIn 0.4s ease-out; }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    
-    .article-form, .article-list {
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    
-    .article-form:hover, .article-list:hover {
-      transform: translateY(-5px);
-      box-shadow: 10px 10px 0 #000;
-    }
+    .article-form, .article-list { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .article-form:hover, .article-list:hover { transform: translateY(-5px); box-shadow: 10px 10px 0 #000; }
     
     /* Loading State */
-    .loading-state {
+    .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
+    .loading-spinner { width: 40px; height: 40px; border: 4px solid rgba(0, 0, 0, 0.1); border-left-color: var(--purple); border-radius: 50%; margin-bottom: 15px; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Formatting Toolbar ── */
+    .editor-wrapper {
+      border: 2px solid var(--outline);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fff;
+    }
+    .fmt-toolbar {
       display: flex;
-      flex-direction: column;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 8px 10px;
+      background: var(--beige);
+      border-bottom: 2px solid var(--outline);
+      align-items: center;
+    }
+    .fmt-sep {
+      width: 1px;
+      height: 24px;
+      background: #00000030;
+      margin: 0 4px;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .fmt-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      flex-shrink: 0;
+    }
+    .tb-btn {
+      min-width: 30px;
+      height: 30px;
+      border: 1.5px solid var(--outline);
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 30px;
-      text-align: center;
+      font-size: 13px;
+      font-family: inherit;
+      font-weight: 700;
+      padding: 0 6px;
+      transition: all .15s;
+      box-shadow: 2px 2px 0 #000;
+      flex-shrink: 0;
     }
-    
-    .loading-spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid rgba(0, 0, 0, 0.1);
-      border-left-color: var(--purple);
+    .tb-btn:hover { background: var(--purple); color: #fff; transform: translateY(-1px); }
+    .tb-btn:active { transform: translate(1px,1px); box-shadow: 1px 1px 0 #000; }
+    .tb-btn.active { background: var(--purple); color: #fff; box-shadow: 1px 1px 0 #000; transform: translate(1px,1px); }
+    .tb-select {
+      height: 30px;
+      border: 1.5px solid var(--outline);
+      border-radius: 8px;
+      background: #fff;
+      padding: 0 6px;
+      font-size: 12px;
+      font-family: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 2px 2px 0 #000;
+      outline: none;
+      flex-shrink: 0;
+    }
+    .tb-select:hover { border-color: var(--purple); }
+    .color-dot {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
-      margin-bottom: 15px;
-      animation: spin 1s linear infinite;
+      border: 2px solid var(--outline);
+      cursor: pointer;
+      box-shadow: 1px 1px 0 #000;
+      transition: transform .15s, box-shadow .15s;
+      font-size: 11px;
+      flex-shrink: 0;
     }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    .color-dot:hover { transform: scale(1.2); box-shadow: 2px 2px 0 #000; }
+
+    /* Rich editor area */
+    #article-content-editor {
+      outline: none;
+      min-height: 200px;
+      padding: 14px 16px;
+      font-size: 16px;
+      line-height: 1.7;
+      background: #fff;
+      font-family: 'Inter', Arial, sans-serif;
+      transition: background 0.3s;
     }
+    #article-content-editor:empty:before {
+      content: attr(data-placeholder);
+      color: #aaa;
+      pointer-events: none;
+    }
+
+    /* Background picker */
+    .bg-picker { margin-top: 14px; }
+    .bg-picker-label { font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block; }
+    .bg-swatches { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .bg-swatch {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 2px solid var(--outline);
+      cursor: pointer;
+      box-shadow: 2px 2px 0 #000;
+      font-size: 11px;
+      font-weight: 700;
+      transition: transform .15s, box-shadow .15s;
+      flex-shrink: 0;
+    }
+    .bg-swatch:hover { transform: translateY(-2px); box-shadow: 3px 3px 0 #000; }
+    .bg-swatch.active { outline: 3px solid var(--purple); outline-offset: 2px; }
+    .bg-picker-note { font-size: 11px; color: #888; margin-top: 6px; font-style: italic; }
   </style>
 </head>
 <body>
@@ -468,11 +559,110 @@
               </div>
             </div>
             
+            <!-- ── RICH TEXT EDITOR (replaces plain textarea) ── -->
             <div class="form-group">
-              <label for="article-content">Article Content:</label>
-              <textarea id="article-content" class="form-textarea" placeholder="Write your article content here..." required></textarea>
+              <label>Article Content:</label>
+
+              <div class="editor-wrapper">
+                <!-- Toolbar -->
+                <div class="fmt-toolbar" id="fmt-toolbar">
+
+                  <!-- Font size -->
+                  <select class="tb-select" title="Font size" onchange="fmtFontSize(this.value)">
+                    <option value="">Size</option>
+                    <option value="12px">12</option>
+                    <option value="14px">14</option>
+                    <option value="16px" selected>16</option>
+                    <option value="18px">18</option>
+                    <option value="22px">22</option>
+                    <option value="28px">28</option>
+                    <option value="36px">36</option>
+                  </select>
+
+                  <div class="fmt-sep"></div>
+
+                  <!-- Basic formatting -->
+                  <button type="button" class="tb-btn" id="btn-bold"          onclick="fmtExec('bold')"          title="Bold (Ctrl+B)"><b>B</b></button>
+                  <button type="button" class="tb-btn" id="btn-italic"        onclick="fmtExec('italic')"        title="Italic (Ctrl+I)"><i>I</i></button>
+                  <button type="button" class="tb-btn" id="btn-underline"     onclick="fmtExec('underline')"     title="Underline (Ctrl+U)"><u>U</u></button>
+                  <button type="button" class="tb-btn" id="btn-strike"        onclick="fmtExec('strikeThrough')" title="Strikethrough"><s>S</s></button>
+
+                  <div class="fmt-sep"></div>
+
+                  <!-- Lists -->
+                  <button type="button" class="tb-btn" onclick="fmtExec('insertUnorderedList')" title="Bullet list">• List</button>
+                  <button type="button" class="tb-btn" onclick="fmtExec('insertOrderedList')"   title="Numbered list">1. List</button>
+
+                  <div class="fmt-sep"></div>
+
+                  <!-- Specials -->
+                  <button type="button" class="tb-btn" onclick="fmtQuote()"                      title="Blockquote">" Quote</button>
+                  <button type="button" class="tb-btn" onclick="fmtNote()"                       title="Callout / Note">💡 Note</button>
+                  <button type="button" class="tb-btn" onclick="fmtExec('insertHorizontalRule')" title="Horizontal divider">― HR</button>
+
+                  <div class="fmt-sep"></div>
+
+                  <!-- Text colours -->
+                  <span class="fmt-label">Text</span>
+                  <span class="color-dot" style="background:#000000" title="Black"  onclick="fmtColor('#000000')"></span>
+                  <span class="color-dot" style="background:#9B59B6" title="Purple" onclick="fmtColor('#9B59B6')"></span>
+                  <span class="color-dot" style="background:#27AE60" title="Green"  onclick="fmtColor('#27AE60')"></span>
+                  <span class="color-dot" style="background:#E74C3C" title="Red"    onclick="fmtColor('#E74C3C')"></span>
+                  <span class="color-dot" style="background:#E67E22" title="Orange" onclick="fmtColor('#E67E22')"></span>
+                  <span class="color-dot" style="background:#3498DB" title="Blue"   onclick="fmtColor('#3498DB')"></span>
+                  <span class="color-dot" style="background:#F39C12" title="Yellow" onclick="fmtColor('#F39C12')"></span>
+                  <span class="color-dot" style="background:#888888" title="Gray"   onclick="fmtColor('#888888')"></span>
+
+                  <div class="fmt-sep"></div>
+
+                  <!-- Highlight colours -->
+                  <span class="fmt-label">Highlight</span>
+                  <span class="color-dot" style="background:#fff3a8" title="Yellow highlight"  onclick="fmtHighlight('#fff3a8')"></span>
+                  <span class="color-dot" style="background:#ffc8c8" title="Pink highlight"    onclick="fmtHighlight('#ffc8c8')"></span>
+                  <span class="color-dot" style="background:#c8f0c8" title="Green highlight"   onclick="fmtHighlight('#c8f0c8')"></span>
+                  <span class="color-dot" style="background:#c8e0ff" title="Blue highlight"    onclick="fmtHighlight('#c8e0ff')"></span>
+                  <span class="color-dot" style="background:#f0c8ff" title="Purple highlight"  onclick="fmtHighlight('#f0c8ff')"></span>
+                  <span class="color-dot" style="background:transparent;border:2px dashed #aaa" title="Remove highlight" onclick="fmtHighlight('transparent')">✕</span>
+                </div>
+
+                <!-- Editable content area -->
+                <div id="article-content-editor"
+                  contenteditable="true"
+                  data-placeholder="Write your article content here..."
+                  oninput="fmtSync()"
+                  onkeyup="fmtUpdateState()"
+                  onmouseup="fmtUpdateState()"
+                ><p><br></p></div>
+              </div>
+
+              <!-- Hidden field carries HTML to your existing author.js / Supabase logic -->
+              <input type="hidden" id="article-content" name="article-content">
+
+              <!-- Background picker -->
+              <div class="bg-picker">
+                <span class="bg-picker-label">Article Card Background:</span>
+                <div class="bg-swatches">
+                  <span class="bg-swatch active" onclick="fmtSetBg(this,'none')"      title="None (white)"      style="background:#fff;font-size:10px;">None</span>
+                  <span class="bg-swatch"        onclick="fmtSetBg(this,'beige')"     title="Beige"             style="background:#F5F5DC;"></span>
+                  <span class="bg-swatch"        onclick="fmtSetBg(this,'purple')"    title="Purple pastel"     style="background:linear-gradient(135deg,#e8c8e4,#f5e8f3);"></span>
+                  <span class="bg-swatch"        onclick="fmtSetBg(this,'green')"     title="Green pastel"      style="background:linear-gradient(135deg,#c8e6c9,#e8f5e9);"></span>
+                  <span class="bg-swatch"        onclick="fmtSetBg(this,'peach')"     title="Peach"             style="background:linear-gradient(135deg,#ffccbc,#fce4ec);"></span>
+                  <span class="bg-swatch"        onclick="fmtSetBg(this,'sky')"       title="Sky blue"          style="background:linear-gradient(135deg,#bbdefb,#e3f2fd);"></span>
+                  <span class="bg-swatch"        onclick="fmtSetBg(this,'lavender')"  title="Lavender"          style="background:linear-gradient(135deg,#d1c4e9,#ede7f6);"></span>
+                  <span class="bg-swatch"        onclick="fmtSetBg(this,'mint')"      title="Mint"              style="background:linear-gradient(135deg,#b2dfdb,#e0f2f1);"></span>
+                  <span class="bg-swatch"        onclick="fmtSetBg(this,'sunshine')"  title="Sunshine yellow"   style="background:linear-gradient(135deg,#fff9c4,#fffde7);"></span>
+                  <span class="bg-swatch"        onclick="fmtSetBg(this,'rose')"      title="Rose"              style="background:linear-gradient(135deg,#f8bbd9,#fce4ec);"></span>
+                  <span class="bg-swatch"        onclick="fmtSetBg(this,'dark')"      title="Dark / night"      style="background:#1a1a2e;color:#fff;">🌙</span>
+                  <span class="bg-swatch"        onclick="fmtSetBg(this,'paper')"     title="Lined paper"       style="background:repeating-linear-gradient(0deg,#f9f9f9,#f9f9f9 23px,#dde 24px);"></span>
+                </div>
+                <p class="bg-picker-note">* Applies as the background of the published article card</p>
+              </div>
+
+              <!-- Hidden field for background value -->
+              <input type="hidden" id="article-bg" name="article-bg" value="none">
             </div>
-            
+            <!-- ── END RICH TEXT EDITOR ── -->
+
             <div class="form-group">
               <label for="author-name">Author Name:</label>
               <input type="text" id="author-name" class="form-input" placeholder="Your name..." required>
@@ -516,57 +706,126 @@
       
       const cursor = document.getElementById('custom-cursor');
       
-      // Move cursor with mouse
       let firstMove = true;
       document.addEventListener('mousemove', function(e) {
-        if (firstMove) {
-          cursor.style.opacity = '1';
-          firstMove = false;
-        }
+        if (firstMove) { cursor.style.opacity = '1'; firstMove = false; }
         cursor.style.left = e.clientX + 'px';
         cursor.style.top = e.clientY + 'px';
       });
       
-      // Add clicking state
-      document.addEventListener('mousedown', function() {
-        cursor.classList.add('clicking');
-      });
+      document.addEventListener('mousedown', function() { cursor.classList.add('clicking'); });
+      document.addEventListener('mouseup',   function() { cursor.classList.remove('clicking'); });
       
-      document.addEventListener('mouseup', function() {
-        cursor.classList.remove('clicking');
-      });
-      
-      // Click sound function
       function playClickSound() {
         const clickSound = document.getElementById('click-sound');
-        if (clickSound) {
-          clickSound.currentTime = 0;
-          clickSound.play().catch(e => console.log("Audio play failed:", e));
-        }
+        if (clickSound) { clickSound.currentTime = 0; clickSound.play().catch(e => console.log("Audio play failed:", e)); }
       }
       
-      // Add hover and click events to all clickable elements
       const clickableElements = document.querySelectorAll('button, .channels li, .icon-btn');
       clickableElements.forEach(function(element) {
-        element.addEventListener('mouseenter', function() {
-          cursor.classList.add('hovering');
-        });
-
-        element.addEventListener('mouseleave', function() {
-          cursor.classList.remove('hovering');
-        });
-
+        element.addEventListener('mouseenter', function() { cursor.classList.add('hovering'); });
+        element.addEventListener('mouseleave', function() { cursor.classList.remove('hovering'); });
         element.addEventListener('click', playClickSound);
       });
 
-      // Global navigation functions
-      window.goHome = function() {
-        window.location.href = 'landingpage.html';
-      };
+      window.goHome  = function() { window.location.href = 'landingpage.html'; };
+      window.viewBlogs = function() { window.location.href = 'blog.html'; };
+    });
 
-      window.viewBlogs = function() {
-        window.location.href = 'blog.html';
-      };
+    // ── Rich Text Editor ──────────────────────────────────────────────
+    const fmtEditor = document.getElementById('article-content-editor');
+    const fmtHidden = document.getElementById('article-content');
+
+    const BG_MAP = {
+      none:      '#fff',
+      beige:     '#F5F5DC',
+      purple:    'linear-gradient(135deg,#e8c8e4,#f5e8f3)',
+      green:     'linear-gradient(135deg,#c8e6c9,#e8f5e9)',
+      peach:     'linear-gradient(135deg,#ffccbc,#fce4ec)',
+      sky:       'linear-gradient(135deg,#bbdefb,#e3f2fd)',
+      lavender:  'linear-gradient(135deg,#d1c4e9,#ede7f6)',
+      mint:      'linear-gradient(135deg,#b2dfdb,#e0f2f1)',
+      sunshine:  'linear-gradient(135deg,#fff9c4,#fffde7)',
+      rose:      'linear-gradient(135deg,#f8bbd9,#fce4ec)',
+      dark:      '#1a1a2e',
+      paper:     'repeating-linear-gradient(0deg,#f9f9f9,#f9f9f9 23px,#dde 24px)'
+    };
+
+    function fmtExec(cmd) {
+      document.execCommand(cmd, false, null);
+      fmtEditor.focus();
+      fmtUpdateState();
+    }
+
+    function fmtFontSize(size) {
+      if (!size) return;
+      document.execCommand('fontSize', false, '7');
+      fmtEditor.querySelectorAll('font[size="7"]').forEach(function(el) {
+        el.removeAttribute('size');
+        el.style.fontSize = size;
+      });
+      fmtEditor.focus();
+    }
+
+    function fmtColor(color) {
+      document.execCommand('foreColor', false, color);
+      fmtEditor.focus();
+    }
+
+    function fmtHighlight(color) {
+      document.execCommand('hiliteColor', false, color);
+      fmtEditor.focus();
+    }
+
+    function fmtQuote() {
+      var sel = window.getSelection();
+      var txt = (sel && sel.toString()) ? sel.toString() : 'Your quote here...';
+      document.execCommand('insertHTML', false,
+        '<blockquote style="border-left:4px solid #D9A3CF;margin:16px 0;padding:12px 20px;background:#f9f0f8;border-radius:0 10px 10px 0;font-style:italic;color:#555;">' + txt + '</blockquote><p><br></p>');
+      fmtEditor.focus();
+    }
+
+    function fmtNote() {
+      document.execCommand('insertHTML', false,
+        '<div style="background:#fffde7;border:2px solid #f39c12;border-radius:10px;padding:12px 16px;margin:14px 0;display:flex;gap:10px;align-items:flex-start;"><span style="font-size:20px;flex-shrink:0;">💡</span><div><strong style="color:#e67e22;">Note:</strong> <span style="color:#555;">Add your callout text here.</span></div></div><p><br></p>');
+      fmtEditor.focus();
+    }
+
+    function fmtSync() {
+      fmtHidden.value = fmtEditor.innerHTML;
+    }
+
+    function fmtUpdateState() {
+      [['bold','btn-bold'],['italic','btn-italic'],['underline','btn-underline'],['strikeThrough','btn-strike']]
+        .forEach(function(pair) {
+          var btn = document.getElementById(pair[1]);
+          if (btn) btn.classList.toggle('active', document.queryCommandState(pair[0]));
+        });
+    }
+
+    function fmtSetBg(el, bg) {
+      document.querySelectorAll('.bg-swatch').forEach(function(s) { s.classList.remove('active'); });
+      el.classList.add('active');
+      document.getElementById('article-bg').value = bg;
+      fmtEditor.style.background = BG_MAP[bg] || '#fff';
+      fmtEditor.style.color = (bg === 'dark') ? '#e0e0e0' : '#000';
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+      if (e.target !== fmtEditor) return;
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === 'b') { e.preventDefault(); fmtExec('bold'); }
+        if (e.key === 'i') { e.preventDefault(); fmtExec('italic'); }
+        if (e.key === 'u') { e.preventDefault(); fmtExec('underline'); }
+      }
+    });
+
+    fmtEditor.addEventListener('focus', fmtUpdateState);
+
+    // Sync on form submit so hidden field is always up to date
+    document.getElementById('article-form').addEventListener('submit', function() {
+      fmtSync();
     });
   </script>
   
