@@ -342,12 +342,12 @@
     <!-- Profile Card -->
     <div class="profile-card">
       <div class="avatar-wrap">
-        <img src="assets/an.png" alt="Asneem" onerror="this.style.display='none'">
+        <img id="profileAvatar" src="assets/an.png" alt="Profile" onerror="this.style.display='none'">
       </div>
       <div class="profile-info">
-        <h1>Asneem</h1>
-        <div class="designation">Full-Stack Developer &amp; Co-Founder</div>
-        <p class="profile-bio">
+        <h1 id="profileName">Asneem</h1>
+        <div class="designation" id="profileDesignation">Full-Stack Developer &amp; Co-Founder</div>
+        <p class="profile-bio" id="profileBio">
           Passionate about creating inclusive tech spaces for women. Specializes in building scalable web applications and mentoring aspiring developers. Loves solving complex problems with elegant code.
         </p>
         <!-- profile stats removed per request -->
@@ -364,21 +364,53 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
   <script>
-    const author = { name: "Asneem", initials: "A", image: "assets/an.png" };
-    const grid = document.getElementById('blogsGrid');
+    const profiles = {
+      asneem: {
+        name: 'Asneem',
+        initials: 'A',
+        image: 'assets/an.png',
+        designation: 'Full-Stack Developer & Co-Founder',
+        bio: 'Passionate about creating inclusive tech spaces for women. Specializes in building scalable web applications and mentoring aspiring developers. Loves solving complex problems with elegant code.'
+      },
+      keerthi: {
+        name: 'Keerthi',
+        initials: 'K',
+        image: 'assets/kee.png',
+        designation: 'Frontend Developer & Co-Founder',
+        bio: 'Dedicated to crafting beautiful, user-friendly interfaces that empower women in tech. Expert in modern frameworks and design systems. Believes in the power of community-driven learning.'
+      }
+    };
 
-    async function loadAsneemBlogs() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const profileKey = (urlParams.get('member') || urlParams.get('author') || 'asneem').toLowerCase();
+    const profile = profiles[profileKey] || profiles.asneem;
+    const grid = document.getElementById('blogsGrid');
+    const profileAvatar = document.getElementById('profileAvatar');
+    const profileName = document.getElementById('profileName');
+    const profileDesignation = document.getElementById('profileDesignation');
+    const profileBio = document.getElementById('profileBio');
+
+    document.title = `${profile.name} Profile - Girlsin.tech`;
+    if (profileAvatar) {
+      profileAvatar.src = profile.image;
+      profileAvatar.alt = profile.name;
+    }
+    if (profileName) profileName.textContent = profile.name;
+    if (profileDesignation) profileDesignation.textContent = profile.designation;
+    if (profileBio) profileBio.textContent = profile.bio;
+
+    async function loadProfileBlogs() {
       try {
         const { data: blogs, error } = await supabaseClient
           .from('blogs')
           .select('*')
-          .ilike('author', '%Asneem%')
+          .ilike('author', `%${profile.name}%`)
           .order('created_at', { ascending: false });
 
         if (error) throw error;
 
         if (!blogs || blogs.length === 0) {
-          grid.innerHTML = '<p style="text-align:center;width:100%;">No blogs found for Asneem yet.</p>';
+          grid.innerHTML = `<p style="text-align:center;width:100%;">No blogs found for ${profile.name} yet.</p>`;
           return;
         }
 
@@ -415,7 +447,7 @@
       }
     }
 
-    loadAsneemBlogs();
+    loadProfileBlogs();
 
     // Custom cursor removed — native cursor restored
   </script>
