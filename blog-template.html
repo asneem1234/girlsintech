@@ -304,6 +304,48 @@
       transform: translate(1px, 1px);
       box-shadow: 1px 1px 0 #000;
     }
+
+    /* Share bar styles - separate from .read-btn used for related post CTA */
+    #share-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 18px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(0,0,0,0.08);
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    #share-bar input {
+      min-width: 160px;
+      max-width: 100%;
+      flex: 1 1 220px;
+      padding: 8px 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 13px;
+      box-sizing: border-box;
+    }
+
+    .share-btn {
+      border: 2px solid #000;
+      background: var(--purple);
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: none;
+      box-shadow: 2px 2px 0 #000;
+      text-decoration: none;
+      color: inherit;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .share-btn:hover { background: #c391b9; }
+
     
     /* Footer */
     .blog-footer {

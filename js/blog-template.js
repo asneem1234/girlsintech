@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const copyBtn = document.createElement('button');
         copyBtn.textContent = 'Copy link';
-        copyBtn.className = 'read-btn';
+        copyBtn.className = 'share-btn';
         copyBtn.style.padding = '8px 12px';
         copyBtn.addEventListener('click', async () => {
           try {
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (navigator.share) {
           const nativeBtn = document.createElement('button');
           nativeBtn.textContent = 'Share';
-          nativeBtn.className = 'read-btn';
+          nativeBtn.className = 'share-btn';
           nativeBtn.style.padding = '8px 12px';
           nativeBtn.addEventListener('click', async () => {
             try {
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
           // Add a Twitter share button as fallback
           const twBtn = document.createElement('a');
           twBtn.textContent = 'Tweet';
-          twBtn.className = 'read-btn';
+          twBtn.className = 'share-btn';
           twBtn.style.display = 'inline-flex';
           twBtn.style.alignItems = 'center';
           twBtn.style.justifyContent = 'center';
