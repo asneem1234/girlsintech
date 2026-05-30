@@ -120,6 +120,81 @@ document.addEventListener('DOMContentLoaded', function() {
         .join('');
       
       blogContent.innerHTML = formattedContent;
+      // Add share bar with copy and native share support
+      try {
+        // Remove existing share bar if present
+        const existing = document.getElementById('share-bar');
+        if (existing) existing.remove();
+
+        const shareBar = document.createElement('div');
+        shareBar.id = 'share-bar';
+        shareBar.style.display = 'flex';
+        shareBar.style.gap = '8px';
+        shareBar.style.alignItems = 'center';
+        shareBar.style.marginTop = '18px';
+        shareBar.style.paddingTop = '12px';
+        shareBar.style.borderTop = '1px solid rgba(0,0,0,0.08)';
+
+        const urlInput = document.createElement('input');
+        urlInput.type = 'text';
+        urlInput.readOnly = true;
+        urlInput.value = window.location.href;
+        urlInput.style.flex = '1';
+        urlInput.style.padding = '8px 10px';
+        urlInput.style.border = '1px solid #ddd';
+        urlInput.style.borderRadius = '8px';
+        urlInput.style.fontSize = '13px';
+
+        const copyBtn = document.createElement('button');
+        copyBtn.textContent = 'Copy link';
+        copyBtn.className = 'read-btn';
+        copyBtn.style.padding = '8px 12px';
+        copyBtn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(urlInput.value);
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => (copyBtn.textContent = 'Copy link'), 2000);
+          } catch (e) {
+            alert('Copy failed — please copy the URL manually.');
+          }
+        });
+
+        shareBar.appendChild(urlInput);
+        shareBar.appendChild(copyBtn);
+
+        // Native share API
+        if (navigator.share) {
+          const nativeBtn = document.createElement('button');
+          nativeBtn.textContent = 'Share';
+          nativeBtn.className = 'read-btn';
+          nativeBtn.style.padding = '8px 12px';
+          nativeBtn.addEventListener('click', async () => {
+            try {
+              await navigator.share({ title: document.title, url: window.location.href });
+            } catch (err) {
+              console.log('Share cancelled or failed', err);
+            }
+          });
+          shareBar.appendChild(nativeBtn);
+        } else {
+          // Add a Twitter share button as fallback
+          const twBtn = document.createElement('a');
+          twBtn.textContent = 'Tweet';
+          twBtn.className = 'read-btn';
+          twBtn.style.display = 'inline-flex';
+          twBtn.style.alignItems = 'center';
+          twBtn.style.justifyContent = 'center';
+          twBtn.style.padding = '8px 12px';
+          const tweetUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(blog.title || '')}`;
+          twBtn.href = tweetUrl;
+          twBtn.target = '_blank';
+          shareBar.appendChild(twBtn);
+        }
+
+        blogContent.appendChild(shareBar);
+      } catch (e) {
+        console.error('Error adding share bar:', e);
+      }
     }
   }
 
